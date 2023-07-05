@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    include: secret
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ENC(nxabeY6O8uh7LJktbEiOgqU5I82v2zE4JTTiueEP05qmFXm4Bxn2cnDFD92RtZMh)
+    username: ENC(QJ/6o0ivcN3Sr/cSea5jOw==)
+    password: ENC(+zeMcjF1L4VipOakWE9THSroy6f1sOY0)
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+  redis:
+    host: ENC(zpJtzJciOKHj4623PdgUzr9giH87KjBd)
+    port: 6379
+  swagger-ui:
+    path: ENC(WTBg/5W0RzdfjEYWeHF/lvHH8XFo0FJA0Ue3wuWoTRM=)
+    use-root-path: true
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
+---
+spring:
+  profiles:
+    active: stag
+
+---
+spring:
+  profiles:
+    active: release
