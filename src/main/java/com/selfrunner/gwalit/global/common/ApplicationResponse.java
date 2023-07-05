@@ -14,14 +14,14 @@ public class ApplicationResponse<T> {
     private final String message;
     private final T data;
 
-    public static <T> ApplicationResponse<T> error(ErrorCode errorCode) {
-        return (ApplicationResponse<T>) ApplicationResponse.builder()
-                .timestamp(LocalDateTime.now())
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .data(null)
-                .build();
-    }
+//    public static <T> ApplicationResponse<T> error(ErrorCode errorCode) {
+//        return (ApplicationResponse<T>) ApplicationResponse.builder()
+//                .timestamp(LocalDateTime.now())
+//                .code(errorCode.getCode())
+//                .message(errorCode.getMessage())
+//                .data(null)
+//                .build();
+//    }
 
     // 200: 반환할 값이 존재하는 경우
     public static <T> ApplicationResponse<T> ok(ErrorCode errorCode, T data) {
