@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
 import com.selfrunner.gwalit.domain.member.service.AuthService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
+import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -29,16 +30,14 @@ public class AuthController {
 
     @Operation(summary = "인증번호 전송 요청")
     @PostMapping("/phone")
-    public ResponseEntity<String> sendAuthorizationCode(@RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-        String authorizationCode = authService.sendAuthorizationCode(postAuthPhoneReq);
-
-        return ResponseEntity.ok(authorizationCode);
+    public ApplicationResponse<String> sendAuthorizationCode(@RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        return authService.sendAuthorizationCode(postAuthPhoneReq);
     }
 
     @PostMapping("/authorization")
-    public ResponseEntity<String> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
-        String result = authService.checkAuthorizationCode(postauthCodeReq) ? "SUCCESS" : "FAIL";
+    public ApplicationResponse<String> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
+        String result = authService.checkAuthorizationCode(postauthCodeReq) ? "인증번호가 일치합니다." : "인증번호가 일치하지 않습니다";
 
-        return ResponseEntity.ok(result);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, result);
     }
 }
