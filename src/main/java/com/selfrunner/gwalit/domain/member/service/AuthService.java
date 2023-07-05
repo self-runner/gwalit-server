@@ -43,16 +43,32 @@ public class AuthService {
     private final RedisClient redisClient;
 
     public ApplicationResponse<String> sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
-        // Redis 저장
         redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
 
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+        // Response
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
     public boolean checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
+        // Business Logic
         boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode()) ? true : false;
 
+        // Response
         return result;
+    }
+
+    public ApplicationResponse<String> sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // Validation
+        if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
+            throw new RuntimeException();
+        }
+
+        // Business Logic
+        smsClient.sendTemporaryPassword(postAuthCodeReq);
+
+        // Response
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, "임시 비밀번호가 전송되었습니다.");
     }
 }

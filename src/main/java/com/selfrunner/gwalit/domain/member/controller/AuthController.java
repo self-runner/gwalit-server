@@ -9,11 +9,9 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -34,10 +32,17 @@ public class AuthController {
         return authService.sendAuthorizationCode(postAuthPhoneReq);
     }
 
+    @Operation(summary = "인증번호 확인 요청")
     @PostMapping("/authorization")
     public ApplicationResponse<String> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
         String result = authService.checkAuthorizationCode(postauthCodeReq) ? "인증번호가 일치합니다." : "인증번호가 일치하지 않습니다";
 
         return ApplicationResponse.ok(ErrorCode.SUCCESS, result);
+    }
+
+    @Operation(summary = "임시 비밀번호 발급")
+    @PostMapping("/password")
+    public ApplicationResponse<String> sendTemporaryPassword(@RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        return authService.sendTemporaryPassword(postAuthCodeReq);
     }
 }
