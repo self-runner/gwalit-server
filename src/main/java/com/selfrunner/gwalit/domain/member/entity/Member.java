@@ -1,11 +1,13 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.Getter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
+@Getter
 public class Member {
 
     @Id
@@ -13,19 +15,16 @@ public class Member {
     @Column(name = "memberId")
     private Long memberId;
 
-    @NotNull
     @Column(name = "name")
     private String name;
 
-    @NotNull
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private MemberType type;
 
-    @NotNull
     @Column(name = "phone")
     private String phone;
 
-    @NotNull
     @Column(name = "password")
     private String password;
 
@@ -33,5 +32,6 @@ public class Member {
     private String school;
 
     @Column(name = "grade")
+    @Enumerated(EnumType.STRING)
     private MemberGrade grade;
 }

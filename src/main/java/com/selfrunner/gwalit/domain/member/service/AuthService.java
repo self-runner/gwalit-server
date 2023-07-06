@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
+import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.redis.RedisClient;
@@ -41,6 +42,7 @@ public class AuthService {
 
     private final SmsClient smsClient;
     private final RedisClient redisClient;
+    private final MemberRepository memberRepository;
 
     public ApplicationResponse<String> sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
