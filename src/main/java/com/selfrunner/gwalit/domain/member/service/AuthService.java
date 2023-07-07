@@ -66,8 +66,9 @@ public class AuthService {
             throw new RuntimeException();
         }
 
-        // Business Logic
+        // Business Logic: 비밀번호 암호화 및 회원 정보 저장
         Member member = postMemberReq.toEntity();
+        member.encryptPassword(member.getPassword());
         memberRepository.save(member);
 
         // Response

@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +40,11 @@ public class Member {
 
     @Column(name = "needNotification")
     private Boolean needNotification;
+
+
+    public void encryptPassword(String password) {
+        this.password = SHA256.encrypt(password);
+    }
 
     @Builder
     public Member(String name, String type, String phone, String password, String school, String grade) {
