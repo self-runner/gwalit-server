@@ -1,13 +1,16 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
-import io.swagger.v3.oas.annotations.Operation;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Getter
+@Table(name = "Member")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member {
 
     @Id
@@ -24,7 +27,6 @@ public class Member {
 
     @Column(name = "phone")
     private String phone;
-
     @Column(name = "password")
     private String password;
 
@@ -34,4 +36,18 @@ public class Member {
     @Column(name = "grade")
     @Enumerated(EnumType.STRING)
     private MemberGrade grade;
+
+    @Column(name = "needNotification")
+    private Boolean needNotification;
+
+    @Builder
+    public Member(String name, String type, String phone, String password, String school, String grade) {
+        this.name = name;
+        this.type = MemberType.valueOf(type);
+        this.phone = phone;
+        this.password = password;
+        this.school = school;
+        this.grade = MemberGrade.valueOf(grade);
+        this.needNotification = Boolean.FALSE;
+    }
 }

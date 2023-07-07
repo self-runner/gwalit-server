@@ -18,4 +18,10 @@ public class ErrorResponse {
         this.code = errorcode.getCode();
         this.message = errorcode.getMessage();
     }
+
+    public ErrorResponse(String message) {
+        this.timestamp = LocalDateTime.now().withNano(0);
+        this.code = 500;
+        this.message = message;
+    }
 }

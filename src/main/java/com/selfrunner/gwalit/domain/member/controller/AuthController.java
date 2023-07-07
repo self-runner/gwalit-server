@@ -3,14 +3,17 @@ package com.selfrunner.gwalit.domain.member.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
+import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.service.AuthService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Null;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -42,5 +45,12 @@ public class AuthController {
     @PostMapping("/password")
     public ApplicationResponse<String> sendTemporaryPassword(@RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         return authService.sendTemporaryPassword(postAuthCodeReq);
+    }
+
+    @Operation(summary = "일반 회원가입")
+    @PostMapping("/register")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ApplicationResponse<String> register(@RequestBody PostMemberReq postMemberReq) {
+        return authService.register(postMemberReq);
     }
 }
