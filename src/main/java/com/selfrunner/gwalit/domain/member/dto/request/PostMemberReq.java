@@ -20,6 +20,7 @@ public class PostMemberReq {
     private String type;
 
     @NotEmpty
+    @Size(min = 10, max = 11)
     private String phone;
 
     @NotNull

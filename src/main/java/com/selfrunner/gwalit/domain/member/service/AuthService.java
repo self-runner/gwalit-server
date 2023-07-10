@@ -5,11 +5,11 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
+import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
+import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
-import com.selfrunner.gwalit.global.common.ApplicationResponse;
-import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.SHA256;
 import com.selfrunner.gwalit.global.util.jwt.TokenDto;
 import com.selfrunner.gwalit.global.util.jwt.TokenProvider;
@@ -17,8 +17,9 @@ import com.selfrunner.gwalit.global.util.redis.RedisClient;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -26,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -35,14 +36,15 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
-    public ApplicationResponse<String> sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public String sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
         redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
 
         // Response
-        return ApplicationResponse.create(ErrorCode.SUCCESS);
+        String response = "인증 번호를 전송했습니다.";
+        return response;
     }
     public boolean checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
@@ -52,7 +54,7 @@ public class AuthService {
         return result;
     }
 
-    public ApplicationResponse<String> sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public String sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
             throw new RuntimeException();
@@ -62,11 +64,12 @@ public class AuthService {
         smsClient.sendTemporaryPassword(postAuthCodeReq);
 
         // Response
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, "임시 비밀번호가 전송되었습니다.");
+        String response = "임시 비밀번호가 전송되었습니다.";
+        return response;
     }
 
     @Transactional
-    public ApplicationResponse<String> register(PostMemberReq postMemberReq) {
+    public String register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
             throw new RuntimeException();
@@ -78,11 +81,12 @@ public class AuthService {
         memberRepository.save(member);
 
         // Response
-        return ApplicationResponse.create(ErrorCode.SUCCESS, "회원가입을 성공했습니다.");
+        String response = "회원가입을 성공했습니다.";
+        return response;
     }
 
     @Transactional
-    public ApplicationResponse<TokenDto> login(PostLoginReq postLoginReq) {
+    public PostLoginRes login(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
         if(member.getDeletedAt() != null) {
@@ -98,22 +102,46 @@ public class AuthService {
         redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
 
         // Response
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, tokenDto);
+        PostLoginRes postLoginRes = new PostLoginRes().toDto(tokenDto, member);
+
+        return postLoginRes;
     }
 
-    @Transactional
-    public ApplicationResponse<String> logout(String atk, Member member) {
+    public String logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
         redisClient.deleteValue(key);
         redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
 
         // Response
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, "로그아웃이 완료되었습니다");
+        String response = "로그아웃이 완료되었습니다";
+        return response;
     }
 
     @Transactional
-    public ApplicationResponse<String> withdrawal(Member member) {
+    public GetRefreshRes reissue(HttpServletRequest httpServletRequest) {
+        // Validation: RTK 조회
+        String rtk = httpServletRequest.getHeader("Authorization");
+        String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
+        if(rtk.isBlank() || !redisClient.getValue(key).equals(rtk)) {
+            throw new RuntimeException("올바르지 않은 RTK입니다.");
+        }
+        Member member = memberRepository.findByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)));
+        if(member == null) {
+            throw new RuntimeException("유효하지 않은 RTK입니다.");
+        }
+
+        // Business Logic
+        String atk = tokenProvider.regenerateToken(member);
+
+        // Response
+        GetRefreshRes getRefreshRes = new GetRefreshRes().toDto(atk);
+
+        return getRefreshRes;
+    }
+
+    @Transactional
+    public String withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
             throw new RuntimeException("이미 탈퇴한 계정입니다.");
@@ -124,6 +152,7 @@ public class AuthService {
         memberRepository.delete(member);
 
         // Response
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, "회원 탈퇴가 완료되었습니다");
+        String response = "회원 탈퇴가 완료되었습니다";
+        return response;
     }
 }

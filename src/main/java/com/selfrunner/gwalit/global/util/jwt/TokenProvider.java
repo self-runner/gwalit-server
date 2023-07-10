@@ -19,7 +19,7 @@ public class TokenProvider {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private static final long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 1000L; // 1시간
+    private static final long ACCESS_TOKEN_VALID_TIME = 60 * 1000L; // 1시간
     private static final long REFRESH_TOKEN_VALID_TIME = 30 * 24 * 60 * 60 * 1000L; // 30일
 
     // AccessToken 발급
@@ -69,6 +69,12 @@ public class TokenProvider {
                 .accessToken(atk)
                 .refreshToken(rtk)
                 .build();
+    }
+
+    // 토큰 재발급
+    public String regenerateToken(Member member) {
+        String atk = createAccessToken(member);
+        return atk;
     }
 
     // 토큰 검증
