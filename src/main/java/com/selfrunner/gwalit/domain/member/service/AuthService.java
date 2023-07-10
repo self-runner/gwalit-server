@@ -82,7 +82,7 @@ public class AuthService {
     }
 
     @Transactional
-    public ApplicationResponse<TokenDto> signIn(PostLoginReq postLoginReq) {
+    public ApplicationResponse<TokenDto> login(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
         if(member.getDeletedAt() != null) {
@@ -94,11 +94,22 @@ public class AuthService {
 
         // Business Logic: 토큰 발급 및 Redis 저장
         TokenDto tokenDto = tokenProvider.generateToken(member);
-        String value = member.getType() + member.getPhone(); // unique 확인은 phone + type이므로 이를 string으로 저장, 앞 7자리는 type으로 고정
-        redisClient.setValue(tokenDto.getRefreshToken(), value, 30 * 24 * 60 * 60 * 1000L);
+        String key = member.getType() + member.getPhone(); // unique 확인은 phone + type이므로 이를 string으로 저장, 앞 7자리는 type으로 고정
+        redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
 
         // Response
         return ApplicationResponse.ok(ErrorCode.SUCCESS, tokenDto);
+    }
+
+    @Transactional
+    public ApplicationResponse<String> logout(String atk, Member member) {
+        // Business Logic
+        String key = member.getType() + member.getPhone();
+        redisClient.deleteValue(key);
+        redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
+
+        // Response
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, "로그아웃이 완료되었습니다");
     }
 
     @Transactional

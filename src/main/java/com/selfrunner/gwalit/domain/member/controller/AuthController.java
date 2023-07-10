@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Null;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
@@ -60,8 +61,14 @@ public class AuthController {
 
     @Operation(summary = "일반 로그인")
     @PostMapping("/login")
-    public ApplicationResponse<TokenDto> signIn(@RequestBody PostLoginReq postLoginReq) {
-        return authService.signIn(postLoginReq);
+    public ApplicationResponse<TokenDto> login(@RequestBody PostLoginReq postLoginReq) {
+        return authService.login(postLoginReq);
+    }
+
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ApplicationResponse<String> logout(HttpServletRequest httpServletRequest, @Auth Member member) {
+        return authService.logout(httpServletRequest.getHeader("Authorization"), member);
     }
 
     @Operation(summary = "회원탈퇴")

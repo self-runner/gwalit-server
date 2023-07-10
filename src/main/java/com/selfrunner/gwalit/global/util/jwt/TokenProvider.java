@@ -1,3 +1,4 @@
+
 package com.selfrunner.gwalit.global.util.jwt;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -76,10 +77,6 @@ public class TokenProvider {
             Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
             return true;
         } catch (ExpiredJwtException e) { // 만료된 토큰일 경우
-            // atk 만료인 경우
-
-
-            // rtk 만료인 경우
             throw new RuntimeException(ErrorCode.EXPIRE_ACCESS_TOKEN.getMessage());
         } catch (UnsupportedJwtException e) { // 지원하지 않는 토큰인 경우
             throw new RuntimeException(e);
@@ -96,7 +93,12 @@ public class TokenProvider {
     // 해당 토큰의 type 반환
     public String getType(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
-
         return claims.get("type").toString();
+    }
+
+    // 해당 토큰의 Expiration 반환
+    public Long getExpiration(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
+        return claims.getExpiration().getTime();
     }
 }
