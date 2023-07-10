@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,7 +13,7 @@ import javax.persistence.*;
 @Getter
 @Table(name = "Member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

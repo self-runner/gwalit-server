@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.global.util.jwt;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +43,14 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         tokenProvider.validateToken(authorization);
 
         // 토큰에서 사용자 정보 추출
-        Long id = tokenProvider.getId(authorization);
+        String phone = tokenProvider.getPhone(authorization);
+        String type = tokenProvider.getType(authorization);
 
         // 사용자 정보 획득
-        Member member = memberRepository.findById(id).orElseThrow();
+        Member member = memberRepository.findByPhoneAndType(phone, MemberType.valueOf(type));
+        if(member == null) {
+            throw new RuntimeException("유효한 사용자 정보가 아닙니다");
+        }
 
         // 사용자 정보 반환
         return  member;

@@ -3,12 +3,16 @@ package com.selfrunner.gwalit.domain.member.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
+import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.SHA256;
+import com.selfrunner.gwalit.global.util.jwt.TokenDto;
+import com.selfrunner.gwalit.global.util.jwt.TokenProvider;
 import com.selfrunner.gwalit.global.util.redis.RedisClient;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +32,7 @@ public class AuthService {
 
     private final SmsClient smsClient;
     private final RedisClient redisClient;
+    private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
     public ApplicationResponse<String> sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
@@ -73,5 +78,24 @@ public class AuthService {
 
         // Response
         return ApplicationResponse.create(ErrorCode.SUCCESS, "회원가입을 성공했습니다.");
+    }
+
+    public ApplicationResponse<TokenDto> signIn(PostLoginReq postLoginReq) {
+        // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
+        Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
+        if(member.getDeletedAt() != null) {
+            throw new RuntimeException("탈퇴된 계정입니다");
+        }
+        if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다");
+        }
+
+        // Business Logic: 토큰 발급 및 Redis 저장
+        TokenDto tokenDto = tokenProvider.generateToken(member);
+        String value = member.getType() + member.getPhone(); // unique 확인은 phone + type이므로 이를 string으로 저장, 앞 7자리는 type으로 고정
+        redisClient.setValue(tokenDto.getRefreshToken(), value, 30 * 24 * 60 * 60 * 1000L);
+
+        // Response
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, tokenDto);
     }
 }

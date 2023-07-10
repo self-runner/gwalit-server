@@ -28,11 +28,11 @@ public class BaseTimeEntity {
     @Column(name = "deletedAt")
     private LocalDateTime deletedAt;
 
-    @CreatedBy
-    @Column(name = "createdBy", updatable = false, nullable = false)
-    private Long createdId;
-
-    @LastModifiedBy
-    @Column(name = "modifiedBy", nullable = false)
-    private Long modifiedId;
+//    @CreatedBy
+//    @Column(name = "createdBy", updatable = false, nullable = false)
+//    private Long createdId;
+//
+//    @LastModifiedBy
+//    @Column(name = "modifiedBy", nullable = false)
+//    private Long modifiedId;
 }

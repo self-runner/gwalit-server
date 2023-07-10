@@ -3,10 +3,14 @@ package com.selfrunner.gwalit.domain.member.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
+import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
+import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.service.AuthService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.jwt.Auth;
+import com.selfrunner.gwalit.global.util.jwt.TokenDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +56,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApplicationResponse<String> register(@RequestBody PostMemberReq postMemberReq) {
         return authService.register(postMemberReq);
+    }
+
+    @Operation(summary = "일반 로그인")
+    @PostMapping("/login")
+    public ApplicationResponse<TokenDto> singIn(@RequestBody PostLoginReq postLoginReq) {
+        return authService.signIn(postLoginReq);
     }
 }

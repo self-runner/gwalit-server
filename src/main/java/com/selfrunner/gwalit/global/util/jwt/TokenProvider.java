@@ -24,7 +24,7 @@ public class TokenProvider {
     // AccessToken 발급
     private String createAccessToken(Member member) {
         Claims claims = Jwts.claims();
-        claims.put("id", member.getMemberId());
+        claims.put("phone", member.getPhone());
         claims.put("type", member.getType());
 
         Date now = new Date();
@@ -32,7 +32,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setHeaderParam("alg", "HS256")
-                .setSubject("Access")
+                .setSubject(member.getPhone())
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + ACCESS_TOKEN_VALID_TIME))
@@ -43,7 +43,7 @@ public class TokenProvider {
     // RefreshToken 발급
     private String createRefreshToken(Member member) {
         Claims claims = Jwts.claims();
-        claims.put("id", member.getMemberId());
+        claims.put("phone", member.getPhone());
         claims.put("type", member.getType());
 
         Date now = new Date();
@@ -51,7 +51,7 @@ public class TokenProvider {
         return Jwts.builder()
                 .setHeaderParam("typ", "JWT")
                 .setHeaderParam("alg", "HS256")
-                .setSubject("Refresh")
+                .setSubject(member.getPhone())
                 .setClaims(claims)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + REFRESH_TOKEN_VALID_TIME))
@@ -87,10 +87,10 @@ public class TokenProvider {
     }
 
     // 해당 토큰의 id 반환
-    public Long getId(String token) {
+    public String getPhone(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
 
-        return Long.valueOf(claims.get("id").toString());
+        return claims.get("phone").toString();
     }
 
     // 해당 토큰의 type 반환
