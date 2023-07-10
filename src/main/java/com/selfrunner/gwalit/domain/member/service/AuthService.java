@@ -65,6 +65,7 @@ public class AuthService {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, "임시 비밀번호가 전송되었습니다.");
     }
 
+    @Transactional
     public ApplicationResponse<String> register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
@@ -80,6 +81,7 @@ public class AuthService {
         return ApplicationResponse.create(ErrorCode.SUCCESS, "회원가입을 성공했습니다.");
     }
 
+    @Transactional
     public ApplicationResponse<TokenDto> signIn(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
@@ -97,5 +99,20 @@ public class AuthService {
 
         // Response
         return ApplicationResponse.ok(ErrorCode.SUCCESS, tokenDto);
+    }
+
+    @Transactional
+    public ApplicationResponse<String> withdrawal(Member member) {
+        // Validation: 기 탈퇴 여부 확인
+        if(member.getDeletedAt() != null) {
+            throw new RuntimeException("이미 탈퇴한 계정입니다.");
+        }
+
+        // Business Logic: Soft Delete
+        System.out.println("삭제 로직 실행" + member.getMemberId().toString());
+        memberRepository.delete(member);
+
+        // Response
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, "회원 탈퇴가 완료되었습니다");
     }
 }

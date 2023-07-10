@@ -60,7 +60,13 @@ public class AuthController {
 
     @Operation(summary = "일반 로그인")
     @PostMapping("/login")
-    public ApplicationResponse<TokenDto> singIn(@RequestBody PostLoginReq postLoginReq) {
+    public ApplicationResponse<TokenDto> signIn(@RequestBody PostLoginReq postLoginReq) {
         return authService.signIn(postLoginReq);
+    }
+
+    @Operation(summary = "회원탈퇴")
+    @PostMapping("/withdrawal")
+    public ApplicationResponse<String> withdrawal(@Auth Member member) {
+        return authService.withdrawal(member);
     }
 }

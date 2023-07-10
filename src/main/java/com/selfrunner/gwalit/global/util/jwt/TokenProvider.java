@@ -73,7 +73,7 @@ public class TokenProvider {
     // 토큰 검증
     public boolean validateToken(String token) {
         try {
-            Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+            Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
             return true;
         } catch (ExpiredJwtException e) { // 만료된 토큰일 경우
             // atk 만료인 경우
@@ -88,14 +88,14 @@ public class TokenProvider {
 
     // 해당 토큰의 id 반환
     public String getPhone(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
 
         return claims.get("phone").toString();
     }
 
     // 해당 토큰의 type 반환
     public String getType(String token) {
-        Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
 
         return claims.get("type").toString();
     }
