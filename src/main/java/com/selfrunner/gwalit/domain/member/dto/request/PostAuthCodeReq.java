@@ -9,5 +9,7 @@ public class PostAuthCodeReq {
 
     private String phone;
 
+    private String type;
+
     private String authorizationCode;
 }

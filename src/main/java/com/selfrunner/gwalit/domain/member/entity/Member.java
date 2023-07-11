@@ -56,6 +56,10 @@ public class Member extends BaseTimeEntity {
         this.password = SHA256.encrypt(password);
     }
 
+    public void setNeedNotification() {
+        this.needNotification = Boolean.TRUE;
+    }
+
     public void update(PutMemberReq putMemberReq) {
         this.name = putMemberReq.getName();
         this.school = putMemberReq.getSchool();

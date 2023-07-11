@@ -24,6 +24,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 
 @Service
@@ -54,14 +55,31 @@ public class AuthService {
         return result;
     }
 
+    @Transactional
     public String sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
+        Member member = memberRepository.findByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType()));
+        if(member == null) {
+            if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
+                if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT)) {
+                    throw new RuntimeException("해당 유형의 계정이 존재하지 않습니다.");
+                }
+            }
+            else {
+                if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER)) {
+                    throw new RuntimeException("해당 유형의 계정이 존재하지 않습니다.");
+                }
+            }
+            throw new RuntimeException("해당 전화번호와 일치하는 계정이 존재하지 않습니다.");
+        }
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new RuntimeException();
+            throw new RuntimeException("인증번호가 일치하지 않습니다.");
         }
 
         // Business Logic
-        smsClient.sendTemporaryPassword(postAuthCodeReq);
+        String temporaryPassword = smsClient.sendTemporaryPassword(postAuthCodeReq);
+        member.encryptPassword(temporaryPassword);
+        member.setNeedNotification();
 
         // Response
         String response = "임시 비밀번호가 전송되었습니다.";

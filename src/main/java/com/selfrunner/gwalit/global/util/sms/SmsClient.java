@@ -117,7 +117,7 @@ public class SmsClient {
             throw new RuntimeException();
         }
 
-        // 성공 시, authorizationCode 반환
+        // 성공 시, 임시 비밀번호 반환
         return temporaryPassword;
     }
 
