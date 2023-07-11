@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.AccessLevel;
@@ -47,6 +48,12 @@ public class Member extends BaseTimeEntity {
 
     public void encryptPassword(String password) {
         this.password = SHA256.encrypt(password);
+    }
+
+    public void update(PutMemberReq putMemberReq) {
+        this.name = putMemberReq.getName();
+        this.school = putMemberReq.getSchool();
+        this.grade = MemberGrade.valueOf(putMemberReq.getGrade());
     }
 
     @Builder
