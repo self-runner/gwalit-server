@@ -28,7 +28,8 @@ public enum ErrorCode {
     // JWT
     WRONG_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 4000, "ATK가 잘못되었습니다."),
     EXPIRE_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "만료된 ATK입니다."),
-    ExPIRE_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 4002, "만료된 RTK입니다."),
+    EXPIRE_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 4002, "만료된 RTK입니다."),
+
 
     // Class
     NOT_EXIST_CLASS(HttpStatus.NOT_FOUND, 5000, "존재하지 않는 클래스입니다."),

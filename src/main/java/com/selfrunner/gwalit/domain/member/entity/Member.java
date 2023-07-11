@@ -1,31 +1,36 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
-import io.swagger.v3.oas.annotations.Operation;
+import com.selfrunner.gwalit.global.common.BaseTimeEntity;
+import com.selfrunner.gwalit.global.util.SHA256;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
-public class Member {
+@Getter
+@Table(name = "Member")
+@SQLDelete(sql = "UPDATE member SET deleted_at = NOW() where member_id = ?")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Member extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "memberId")
     private Long memberId;
 
-    @NotNull
     @Column(name = "name")
     private String name;
 
-    @NotNull
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private MemberType type;
 
-    @NotNull
     @Column(name = "phone")
     private String phone;
-
-    @NotNull
     @Column(name = "password")
     private String password;
 
@@ -33,5 +38,25 @@ public class Member {
     private String school;
 
     @Column(name = "grade")
+    @Enumerated(EnumType.STRING)
     private MemberGrade grade;
+
+    @Column(name = "needNotification")
+    private Boolean needNotification;
+
+
+    public void encryptPassword(String password) {
+        this.password = SHA256.encrypt(password);
+    }
+
+    @Builder
+    public Member(String name, String type, String phone, String password, String school, String grade) {
+        this.name = name;
+        this.type = MemberType.valueOf(type);
+        this.phone = phone;
+        this.password = password;
+        this.school = school;
+        this.grade = MemberGrade.valueOf(grade);
+        this.needNotification = Boolean.FALSE;
+    }
 }

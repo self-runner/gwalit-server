@@ -14,11 +14,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
-        //log.error();
+        log.error(e.getMessage());
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse());
+                .body(new ErrorResponse(e.getMessage()));
     }
 
 
