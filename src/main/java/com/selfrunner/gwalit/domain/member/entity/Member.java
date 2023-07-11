@@ -60,10 +60,12 @@ public class Member extends BaseTimeEntity {
         this.name = putMemberReq.getName();
         this.school = putMemberReq.getSchool();
         this.grade = MemberGrade.valueOf(putMemberReq.getGrade());
+        this.isAdvertisement = putMemberReq.getIsAdvertisement();
+        this.isPrivacy = putMemberReq.getIsPrivacy();
     }
 
     @Builder
-    public Member(String name, String type, String phone, String password, String school, String grade) {
+    public Member(String name, String type, String phone, String password, String school, String grade, Boolean isAdvertisement, Boolean isPrivacy) {
         this.name = name;
         this.type = MemberType.valueOf(type);
         this.phone = phone;
@@ -71,5 +73,7 @@ public class Member extends BaseTimeEntity {
         this.school = school;
         this.grade = MemberGrade.valueOf(grade);
         this.needNotification = Boolean.FALSE;
+        this.isAdvertisement = isAdvertisement;
+        this.isPrivacy = isPrivacy;
     }
 }

@@ -32,6 +32,12 @@ public class PostMemberReq {
 
     private String grade;
 
+    @NotNull
+    private Boolean isAdvertisement;
+
+    @NotNull
+    private Boolean isPrivacy;
+
     public Member toEntity() {
         return Member.builder()
                 .name(this.name)
@@ -40,6 +46,8 @@ public class PostMemberReq {
                 .password(this.password)
                 .school(this.school)
                 .grade(this.grade)
+                .isAdvertisement(this.isAdvertisement)
+                .isPrivacy(this.isPrivacy)
                 .build();
     }
 }

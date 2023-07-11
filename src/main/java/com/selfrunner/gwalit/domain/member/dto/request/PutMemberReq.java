@@ -19,4 +19,10 @@ public class PutMemberReq {
     private String school;
 
     private String grade;
+
+    @NotNull
+    private Boolean isAdvertisement;
+
+    @NotNull
+    private Boolean isPrivacy;
 }
