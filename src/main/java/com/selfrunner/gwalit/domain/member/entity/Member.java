@@ -54,6 +54,7 @@ public class Member extends BaseTimeEntity {
 
     public void encryptPassword(String password) {
         this.password = SHA256.encrypt(password);
+        this.needNotification = Boolean.FALSE;
     }
 
     public void setNeedNotification() {
