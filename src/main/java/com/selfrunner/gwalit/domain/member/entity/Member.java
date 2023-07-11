@@ -45,6 +45,12 @@ public class Member extends BaseTimeEntity {
     @Column(name = "needNotification")
     private Boolean needNotification;
 
+    @Column(name = "isAdvertisement")
+    private Boolean isAdvertisement;
+
+    @Column(name = "isPrivacy")
+    private Boolean isPrivacy;
+
 
     public void encryptPassword(String password) {
         this.password = SHA256.encrypt(password);
