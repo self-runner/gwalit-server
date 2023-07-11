@@ -21,6 +21,10 @@ public class GetMemberRes {
 
     private Boolean needNotification;
 
+    private Boolean isAdvertisement;
+
+    private Boolean isPrivacy;
+
     public GetMemberRes toDto(Member member) {
         GetMemberRes getMemberRes = new GetMemberRes();
         getMemberRes.memberId = member.getMemberId();
@@ -29,6 +33,8 @@ public class GetMemberRes {
         getMemberRes.phone = member.getPhone();
         getMemberRes.grade = member.getGrade();
         getMemberRes.needNotification = member.getNeedNotification();
+        getMemberRes.isAdvertisement = member.getIsAdvertisement();
+        getMemberRes.isPrivacy = member.getIsPrivacy();
 
         return getMemberRes;
     }

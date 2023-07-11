@@ -10,14 +10,28 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class PostLoginRes {
+
     private String accessToken;
+
     private String refreshToken;
+
     private Long memberId;
+
     private String name;
+
     private MemberType type;
+
     private String phone;
+
     private String school;
+
     private MemberGrade grade;
+
+    private Boolean needNotification;
+
+    private Boolean isAdvertisement;
+
+    private Boolean isPrivacy;
 
     public PostLoginRes toDto(TokenDto tokenDto, Member member) {
         PostLoginRes postLoginRes = new PostLoginRes();
@@ -29,6 +43,9 @@ public class PostLoginRes {
         postLoginRes.phone = member.getPhone();
         postLoginRes.school = member.getSchool();
         postLoginRes.grade = member.getGrade();
+        postLoginRes.needNotification = member.getNeedNotification();
+        postLoginRes.isAdvertisement = member.getIsAdvertisement();
+        postLoginRes.isPrivacy = member.getIsPrivacy();
 
         return postLoginRes;
     }
