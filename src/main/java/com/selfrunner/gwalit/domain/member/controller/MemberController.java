@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.member.controller;
 
 import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
+import com.selfrunner.gwalit.domain.member.dto.request.PutPasswordReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetMemberRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PutMemberRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -28,5 +29,10 @@ public class MemberController {
     @PutMapping("/profile")
     public ApplicationResponse<PutMemberRes> updateProfile(@Auth Member member, @RequestBody PutMemberReq putMemberReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updateProfile(member, putMemberReq));
+    }
+
+    @PutMapping("/password")
+    public ApplicationResponse<Void> updatePassword(@Auth Member member, @RequestBody PutPasswordReq putPasswordReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updatePassword(member, putPasswordReq));
     }
 }
