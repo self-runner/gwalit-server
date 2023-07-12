@@ -51,7 +51,7 @@ jobs:
       - name: Start Redis
         uses: supercharge/redis-github-action@1.5.0
         with:
-          redis-port:6376
+          redis-port: 6376
 
       # yml 반영
       - name: Make application-test.yml
