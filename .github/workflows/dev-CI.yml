@@ -37,6 +37,12 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Gradle Clean
+        run: ./gradlew clean
+
+      - name: Gradle stop
+        run: ./gradlew --stop
+
       # Actions MySQL Set up
       - name: Set up MySQL
         uses: samin/mysql-action@v1
