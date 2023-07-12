@@ -45,7 +45,7 @@ jobs:
 
       # Gradle Test
       - name: Build with Gradle
-        run: ./gradlew build --debug -Djasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
+        run: ./gradlew clean bootJar -Djasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
 
       # Check Test Results
 #      - name: Publish Unit Test Results
