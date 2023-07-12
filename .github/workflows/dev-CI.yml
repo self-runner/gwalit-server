@@ -47,7 +47,7 @@ jobs:
 
       # Gradle Test
       - name: Build with Gradle
-        run: ./gradlew test -Pjasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
+        run: ./gradlew test -i -Pjasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
 
       # Check Test Results
 #      - name: Publish Unit Test Results
