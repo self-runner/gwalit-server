@@ -5,6 +5,8 @@ on:
     branches:
       - dev
 
+permissions: write-all
+
 jobs:
   build:
     # ubuntu 버전 지정
@@ -45,7 +47,7 @@ jobs:
 
       # Gradle Test
       - name: Build with Gradle
-        run: ./gradlew clean test -Pjasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
+        run: ./gradlew test -Pjasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
 
       # Check Test Results
 #      - name: Publish Unit Test Results
