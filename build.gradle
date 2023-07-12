@@ -69,6 +69,7 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+	systemProperty "jasypt.encryptor.password", findProperty("jasypt.encryptor.password")
 }
 
 // QueryDSL Options
