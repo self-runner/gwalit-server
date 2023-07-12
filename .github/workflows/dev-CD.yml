@@ -1,4 +1,4 @@
-name: CI with Gradle
+name: Beanstalk Deploy
 
 on:
   pull_request:
@@ -38,14 +38,14 @@ jobs:
       # yml 반영
       - name: Make application-secret.yml
         run: |
-            cd ./src/main/resources
-            touch ./application-secret.yml
-            echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
+          cd ./src/main/resources
+          touch ./application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
         shell: bash
 
       # Gradle BootJar
       - name: Build with Gradle
-        run: ./gradlew clean bootJar
+        run: ./gradlew clean build -Djasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
 
       # 현재 시간 반영
       - name: Get current time
@@ -55,25 +55,29 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
+      # 현재 시간 출력
       - name: Show Current Time
         run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
 
-      # AWS 로그인 (Region: 서울)
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-northeast-2
-
-      # ECR 로그인
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      # Docker 이미지 ECR push
-      - name: Build, tag, and push image to Amazon ECR
+      # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
+      - name: Generate deployment package
         run: |
-          docker build -t gwalit-server:${{steps.current-time.outputs.formattedTime}} .
-          docker tag gwalit-server:${{steps.current-time.outputs.formattedTime}} 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
-          docker push 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
+          mkdir -p deploy
+          cp build/libs/*.jar deploy/application.jar # 빌드 완료 시 jar 파일명을 application.jar로 변경
+          cp Procfile deploy/Procfile
+          cp -r .ebextensions deploy/.ebextensions
+          cp -r .platform deploy/.platform
+          cd deploy && zip -r deploy.zip . # Procfile, .ebextensions, .platform 포함하여 zip 생성
+
+        # Beanstalk Deploy 플러그인 사용
+      - name: Beanstalk Deploy
+        uses: einaregilsson/beanstalk-deploy@v14
+        with:
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY }} # github secrets로 등록한 값 사용
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # github secrets로 등록한 값 사용
+          application-name: earth-github-action-test # EB application 이름
+          environment_name: dev-earth-github-action-test # EB environment 이름
+          version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
+          region: ap-northeast-2
+          deployment_package: deploy/deploy.zip
+          wait_for_environment_recovery: 100 # default wait time은 30초이며, 필자의 EB가 느려서 180초로 지정했습니다(지정 안하면 간혹 timeout 발생).
