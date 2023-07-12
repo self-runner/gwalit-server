@@ -52,6 +52,7 @@ jobs:
           mysql database: 'test_db'
           mysql user: 'test'
           mysql password: ${{ secrets.TEST_MYSQL_PASSWORD }}
+          mysql version: '8.0.33'
 
       # Actions Redis Set up
       - name: Start Redis
