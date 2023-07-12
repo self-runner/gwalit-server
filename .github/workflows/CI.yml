@@ -45,7 +45,7 @@ jobs:
 
       # Gradle BootJar
       - name: Build with Gradle
-        run: ./gradlew clean bootJar --debug
+        run: ./gradlew clean bootJar
 
       # 현재 시간 반영
       - name: Get current time
@@ -76,4 +76,4 @@ jobs:
         run: |
           docker build -t sample:${{steps.current-time.outputs.formattedTime}} .
           docker tag gwalit-server:${{steps.current-time.outputs.formattedTime}} 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
-          docker push docker push 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
+          docker push 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
