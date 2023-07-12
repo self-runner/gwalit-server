@@ -74,6 +74,6 @@ jobs:
       # Docker 이미지 ECR push
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t sample:${{steps.current-time.outputs.formattedTime}} .
+          docker build -t gwalit-server:${{steps.current-time.outputs.formattedTime}} .
           docker tag gwalit-server:${{steps.current-time.outputs.formattedTime}} 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
           docker push 839974683655.dkr.ecr.ap-northeast-2.amazonaws.com/gwalit-server:${{steps.current-time.outputs.formattedTime}}
