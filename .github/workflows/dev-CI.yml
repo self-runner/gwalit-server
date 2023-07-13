@@ -47,6 +47,6 @@ jobs:
           echo "${{ secrets.APPLICATION_SECRET }}" > ./application-secret.yml
         shell: bash
 
-      # Gradle Build
+      # Gradle clean bootJar
       - name: Build with Gradle
         run: ./gradlew clean bootJar
