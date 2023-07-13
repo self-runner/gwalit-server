@@ -4,6 +4,8 @@ on:
   pull_request:
     branches:
       - dev
+      - stag
+      - release
 
 permissions: write-all
 
@@ -23,58 +25,28 @@ jobs:
           distribution: 'temurin'
 
       # Gradle 캐싱
-#      - name: Gradle Caching
-#        uses: actions/cache@v3
-#        with:
-#          path: |
-#            ~/.gradle/caches
-#            ~/.gradle/wrapper
-#          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-#          restore-keys: |
-#            ${{ runner.os }}-gradle-
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       # Gradle 권한 부여
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Gradle Clean
-        run: ./gradlew clean
-
-      - name: Gradle stop
-        run: ./gradlew --stop
-
-      # Actions MySQL Set up
-      - name: Set up MySQL
-        uses: samin/mysql-action@v1
-        with:
-          host port: 3306
-          container port: 3306
-          mysql database: 'test_db'
-          mysql user: 'test'
-          mysql password: ${{ secrets.TEST_MYSQL_PASSWORD }}
-          mysql version: '8.0.33'
-
-      # Actions Redis Set up
-      - name: Start Redis
-        uses: supercharge/redis-github-action@1.5.0
-        with:
-          redis-port: 6376
-
       # yml 반영
-      - name: Make application-test.yml
+      - name: Make application-secret.yml
         run: |
-          cd ./src/test/resources
-          touch ./application-test.yml
-          echo "${{ secrets.APPLICATION_TEST }}" > ./application-test.yml
+          cd ./src/main/resources
+          touch ./application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" > ./application-secret.yml
         shell: bash
 
-      # Gradle Test
+      # Gradle Build
       - name: Build with Gradle
-        run: ./gradlew test --debug -Pjasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
-
-      # Check Test Results
-      - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        if: ${{ always() }}  # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
-        with:
-            files: build/test-results/**/*.xml
+        run: ./gradlew clean build -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
