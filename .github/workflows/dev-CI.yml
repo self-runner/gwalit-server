@@ -49,4 +49,4 @@ jobs:
 
       # Gradle Build
       - name: Build with Gradle
-        run: ./gradlew clean build -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
+        run: ./gradlew clean bootJar -Djasypt.encryptor.password=${{ secrets.JASYPT_PASSWORD }}
