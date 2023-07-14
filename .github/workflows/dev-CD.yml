@@ -44,8 +44,8 @@ jobs:
         shell: bash
 
       # Gradle BootJar
-      - name: Build with Gradle
-        run: ./gradlew clean build
+      - name: BootJar with Gradle
+        run: ./gradlew clean bootJar
 
       # 현재 시간 반영
       - name: Get current time
