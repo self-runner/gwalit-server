@@ -1,7 +1,7 @@
 name: Beanstalk Deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - dev
 
@@ -45,7 +45,7 @@ jobs:
 
       # Gradle BootJar
       - name: Build with Gradle
-        run: ./gradlew clean build -Djasypt.encryptor.password=${{secrets.JASYPT_PASSWORD}}
+        run: ./gradlew clean build
 
       # 현재 시간 반영
       - name: Get current time
@@ -55,19 +55,15 @@ jobs:
           format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00"
 
-      # 현재 시간 출력
-      - name: Show Current Time
-        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
-
       # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
       - name: Generate deployment package
         run: |
           mkdir -p deploy
-          cp build/libs/*.jar deploy/application.jar # 빌드 완료 시 jar 파일명을 application.jar로 변경
+          cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
-          cd deploy && zip -r deploy.zip . # Procfile, .ebextensions, .platform 포함하여 zip 생성
+          cd deploy && zip -r deploy.zip .
 
         # Beanstalk Deploy 플러그인 사용
       - name: Beanstalk Deploy
@@ -75,8 +71,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY }} # github secrets로 등록한 값 사용
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # github secrets로 등록한 값 사용
-          application-name: earth-github-action-test # EB application 이름
-          environment_name: dev-earth-github-action-test # EB environment 이름
+          application-name: Gwalit-dev # EB application 이름
+          environment_name: Gwalit-dev-env # EB environment 이름
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
