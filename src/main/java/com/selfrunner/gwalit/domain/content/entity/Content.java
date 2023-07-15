@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.content.entity;
 
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -39,5 +40,14 @@ public class Content extends BaseTimeEntity {
 
     public void update() {
 
+    }
+
+    @Builder
+    public Content(String title, String type, String linkUrl, String thumbnail, Time duration) {
+        this.title = title;
+        this.type = ContentType.valueOf(type);
+        this.linkUrl = linkUrl;
+        this.thumbnail = thumbnail;
+        this.duration = duration;
     }
 }
