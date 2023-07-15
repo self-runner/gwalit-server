@@ -62,4 +62,19 @@ public class ContentService {
         ContentRes contentRes = new ContentRes().toDto(content);
         return contentRes;
     }
+
+    @Transactional
+    public Void delete(Long contentId) {
+        // Validation
+        Content content = contentRepository.findById(contentId).orElseThrow();
+        if(content.getDeletedAt() != null) {
+            throw new RuntimeException("이미 삭제된 게시글입니다.");
+        }
+
+        // Business Logic
+        contentRepository.delete(content);
+
+        // Response
+        return null;
+    }
 }

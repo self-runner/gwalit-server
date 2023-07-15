@@ -37,4 +37,9 @@ public class ContentController {
     public ApplicationResponse<ContentRes> update(@PathVariable("content_id") Long contentId, @Valid @RequestBody ContentReq contentReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.update(contentId, contentReq));
     }
+
+    @DeleteMapping("/{content_id}")
+    public ApplicationResponse<Void> delete(@PathVariable("content_id") Long contentId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.delete(contentId));
+    }
 }
