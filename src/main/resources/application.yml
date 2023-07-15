@@ -4,11 +4,12 @@ server:
 spring:
   profiles:
     include: secret
+    active: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(nxabeY6O8uh7LJktbEiOgqU5I82v2zE4JTTiueEP05qmFXm4Bxn2cnDFD92RtZMh)
-    username: ENC(QJ/6o0ivcN3Sr/cSea5jOw==)
-    password: ENC(+zeMcjF1L4VipOakWE9THSroy6f1sOY0)
+    url: ENC(r8hRoOVKXzq2QGA9uOoM4y3XYtR2lxhqnH2svMdrc9vgpQc65UD9UhIposQd4Cqd8BnkCmFbNwPh7Ycf2uuVmOQ81NDKaGOcgKw+cy72C6xpQm2ly6s82/B0lQNqGYZG)
+    username: ENC(qHpLntcREcuy4ANFoiu4S5rvu3B4WM4a)
+    password: ENC(kos0w5kmyEhYlfJ+xRyrYmNppiAVztcg)
     hibernate:
       ddl-auto: update
     properties:
