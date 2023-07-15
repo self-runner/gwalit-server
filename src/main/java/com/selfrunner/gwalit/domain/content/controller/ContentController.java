@@ -1,18 +1,17 @@
 package com.selfrunner.gwalit.domain.content.controller;
 
 import com.selfrunner.gwalit.domain.content.dto.request.PostContentReq;
+import com.selfrunner.gwalit.domain.content.dto.response.GetContentRes;
 import com.selfrunner.gwalit.domain.content.service.ContentService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @RestController
@@ -26,5 +25,10 @@ public class ContentController {
     @PostMapping("")
     public ApplicationResponse<Void> register(@Valid @RequestBody PostContentReq postContentReq, Errors errors) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, contentService.register(postContentReq));
+    }
+
+    @GetMapping("")
+    public ApplicationResponse<List<GetContentRes>> getAll() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.getAll());
     }
 }
