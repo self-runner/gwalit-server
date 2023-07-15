@@ -1,7 +1,8 @@
 package com.selfrunner.gwalit.domain.content.service;
 
-import com.selfrunner.gwalit.domain.content.dto.request.PostContentReq;
-import com.selfrunner.gwalit.domain.content.dto.response.GetContentRes;
+import com.selfrunner.gwalit.domain.content.dto.request.ContentReq;
+import com.selfrunner.gwalit.domain.content.dto.request.PutContentReq;
+import com.selfrunner.gwalit.domain.content.dto.response.ContentRes;
 import com.selfrunner.gwalit.domain.content.entity.Content;
 import com.selfrunner.gwalit.domain.content.repository.ContentRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +20,14 @@ public class ContentService {
     private final ContentRepository contentRepository;
 
     @Transactional
-    public Void register(PostContentReq postContentReq) {
+    public Void register(ContentReq contentReq) {
         // Validation
-        if(contentRepository.existsByLinkUrl(postContentReq.getLinkUrl())) {
+        if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
             throw new RuntimeException("이미 존재하는 콘텐츠입니다.");
         }
 
         // Business Logic
-        Content content = postContentReq.toEntity();
+        Content content = contentReq.toEntity();
         contentRepository.save(content);
 
         // Response
@@ -34,7 +35,7 @@ public class ContentService {
     }
 
     @Transactional
-    public List<GetContentRes> getAll() {
+    public List<ContentRes> getAll() {
         // Validation
 
         // Business Logic
@@ -42,7 +43,23 @@ public class ContentService {
 
         // Response
         return contents.stream()
-                .map(GetContentRes::toDto)
+                .map(ContentRes::staticToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ContentRes update(Long contentId, ContentReq contentReq) {
+        // Validation
+        Content content = contentRepository.findById(contentId).orElseThrow();
+        if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
+            throw new RuntimeException("이미 존재하는 콘텐츠입니다.");
+        }
+
+        // Business Logic
+        content.update(contentReq.toEntity());
+
+        // Response
+        ContentRes contentRes = new ContentRes().toDto(content);
+        return contentRes;
     }
 }

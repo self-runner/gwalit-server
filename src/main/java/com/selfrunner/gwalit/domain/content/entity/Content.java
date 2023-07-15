@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.content.entity;
 
+import com.selfrunner.gwalit.domain.content.dto.request.PutContentReq;
+import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,8 +40,12 @@ public class Content extends BaseTimeEntity {
     @Column(name = "duration")
     private Time duration;
 
-    public void update() {
-
+    public void update(Content content) {
+        this.title = content.getTitle();
+        this.type = content.getType();
+        this.linkUrl = content.getLinkUrl();
+        this.thumbnail = content.getThumbnail();
+        this.duration = content.getDuration();
     }
 
     @Builder

@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.content.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.selfrunner.gwalit.domain.content.entity.Content;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +11,7 @@ import java.sql.Time;
 
 @Getter
 @RequiredArgsConstructor
-public class PostContentReq {
+public class PutContentReq {
 
     @NotEmpty
     private String title;
@@ -31,14 +30,4 @@ public class PostContentReq {
     @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
     private Time duration;
-
-    public Content toEntity() {
-        return Content.builder()
-                .title(this.title)
-                .type(this.type)
-                .linkUrl(this.linkUrl)
-                .thumbnail(this.thumbnail)
-                .duration(this.duration)
-                .build();
-    }
 }
