@@ -12,6 +12,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ErrorResponse> applicationException(ApplicationException e) {
+        log.error(e.getMessage());
+
+        return ResponseEntity
+                .status(e.getErrorCode().getHttpStatus())
+                .body(new ErrorResponse(e.getErrorCode()));
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
         log.error(e.getMessage());
