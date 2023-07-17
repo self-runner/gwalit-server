@@ -69,7 +69,7 @@ public class SmsClient {
 
         // 실페 시, Error 던지기
         if(!smsNaverRes.getStatusCode().equals("202")) {
-            throw new RuntimeException();
+            throw new RuntimeException("문자 전송에 실패했습니다.");
         }
 
         // 성공 시, authorizationCode 반환
@@ -114,7 +114,7 @@ public class SmsClient {
 
         // 실페 시, Error 던지기
         if(!smsNaverRes.getStatusCode().equals("202")) {
-            throw new RuntimeException();
+            throw new RuntimeException("문자 전송에 실패했습니다.");
         }
 
         // 성공 시, 임시 비밀번호 반환

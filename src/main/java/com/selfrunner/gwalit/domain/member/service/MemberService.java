@@ -6,6 +6,8 @@ import com.selfrunner.gwalit.domain.member.dto.response.GetMemberRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PutMemberRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.global.exception.ApplicationException;
+import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +31,10 @@ public class MemberService {
         // Validation
         Member change = memberRepository.findById(putMemberReq.getMemberId()).orElseThrow();
         if(change.getDeletedAt() != null) {
-            throw new RuntimeException("이미 삭제된 계정입니다");
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
         if(!member.getMemberId().equals(putMemberReq.getMemberId())) {
-            throw new RuntimeException("요청자가 수정 정보 권한을 가지고 있지 않습니다");
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
         // Business Logic
@@ -46,12 +48,12 @@ public class MemberService {
     @Transactional
     public Void updatePassword(Member member, PutPasswordReq putPasswordReq) {
         // Validation
-        Member change = memberRepository.findById(putPasswordReq.getMemberId()).orElseThrow();
+        Member change = memberRepository.findById(putPasswordReq.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(change.getDeletedAt() != null) {
-            throw new RuntimeException("이미 삭제된 계정입니다");
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
         if(!member.getMemberId().equals(putPasswordReq.getMemberId())) {
-            throw new RuntimeException("요청자가 수정 정보 권한을 가지고 있지 않습니다");
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
         // Business Logic

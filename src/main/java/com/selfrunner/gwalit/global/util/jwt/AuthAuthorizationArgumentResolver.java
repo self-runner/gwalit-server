@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.global.util.jwt;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +37,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
 
         // 토큰 정보 유무 확인
         if (authorization == null) {
-            throw new RuntimeException(ErrorCode.WRONG_ACCESS_TOKEN.getMessage());
+            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
 
         // 토큰 유효 여부 확인
@@ -49,7 +50,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         // 사용자 정보 획득
         Member member = memberRepository.findByPhoneAndType(phone, MemberType.valueOf(type));
         if(member == null) {
-            throw new RuntimeException("유효한 사용자 정보가 아닙니다");
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
 
         // 사용자 정보 반환

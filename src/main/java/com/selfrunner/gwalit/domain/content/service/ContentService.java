@@ -5,6 +5,8 @@ import com.selfrunner.gwalit.domain.content.dto.request.PutContentReq;
 import com.selfrunner.gwalit.domain.content.dto.response.ContentRes;
 import com.selfrunner.gwalit.domain.content.entity.Content;
 import com.selfrunner.gwalit.domain.content.repository.ContentRepository;
+import com.selfrunner.gwalit.global.exception.ApplicationException;
+import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +25,7 @@ public class ContentService {
     public Void register(ContentReq contentReq) {
         // Validation
         if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
-            throw new RuntimeException("이미 존재하는 콘텐츠입니다.");
+            throw new ApplicationException(ErrorCode.ALREADY_EXIST_CONTENT);
         }
 
         // Business Logic
@@ -52,7 +54,7 @@ public class ContentService {
         // Validation
         Content content = contentRepository.findById(contentId).orElseThrow();
         if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
-            throw new RuntimeException("이미 존재하는 콘텐츠입니다.");
+            throw new ApplicationException(ErrorCode.ALREADY_EXIST_CONTENT);
         }
 
         // Business Logic
@@ -66,9 +68,9 @@ public class ContentService {
     @Transactional
     public Void delete(Long contentId) {
         // Validation
-        Content content = contentRepository.findById(contentId).orElseThrow();
+        Content content = contentRepository.findById(contentId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(content.getDeletedAt() != null) {
-            throw new RuntimeException("이미 삭제된 게시글입니다.");
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_EXCEPTION);
         }
 
         // Business Logic

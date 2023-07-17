@@ -16,19 +16,21 @@ public enum ErrorCode {
     NOT_FOUND_EXCEPTION(HttpStatus.NOT_FOUND, 2001, "존재하지 않는 리소스입니다."),
     INVALID_VALUE_EXCEPTION(HttpStatus.BAD_REQUEST, 2002, "올바르지 않은 요청 값입니다."),
     UNAUTHORIZED_EXCEPTION(HttpStatus.UNAUTHORIZED, 2003, "권한이 없는 요청입니다."),
+    ALREADY_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, 2004, "이미 삭제된 리소스입니다."),
 
     // Member
-    EXIST_PHONE(HttpStatus.BAD_REQUEST, 3000, "이미 가입된 전화번호입니다."),
+    ALREADY_EXIST_MEMBER(HttpStatus.BAD_REQUEST, 3000, "이미 가입된 정보입니다."),
     WRONG_PASSWORD(HttpStatus.BAD_REQUEST, 3001, "잘못된 비밀번호입니다."),
     SAME_PASSWORD(HttpStatus.BAD_REQUEST, 3002, "기존 비밀번호와 같습니다."),
     WRONG_AUTHENTICATION_CODE(HttpStatus.BAD_REQUEST, 3003, "인증번호가 다릅니다."),
     NOT_MATCH_PASSWORD_RULE(HttpStatus.BAD_REQUEST, 3004, "비밀번호 규칙에 부합하지 않습니다."),
-    NOT_EXIST_PHONE(HttpStatus.BAD_REQUEST, 3005, "존재하지 않는 전화번호입니다."),
+    NOT_EXIST_PHONE(HttpStatus.NOT_FOUND, 3005, "해당 정보와 일치하는 계정이 없습니다."),
+    WRONG_TYPE(HttpStatus.NOT_FOUND, 3006, "해당 전화번호는 이 유형으로 가입되지 않았습니다."),
+    ALREADY_DELETE_MEMBER(HttpStatus.BAD_REQUEST, 3007, "이미 탈퇴한 계정입니다."),
 
     // JWT
-    WRONG_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 4000, "ATK가 잘못되었습니다."),
-    EXPIRE_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "만료된 ATK입니다."),
-    EXPIRE_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, 4002, "만료된 RTK입니다."),
+    WRONG_TOKEN(HttpStatus.UNAUTHORIZED, 4000, "유효하지 않은 토큰입니다."),
+    EXPIRE_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "만료된 토큰입니다."),
 
 
     // Class
@@ -42,7 +44,7 @@ public enum ErrorCode {
     NO_BANNER_LINK(HttpStatus.BAD_REQUEST, 6001, "배너 링크가 존재하지 않습니다."),
 
     // Content
-    NO_CONTENT_IMAGE(HttpStatus.BAD_REQUEST, 7000, "콘텐츠 이미지 파일이 존재하지 않습니다."),
+    ALREADY_EXIST_CONTENT(HttpStatus.BAD_REQUEST, 7000, "이미 존재하는 콘텐츠입니다."),
     NO_CONTENT_LINK(HttpStatus.BAD_REQUEST, 7001, "콘텐츠 링크가 존재하지 않습니다.");
 
     private final HttpStatus httpStatus;

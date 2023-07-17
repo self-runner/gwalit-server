@@ -40,10 +40,8 @@ public class AuthController {
 
     @Operation(summary = "인증번호 확인 요청")
     @PostMapping("/authorization")
-    public ApplicationResponse<String> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
-        String result = authService.checkAuthorizationCode(postauthCodeReq) ? "인증번호가 일치합니다." : "인증번호가 일치하지 않습니다";
-
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, result);
+    public ApplicationResponse<Void> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.checkAuthorizationCode(postauthCodeReq));
     }
 
     @Operation(summary = "임시 비밀번호 발급")
