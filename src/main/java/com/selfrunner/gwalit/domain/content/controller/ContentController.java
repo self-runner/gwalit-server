@@ -24,7 +24,7 @@ public class ContentController {
     private final ContentService contentService;
 
     @PostMapping("")
-    public ApplicationResponse<Void> register(@Valid @RequestBody ContentReq contentReq, Errors errors) {
+    public ApplicationResponse<Void> register(@Valid @RequestBody ContentReq contentReq) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, contentService.register(contentReq));
     }
 
