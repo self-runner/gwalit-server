@@ -21,7 +21,7 @@ public class ErrorResponse {
 
     public ErrorResponse(String message) {
         this.timestamp = LocalDateTime.now().withNano(0);
-        this.code = 500;
+        this.code = 2000;
         this.message = message;
     }
 }
