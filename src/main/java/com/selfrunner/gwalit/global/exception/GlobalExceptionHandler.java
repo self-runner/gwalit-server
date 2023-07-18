@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_EXCEPTION, e.getMessage()));
+                .body(new ErrorResponse(ErrorCode.INTERNAL_SERVER_EXCEPTION));
     }
 
 
