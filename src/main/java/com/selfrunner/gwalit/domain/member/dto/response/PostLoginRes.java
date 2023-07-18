@@ -15,7 +15,7 @@ public class PostLoginRes {
 
     private String refreshToken;
 
-    private Long memberId;
+    private String memberId;
 
     private String name;
 
@@ -37,7 +37,7 @@ public class PostLoginRes {
         PostLoginRes postLoginRes = new PostLoginRes();
         postLoginRes.accessToken = tokenDto.getAccessToken();
         postLoginRes.refreshToken = tokenDto.getRefreshToken();
-        postLoginRes.memberId = member.getMemberId();
+        postLoginRes.memberId = member.getMemberId().toString();
         postLoginRes.name = member.getName();
         postLoginRes.type = member.getType();
         postLoginRes.phone = member.getPhone();

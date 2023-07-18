@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PutMemberRes {
 
-    private Long memberId;
+    private String memberId;
 
     private String name;
 
@@ -23,7 +23,7 @@ public class PutMemberRes {
 
     public PutMemberRes toDto(Member member) {
         PutMemberRes putMemberRes = new PutMemberRes();
-        putMemberRes.memberId = member.getMemberId();
+        putMemberRes.memberId = member.getMemberId().toString();
         putMemberRes.name = member.getName();
         putMemberRes.school = member.getSchool();
         putMemberRes.grade = member.getGrade();
