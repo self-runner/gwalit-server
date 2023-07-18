@@ -10,6 +10,8 @@ import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.global.exception.ApplicationException;
+import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.SHA256;
 import com.selfrunner.gwalit.global.util.jwt.TokenDto;
 import com.selfrunner.gwalit.global.util.jwt.TokenProvider;
@@ -47,12 +49,16 @@ public class AuthService {
         String response = "인증 번호를 전송했습니다.";
         return response;
     }
-    public boolean checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
+    public Void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
         boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode()) ? true : false;
 
+        if(!result) {
+            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+        }
+
         // Response
-        return result;
+        return null;
     }
 
     @Transactional
@@ -62,15 +68,15 @@ public class AuthService {
         if(member == null) {
             if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
                 if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT)) {
-                    throw new RuntimeException("해당 유형의 계정이 존재하지 않습니다.");
+                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
                 }
             }
             else {
                 if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER)) {
-                    throw new RuntimeException("해당 유형의 계정이 존재하지 않습니다.");
+                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
                 }
             }
-            throw new RuntimeException("해당 전화번호와 일치하는 계정이 존재하지 않습니다.");
+            throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
         }
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
             throw new RuntimeException("인증번호가 일치하지 않습니다.");
@@ -90,7 +96,7 @@ public class AuthService {
     public String register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
-            throw new RuntimeException();
+            throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
         }
 
         // Business Logic: 비밀번호 암호화 및 회원 정보 저장
@@ -108,10 +114,10 @@ public class AuthService {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
         if(member.getDeletedAt() != null) {
-            throw new RuntimeException("탈퇴된 계정입니다");
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
         if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다");
+            throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
         }
 
         // Business Logic: 토큰 발급 및 Redis 저장
@@ -142,11 +148,11 @@ public class AuthService {
         String rtk = httpServletRequest.getHeader("Authorization");
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
         if(rtk.isBlank() || !redisClient.getValue(key).equals(rtk)) {
-            throw new RuntimeException("올바르지 않은 RTK입니다.");
+            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
         Member member = memberRepository.findByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)));
         if(member == null) {
-            throw new RuntimeException("유효하지 않은 RTK입니다.");
+            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
 
         // Business Logic
@@ -162,7 +168,7 @@ public class AuthService {
     public String withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
-            throw new RuntimeException("이미 탈퇴한 계정입니다.");
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
 
         // Business Logic: Soft Delete

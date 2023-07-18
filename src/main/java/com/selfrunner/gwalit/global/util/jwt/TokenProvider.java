@@ -2,6 +2,7 @@
 package com.selfrunner.gwalit.global.util.jwt;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -83,9 +84,9 @@ public class TokenProvider {
             Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
             return true;
         } catch (ExpiredJwtException e) { // 만료된 토큰일 경우
-            throw new RuntimeException(ErrorCode.EXPIRE_ACCESS_TOKEN.getMessage());
+            throw new ApplicationException(ErrorCode.EXPIRE_TOKEN);
         } catch (UnsupportedJwtException e) { // 지원하지 않는 토큰인 경우
-            throw new RuntimeException(e);
+            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
     }
 

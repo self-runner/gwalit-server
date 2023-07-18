@@ -12,15 +12,15 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 public class PostLoginReq {
 
-    @NotEmpty
-    @Size(min = 10, max = 11)
+    @NotNull(message = "전화번호가 Null입니다.")
+    @Size(min = 10, max = 11, message = "유효한 전화번호 길이가 아닙니다.")
     private String phone;
 
-    @NotNull
-    @Size(min = 8, max = 20)
-    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
+    @NotNull(message = "비밀번호가 Null입니다.")
+    @Size(min = 8, max = 20, message = "비밀번호 길이는 8자 이상 20자 이하여야 합니다.")
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$", message = "비밀번호가 규칙에 맞지 않습니다.")
     private String password;
 
-    @NotEmpty
+    @NotEmpty(message = "사용자 유형이 지정되지 않았습니다.")
     private String type;
 }

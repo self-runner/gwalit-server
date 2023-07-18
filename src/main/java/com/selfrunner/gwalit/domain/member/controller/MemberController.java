@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -27,12 +29,12 @@ public class MemberController {
     }
 
     @PutMapping("/profile")
-    public ApplicationResponse<PutMemberRes> updateProfile(@Auth Member member, @RequestBody PutMemberReq putMemberReq) {
+    public ApplicationResponse<PutMemberRes> updateProfile(@Auth Member member, @Valid @RequestBody PutMemberReq putMemberReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updateProfile(member, putMemberReq));
     }
 
     @PutMapping("/password")
-    public ApplicationResponse<Void> updatePassword(@Auth Member member, @RequestBody PutPasswordReq putPasswordReq) {
+    public ApplicationResponse<Void> updatePassword(@Auth Member member, @Valid @RequestBody PutPasswordReq putPasswordReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updatePassword(member, putPasswordReq));
     }
 }

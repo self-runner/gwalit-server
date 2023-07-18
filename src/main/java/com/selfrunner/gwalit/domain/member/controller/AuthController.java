@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
@@ -34,34 +35,32 @@ public class AuthController {
 
     @Operation(summary = "인증번호 전송 요청")
     @PostMapping("/phone")
-    public ApplicationResponse<String> sendAuthorizationCode(@RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public ApplicationResponse<String> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendAuthorizationCode(postAuthPhoneReq));
     }
 
     @Operation(summary = "인증번호 확인 요청")
     @PostMapping("/authorization")
-    public ApplicationResponse<String> checkAuthorizationCode(@RequestBody PostAuthCodeReq postauthCodeReq) {
-        String result = authService.checkAuthorizationCode(postauthCodeReq) ? "인증번호가 일치합니다." : "인증번호가 일치하지 않습니다";
-
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, result);
+    public ApplicationResponse<Void> checkAuthorizationCode(@Valid @RequestBody PostAuthCodeReq postauthCodeReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.checkAuthorizationCode(postauthCodeReq));
     }
 
     @Operation(summary = "임시 비밀번호 발급")
     @PostMapping("/password")
-    public ApplicationResponse<String> sendTemporaryPassword(@RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public ApplicationResponse<String> sendTemporaryPassword(@Valid @RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendTemporaryPassword(postAuthCodeReq));
     }
 
     @Operation(summary = "일반 회원가입")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApplicationResponse<String> register(@RequestBody PostMemberReq postMemberReq) {
+    public ApplicationResponse<String> register(@Valid @RequestBody PostMemberReq postMemberReq) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, authService.register(postMemberReq));
     }
 
     @Operation(summary = "일반 로그인")
     @PostMapping("/login")
-    public ApplicationResponse<PostLoginRes> login(@RequestBody PostLoginReq postLoginReq) {
+    public ApplicationResponse<PostLoginRes> login(@Valid @RequestBody PostLoginReq postLoginReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.login(postLoginReq));
     }
 

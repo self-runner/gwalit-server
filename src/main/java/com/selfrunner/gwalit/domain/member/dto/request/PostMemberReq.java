@@ -13,17 +13,17 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 public class PostMemberReq {
 
-    @NotEmpty
+    @NotEmpty(message = "이름이 공란입니다.")
     private String name;
 
-    @NotEmpty
+    @NotEmpty(message = "사용자 유형이 공란입니다.")
     private String type;
 
-    @NotEmpty
-    @Size(min = 10, max = 11)
+    @NotNull(message = "전화번호가 Null입니다.")
+    @Size(min = 10, max = 11, message = "유효한 전화번호 길이가 아닙니다.")
     private String phone;
 
-    @NotNull
+    @NotNull(message = "비밀번호가 Null입니다.")
     @Size(min = 8, max = 20)
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
     private String password;
@@ -32,10 +32,10 @@ public class PostMemberReq {
 
     private String grade;
 
-    @NotNull
+    @NotNull(message = "광고정보 수신 동의가 설정되지 않았습니다.")
     private Boolean isAdvertisement;
 
-    @NotNull
+    @NotNull(message = "개인정보 처리 방침 동의 여부가 설정되지 않았습니다.")
     private Boolean isPrivacy;
 
     public Member toEntity() {
