@@ -19,9 +19,9 @@ public class ErrorResponse {
         this.message = errorcode.getMessage();
     }
 
-    public ErrorResponse(String message) {
+    public ErrorResponse(ErrorCode errorCode, String message) {
         this.timestamp = LocalDateTime.now().withNano(0);
-        this.code = 2000;
+        this.code = errorCode.getCode();
         this.message = message;
     }
 }
