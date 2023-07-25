@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.banner.entity;
 
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -25,4 +26,10 @@ public class Banner extends BaseTimeEntity {
 
     @Column(name = "linkUrl")
     private String linkUrl;
+
+    @Builder
+    public Banner(String imageUrl, String linkUrl) {
+        this.imageUrl = imageUrl;
+        this.linkUrl = linkUrl;
+    }
 }
