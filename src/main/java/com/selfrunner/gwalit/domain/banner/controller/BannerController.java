@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.banner.controller;
 
-import com.selfrunner.gwalit.domain.banner.dto.request.PostBannerReq;
+import com.selfrunner.gwalit.domain.banner.dto.request.BannerReq;
+import com.selfrunner.gwalit.domain.banner.dto.response.BannerRes;
 import com.selfrunner.gwalit.domain.banner.service.BannerService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -24,9 +25,8 @@ public class BannerController {
     private final BannerService bannerService;
 
     @PostMapping("/")
-    public ApplicationResponse<Null> register(@Valid @RequestPart("data")PostBannerReq postBannerReq, @RequestPart("file") MultipartFile multipartFile) {
-        bannerService.register(postBannerReq, multipartFile);
-        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    public ApplicationResponse<BannerRes> register(@Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file") MultipartFile multipartFile) {
+        return ApplicationResponse.create(ErrorCode.SUCCESS, bannerService.register(bannerReq, multipartFile));
     }
 
 }
