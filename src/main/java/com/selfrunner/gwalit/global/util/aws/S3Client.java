@@ -57,6 +57,21 @@ public class S3Client {
         return linkUrl;
     }
 
+    public void delete(String imageUrl) {
+        // Validation
+        String fileName = imageUrl.substring(baseUrl.length()); // baseUrl 제거
+        if(!amazonS3Client.doesObjectExist(bucket, fileName)) {
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+        }
+
+        // Business Logic
+        try {
+            amazonS3Client.deleteObject(bucket, fileName);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.FAILED_DELETE_FILE);
+        }
+    }
+
     // 년/월/일로 디렉토리 구분할 때 사용
     public String getDate() {
         LocalDate now = LocalDate.now();
