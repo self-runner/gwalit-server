@@ -31,8 +31,7 @@ public class BannerService {
         // Business Logic
         String imageUrl;
         try {
-            imageUrl = s3Client.upload(multipartFile);
-
+            imageUrl = s3Client.upload(multipartFile, "banner");
         } catch (Exception e) {
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }

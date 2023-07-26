@@ -21,13 +21,13 @@ public class S3Client {
 
     private final AmazonS3Client amazonS3Client;
 
-    @Value("${cloud.aws.s3.bucket")
+    @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
     @Value("${cloud.aws.baseUrl}")
     private String baseUrl;
 
-    public String upload(MultipartFile multipartFile) throws IOException {
+    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
         // Validation
         if(multipartFile.isEmpty()) {
             throw new ApplicationException(ErrorCode.NO_BANNER_IMAGE);
@@ -35,18 +35,25 @@ public class S3Client {
 
         // Business Logic
         LocalDate now = LocalDate.now();
-        String uuid = UUID.randomUUID()+toString();
-        String imageUrl = uuid+"_"+multipartFile.getOriginalFilename();
+        String uuid = UUID.randomUUID().toString();
+        String imageUrl = dirName + "/" + now + "_" + uuid + "_" + multipartFile.getOriginalFilename();
 
         ObjectMetadata objMeta = new ObjectMetadata();
         objMeta.setContentType(multipartFile.getContentType());
         objMeta.setContentLength(multipartFile.getInputStream().available());
 
-        amazonS3Client.putObject(new PutObjectRequest(bucket, imageUrl, multipartFile.getInputStream(), objMeta)
-                .withCannedAcl(CannedAccessControlList.PublicRead));
+        // Check File upload
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(bucket, imageUrl, multipartFile.getInputStream(), objMeta)
+                    .withCannedAcl(CannedAccessControlList.PublicRead));
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.FAILED_UPLOAD_FILE);
+        }
+
+        System.out.println("Here6");
 
         // Response
-        String linkUrl = baseUrl+ imageUrl;
+        String linkUrl = baseUrl + imageUrl;
 
         return linkUrl;
     }

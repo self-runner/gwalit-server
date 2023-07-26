@@ -24,7 +24,7 @@ public class BannerController {
 
     private final BannerService bannerService;
 
-    @PostMapping("/")
+    @PostMapping("")
     public ApplicationResponse<BannerRes> register(@Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file") MultipartFile multipartFile) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, bannerService.register(bannerReq, multipartFile));
     }
