@@ -82,4 +82,20 @@ public class BannerService {
 
         return bannerRes;
     }
+
+    @Transactional
+    public Void delete(Long bannerId) {
+        // Validation
+        Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(banner.getDeletedAt() != null) {
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_EXCEPTION);
+        }
+
+        // Business Logic
+        bannerRepository.delete(banner);
+        s3Client.delete(banner.getImageUrl());
+
+        // Response
+        return null;
+    }
 }
