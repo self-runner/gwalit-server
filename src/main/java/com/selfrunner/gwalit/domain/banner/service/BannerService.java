@@ -43,4 +43,28 @@ public class BannerService {
         BannerRes bannerRes = new BannerRes().toDto(banner);
         return bannerRes;
     }
+
+    @Transactional
+    public BannerRes update(Long bannerId, BannerReq bannerReq, MultipartFile multipartFile) {
+        // Validation
+        Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        // 변경하고자 하는 이미지가 들어올 경우, 삭제 후 변경
+        if(!multipartFile.isEmpty()) {
+            try {
+                s3Client.delete(banner.getImageUrl());
+                String imageUrl = s3Client.upload(multipartFile, "banner");
+                banner.updateImage(imageUrl);
+            } catch (Exception e) {
+                throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+            }
+        }
+
+        banner.updateLink(bannerReq.getLinkUrl());
+
+        // Response
+        BannerRes bannerRes = new BannerRes().toDto(banner);
+        return bannerRes;
+    }
 }

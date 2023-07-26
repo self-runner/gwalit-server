@@ -27,6 +27,14 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "linkUrl")
     private String linkUrl;
 
+    public void updateImage(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public void updateLink(String linkUrl) {
+        this.linkUrl = linkUrl;
+    }
+
     @Builder
     public Banner(String imageUrl, String linkUrl) {
         this.imageUrl = imageUrl;

@@ -7,14 +7,12 @@ import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Null;
+import javax.validation.constraints.Pattern;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +25,11 @@ public class BannerController {
     @PostMapping("")
     public ApplicationResponse<BannerRes> register(@Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file") MultipartFile multipartFile) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, bannerService.register(bannerReq, multipartFile));
+    }
+
+    @PutMapping("/{banner_id}")
+    public ApplicationResponse<BannerRes> update(@PathVariable("banner_id") Long bannerId, @Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.update(bannerId, bannerReq, multipartFile));
     }
 
 }
