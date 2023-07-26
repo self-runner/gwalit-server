@@ -45,7 +45,7 @@ public class ContentService {
 
         // Response
         return contents.stream()
-                .map(ContentRes::staticToDto)
+                .map(ContentRes::new)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +61,7 @@ public class ContentService {
         content.update(contentReq.toEntity());
 
         // Response
-        ContentRes contentRes = new ContentRes().toDto(content);
+        ContentRes contentRes = new ContentRes(content);
         return contentRes;
     }
 
