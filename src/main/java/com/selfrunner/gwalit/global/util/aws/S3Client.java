@@ -34,7 +34,7 @@ public class S3Client {
         }
 
         // Business Logic
-        LocalDate now = LocalDate.now();
+        String now = getDate();
         String uuid = UUID.randomUUID().toString();
         String imageUrl = dirName + "/" + now + "_" + uuid + "_" + multipartFile.getOriginalFilename();
 
@@ -50,11 +50,18 @@ public class S3Client {
             throw new ApplicationException(ErrorCode.FAILED_UPLOAD_FILE);
         }
 
-        System.out.println("Here6");
 
         // Response
         String linkUrl = baseUrl + imageUrl;
 
         return linkUrl;
+    }
+
+    // 년/월/일로 디렉토리 구분할 때 사용
+    public String getDate() {
+        LocalDate now = LocalDate.now();
+
+        String str = now.toString().replace("-", "/");
+        return str;
     }
 }
