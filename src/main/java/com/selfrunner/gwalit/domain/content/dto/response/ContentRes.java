@@ -23,27 +23,12 @@ public class ContentRes {
 
     private Time duration;
 
-    public ContentRes toDto(Content content) {
-        ContentRes contentRes = new ContentRes();
-        contentRes.contentId = content.getContentId().toString();
-        contentRes.title = content.getTitle();
-        contentRes.type = content.getType();
-        contentRes.linkUrl = content.getLinkUrl();
-        contentRes.thumbnail = content.getThumbnail();
-        contentRes.duration = content.getDuration();
-
-        return contentRes;
-    }
-
-    public static ContentRes staticToDto(Content content) {
-        ContentRes contentRes = new ContentRes();
-        contentRes.contentId = content.getContentId().toString();
-        contentRes.title = content.getTitle();
-        contentRes.type = content.getType();
-        contentRes.linkUrl = content.getLinkUrl();
-        contentRes.thumbnail = content.getThumbnail();
-        contentRes.duration = content.getDuration();
-
-        return contentRes;
+    public ContentRes(Content content) {
+        this.contentId = content.getContentId().toString();
+        this.title = content.getTitle();
+        this.type = content.getType();
+        this.linkUrl = content.getLinkUrl();
+        this.thumbnail = content.getThumbnail();
+        this.duration = content.getDuration();
     }
 }
