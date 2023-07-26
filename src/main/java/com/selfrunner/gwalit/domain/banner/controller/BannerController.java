@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Null;
-import javax.validation.constraints.Pattern;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,4 +31,8 @@ public class BannerController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.update(bannerId, bannerReq, multipartFile));
     }
 
+    @GetMapping("")
+    public ApplicationResponse<List<BannerRes>> getAll() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.getAll());
+    }
 }

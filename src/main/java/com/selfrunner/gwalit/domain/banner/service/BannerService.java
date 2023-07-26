@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -40,7 +43,7 @@ public class BannerService {
         bannerRepository.save(banner);
 
         // Response
-        BannerRes bannerRes = new BannerRes().toDto(banner);
+        BannerRes bannerRes = new BannerRes(banner);
         return bannerRes;
     }
 
@@ -64,7 +67,19 @@ public class BannerService {
         banner.updateLink(bannerReq.getLinkUrl());
 
         // Response
-        BannerRes bannerRes = new BannerRes().toDto(banner);
+        BannerRes bannerRes = new BannerRes(banner);
+        return bannerRes;
+    }
+
+    public List<BannerRes> getAll() {
+        // Business Logic
+        List<Banner> bannerList = bannerRepository.findAll();
+
+        // Response
+        List<BannerRes> bannerRes = bannerList.stream()
+                .map(BannerRes::new)
+                .collect(Collectors.toList());
+
         return bannerRes;
     }
 }
