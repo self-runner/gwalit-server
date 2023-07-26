@@ -9,14 +9,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BannerRes {
 
-    private Long bannerId;
+    private String bannerId;
 
     private String imageUrl;
 
     private String linkUrl;
 
     public BannerRes(Banner banner) {
-        this.bannerId = banner.getBannerId();
+        this.bannerId = banner.getBannerId().toString();
         this.imageUrl = banner.getImageUrl();
         this.linkUrl = banner.getLinkUrl();
     }
