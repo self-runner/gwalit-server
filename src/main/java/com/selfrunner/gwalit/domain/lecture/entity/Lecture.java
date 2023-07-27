@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lecture.entity;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -31,6 +32,9 @@ public class Lecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
+    @Column(name = "month")
+    private Integer month;
+
     @Type(type = "json")
     @Column(name = "rules", columnDefinition = "json")
     private List<String> rules;
@@ -38,4 +42,13 @@ public class Lecture extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "schedules", columnDefinition = "json")
     private List<Schedule> schedules;
+
+    @Builder
+    public Lecture(String name, String color, Integer month, List<String> rules, List<Schedule> schedules) {
+        this.name = name;
+        this.color = color;
+        this.month = month;
+        this.rules = rules;
+        this.schedules = schedules;
+    }
 }

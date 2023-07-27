@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.dto;
 
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -21,4 +22,16 @@ public class PostLectureReq {
     private List<String> rules;
 
     private List<Schedule> schedules;
+
+    public Lecture toEntity() {
+        Lecture lecture = Lecture.builder()
+                .name(this.name)
+                .color(this.color)
+                .month(Integer.valueOf(this.month))
+                .rules(this.rules)
+                .schedules(this.schedules)
+                .build();
+
+        return lecture;
+    }
 }
