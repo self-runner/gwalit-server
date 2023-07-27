@@ -10,7 +10,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import javax.persistence.*;
-import java.util.Map;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,13 +31,11 @@ public class Lecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
-    @Column(name = "memo", columnDefinition = "TEXT")
-    private String memo;
-
-    @Column(name = "rules")
-    private String rules;
+    @Type(type = "json")
+    @Column(name = "rules", columnDefinition = "json")
+    private List<String> rules;
 
     @Type(type = "json")
-    @Column(name = "schedules", columnDefinition = "longtext")
-    private Map<String, Object> schedules;
+    @Column(name = "schedules", columnDefinition = "json")
+    private List<Schedule> schedules;
 }

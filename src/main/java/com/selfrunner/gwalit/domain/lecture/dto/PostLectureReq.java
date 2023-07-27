@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.dto;
 
+import com.selfrunner.gwalit.domain.lecture.entity.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,5 +20,5 @@ public class PostLectureReq {
 
     private List<String> rules;
 
-    //private List<>
+    private List<Schedule> schedules;
 }
