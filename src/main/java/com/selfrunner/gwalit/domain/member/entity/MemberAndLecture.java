@@ -9,7 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "MemberAndLectrue")
+@Table(name = "MemberAndLecture")
 @SQLDelete(sql = "UPDATE member_and_lectrue SET deleted_at = new() where member_and_lecture_id = ?")
 public class MemberAndLecture extends BaseTimeEntity {
 
