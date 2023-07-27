@@ -68,6 +68,10 @@ dependencies {
 
 	// Amazon S3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+	// MySQL Json
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-5:3.5.1'
+
 }
 
 tasks.named('test') {
