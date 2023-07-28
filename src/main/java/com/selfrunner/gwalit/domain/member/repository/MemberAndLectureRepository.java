@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface MemberAndLectureRepository extends JpaRepository<MemberAndLecture, Long>, MemberAndLectureRepositoryCustom {
 
     // 사용자 클래스 존재 여부 확인
-    Optional<MemberAndLecture> findMemberAndLectureByMemberAndLecture(Member member, Lecture lecture);
-
     Optional<MemberAndLecture> findMemberAndLectureByMemberAndLectureLectureId(Member member, Long lectureId);
 
 }

@@ -46,12 +46,11 @@ public class LectureService {
     @Transactional
     public Void delete(Member member, Long lectureId) {
         // Validation
-        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 존재 여부 확인
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLecture(member, lecture).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
         memberAndLectureRepository.delete(memberAndLecture);
-        lectureRepository.delete(lecture);
+        lectureRepository.delete(memberAndLecture.getLecture());
 
         // Response
         return null;
