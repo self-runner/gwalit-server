@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.service.LectureService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -34,5 +35,11 @@ public class LectureController {
     public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         lectureService.delete(member, lectureId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "특정 Class 정보 반환")
+    @GetMapping("/{lecture_id}")
+    public ApplicationResponse<GetLectureRes> get(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.get(member, lectureId));
     }
 }
