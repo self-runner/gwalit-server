@@ -11,7 +11,7 @@ public class Schedule {
 
     private String day;
 
-    private Timestamp startTime;
+    private String startTime;
 
-    private Timestamp endTime;
+    private String endTime;
 }
