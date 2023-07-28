@@ -28,6 +28,14 @@ public class LectureController {
     @Operation(summary = "Class 생성")
     @PostMapping("")
     public ApplicationResponse<Void> register(@Auth Member member, @Valid @RequestBody PostLectureReq postLectureReq) {
-        return ApplicationResponse.create(ErrorCode.SUCCESS, lectureService.register(member, postLectureReq));
+        lectureService.register(member, postLectureReq);
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "Class 삭제")
+    @PostMapping("/{lecture_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member) {
+        lectureService.delete(member);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }
