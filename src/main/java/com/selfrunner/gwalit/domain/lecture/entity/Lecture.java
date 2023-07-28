@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 @Table(name = "Lecture")
 @TypeDef(name = "json", typeClass = JsonType.class)
 @SQLDelete(sql = "UPDATE lecture SET deleted_at = NOW() where lecture_id = ?")
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lecture extends BaseTimeEntity {
 

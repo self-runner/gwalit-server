@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 
@@ -14,6 +15,7 @@ import javax.persistence.*;
 @Getter
 @Table(name = "MemberAndLecture")
 @SQLDelete(sql = "UPDATE member_and_lecture SET deleted_at = NOW() where member_and_lecture_id = ?")
+@Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAndLecture extends BaseTimeEntity {
 
