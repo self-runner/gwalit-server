@@ -1,6 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
-import com.selfrunner.gwalit.domain.lecture.dto.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.service.LectureService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;

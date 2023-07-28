@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.lecture.dto;
+package com.selfrunner.gwalit.domain.lecture.dto.request;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Rule;

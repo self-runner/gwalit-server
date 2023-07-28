@@ -1,7 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.service;
 
 
-import com.selfrunner.gwalit.domain.lecture.dto.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -13,8 +13,6 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
