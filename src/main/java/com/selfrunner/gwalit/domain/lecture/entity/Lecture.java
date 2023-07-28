@@ -37,14 +37,14 @@ public class Lecture extends BaseTimeEntity {
 
     @Type(type = "json")
     @Column(name = "rules", columnDefinition = "json")
-    private List<String> rules;
+    private List<Rule> rules;
 
     @Type(type = "json")
     @Column(name = "schedules", columnDefinition = "json")
     private List<Schedule> schedules;
 
     @Builder
-    public Lecture(String name, String color, Integer month, List<String> rules, List<Schedule> schedules) {
+    public Lecture(String name, String color, Integer month, List<Rule> rules, List<Schedule> schedules) {
         this.name = name;
         this.color = color;
         this.month = month;

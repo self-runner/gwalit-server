@@ -37,6 +37,6 @@ public class MemberAndLecture extends BaseTimeEntity {
     public MemberAndLecture(Member member, Lecture lecture) {
         this.member = member;
         this.lecture = lecture;
-        this.isTeacher = (member.getType().equals(MemberType.TEACHER) ? Boolean.TRUE : Boolean.FALSE;
+        this.isTeacher = (member.getType().equals(MemberType.TEACHER)) ? Boolean.TRUE : Boolean.FALSE;
     }
 }
