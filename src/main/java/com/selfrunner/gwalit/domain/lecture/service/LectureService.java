@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -37,6 +39,20 @@ public class LectureService {
                         .build();
         lectureRepository.save(lecture);
         memberAndLectureRepository.save(memberAndLecture);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void delete(Member member, Long lectureId) {
+        // Validation
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 존재 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLecture(member, lecture).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+
+        // Business Logic
+        memberAndLectureRepository.delete(memberAndLecture);
+        lectureRepository.delete(lecture);
 
         // Response
         return null;

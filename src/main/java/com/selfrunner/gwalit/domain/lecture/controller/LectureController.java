@@ -9,10 +9,7 @@ import com.selfrunner.gwalit.global.util.jwt.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -33,9 +30,9 @@ public class LectureController {
     }
 
     @Operation(summary = "Class 삭제")
-    @PostMapping("/{lecture_id}")
-    public ApplicationResponse<Void> delete(@Auth Member member) {
-        lectureService.delete(member);
+    @DeleteMapping("/{lecture_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        lectureService.delete(member, lectureId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }

@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name = "MemberAndLecture")
-@SQLDelete(sql = "UPDATE member_and_lectrue SET deleted_at = new() where member_and_lecture_id = ?")
+@SQLDelete(sql = "UPDATE member_and_lecture SET deleted_at = NOW() where member_and_lecture_id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberAndLecture extends BaseTimeEntity {
 
