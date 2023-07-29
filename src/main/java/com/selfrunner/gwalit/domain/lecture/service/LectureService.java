@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.service;
 
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
@@ -65,5 +66,17 @@ public class LectureService {
 
         // Response
         return getLectureRes;
+    }
+
+    @Transactional
+    public Void update(Member member, Long lectureId, PutLectureReq putLectureReq) {
+        // Validation
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+
+        // Business Logic
+        memberAndLecture.getLecture().update(putLectureReq);
+
+        // Response
+        return null;
     }
 }

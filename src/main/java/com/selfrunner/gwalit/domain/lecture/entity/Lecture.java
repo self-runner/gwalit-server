@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.entity;
 
+import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
@@ -44,6 +45,14 @@ public class Lecture extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "schedules", columnDefinition = "json")
     private List<Schedule> schedules;
+
+    public void update(PutLectureReq putLectureReq) {
+        this.name = putLectureReq.getName();
+        this.color = putLectureReq.getColor();
+        this.month = Integer.valueOf(putLectureReq.getMonth());
+        this.rules = putLectureReq.getRules();
+        this.schedules = putLectureReq.getSchedules();
+    }
 
     @Builder
     public Lecture(String name, String color, Integer month, List<Rule> rules, List<Schedule> schedules) {
