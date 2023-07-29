@@ -48,11 +48,6 @@ public class Lesson extends BaseTimeEntity {
     private LocalDate date;
 
     @Type(type = "json")
-    @Column(name = "startTime", columnDefinition = "json")
-    private Schedule startTime;
-
-    @Type(type = "json")
-    @Column(name = "endTime", columnDefinition = "json")
-    private Schedule endTime;
-
+    @Column(name = "time", columnDefinition = "json")
+    private Schedule time;
 }
