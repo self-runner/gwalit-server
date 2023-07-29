@@ -35,6 +35,7 @@ public class Lesson extends BaseTimeEntity {
     private Lecture lecture;
 
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private LessonType type;
 
     @Type(type = "json")
