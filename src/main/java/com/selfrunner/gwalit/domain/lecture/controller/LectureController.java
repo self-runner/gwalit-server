@@ -46,7 +46,7 @@ public class LectureController {
 
     @Operation(summary = "Class 수정")
     @PutMapping("/{lecture_id}")
-    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @RequestBody PutLectureReq putLectureReq) {
+    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PutLectureReq putLectureReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.update(member, lectureId, putLectureReq));
     }
 }
