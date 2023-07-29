@@ -1,7 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
-import com.selfrunner.gwalit.domain.lecture.entity.Schedule;
+import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
@@ -13,7 +13,6 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
