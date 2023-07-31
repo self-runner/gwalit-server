@@ -1,12 +1,12 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -34,6 +34,18 @@ public class HomeworkService {
         // Business Logic
         Homework homework = postHomeworkReq.toEntity(member);
         homeworkRepository.save(homework);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void update(Member member, Long homeworkId, PutHomeworkReq putHomeworkReq) {
+        // Validation
+        Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        homework.update(putHomeworkReq);
 
         // Response
         return null;
