@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.homework.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -36,4 +37,13 @@ public class Homework {
 
     @Column(name = "isFinish")
     private Boolean isFinish;
+
+    @Builder
+    public Homework(String lessonId, Long memberId, String body, LocalDate deadline, Boolean isFinish) {
+        this.lessonId = (lessonId.equals(null)) ? -1L : Long.valueOf(lessonId);
+        this.memberId = memberId;
+        this.body = body;
+        this.deadline = deadline;
+        this.isFinish = isFinish;
+    }
 }
