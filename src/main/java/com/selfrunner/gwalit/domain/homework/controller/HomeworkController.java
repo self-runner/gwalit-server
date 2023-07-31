@@ -45,7 +45,7 @@ public class HomeworkController {
     }
 
     @Operation(summary = "숙제 정보 반환")
-    @DeleteMapping("/{homework_id}")
+    @GetMapping("/{homework_id}")
     public ApplicationResponse<HomeworkRes> get(@Auth Member member, @PathVariable("homework_id") Long homeworkId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.get(member, homeworkId));
     }
