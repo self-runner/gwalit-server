@@ -33,7 +33,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
-        log.error(e.getMessage());
+        log.error(e.toString());
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
