@@ -20,6 +20,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
 
+    @Transactional
     public Void register(Member member, PostLessonReq postLessonReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(postLessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
@@ -27,6 +28,16 @@ public class LessonService {
         // Business Logic
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void update(Member member) {
+        // Validation
+
+        // Buisness Logic
 
         // Response
         return null;

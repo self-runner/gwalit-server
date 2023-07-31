@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,5 +27,12 @@ public class LessonController {
     public ApplicationResponse<Void> register(@Auth Member member, PostLessonReq postLessonReq) {
         lessonService.register(member, postLessonReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "수업 리포트 수정")
+    @PutMapping("")
+    public ApplicationResponse<Void> update(@Auth Member member) {
+        lessonService.update(member);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }
