@@ -45,6 +45,10 @@ public class Lesson extends BaseTimeEntity {
     @Column(name = "feedback")
     private String feedback;
 
+    @Type(type = "json")
+    @Column(name = "progresses", columnDefinition = "json")
+    private List<Progress> progresses;
+
     @Column(name = "date")
     private LocalDate date;
 
