@@ -24,6 +24,7 @@ public class LessonController {
     @Operation(summary = "수업 리포트 생성")
     @PostMapping("")
     public ApplicationResponse<Void> register(@Auth Member member, PostLessonReq postLessonReq) {
-        return ApplicationResponse.create(ErrorCode.SUCCESS, lessonService.register(member, postLessonReq));
+        lessonService.register(member, postLessonReq);
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 }

@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -55,4 +56,15 @@ public class Lesson extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "time", columnDefinition = "json")
     private Schedule time;
+
+    @Builder
+    public Lesson(Lecture lecture, String type, List<Student> students, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {
+        this.lecture = lecture;
+        this.type = LessonType.valueOf(type);
+        this.students = students;
+        this.feedback = feedback;
+        this.progresses = progresses;
+        this.date = date;
+        this.time = time;
+    }
 }
