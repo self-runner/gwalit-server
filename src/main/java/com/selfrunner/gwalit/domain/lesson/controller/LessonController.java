@@ -42,4 +42,11 @@ public class LessonController {
     public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
     }
+
+    @Operation(summary = "수업 리포트 삭제")
+    @DeleteMapping("/{lesson_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
+        lessonService.delete(member, lessonId);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 }

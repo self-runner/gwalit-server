@@ -59,4 +59,17 @@ public class LessonService {
         // Response
         return lessonRes;
     }
+
+    @Transactional
+    public Void delete(Member member, Long lessonId) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        lessonRepository.delete(lesson);
+
+        // Response
+        return null;
+    }
 }
