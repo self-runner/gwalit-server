@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lesson.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.entity.Progress;
 import com.selfrunner.gwalit.domain.lesson.entity.Student;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class LessonReq {
+public class PostLessonReq {
 
     @NotEmpty(message = "연결된 Class가 없습니다.")
     private String lectureId;
@@ -30,6 +31,8 @@ public class LessonReq {
 
     private String feedback;
 
+    private List<Progress> progresses;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;
 
@@ -40,6 +43,8 @@ public class LessonReq {
                 .lecture(lecture)
                 .type(this.type)
                 .students(this.students)
+                .feedback(this.feedback)
+                .progresses(this.progresses)
                 .date(this.date)
                 .time(this.time)
                 .build();

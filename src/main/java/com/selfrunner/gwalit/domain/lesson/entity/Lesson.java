@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -56,6 +57,15 @@ public class Lesson extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "time", columnDefinition = "json")
     private Schedule time;
+
+    public void update(PutLessonReq putLessonReq) {
+        this.type = LessonType.valueOf(putLessonReq.getType());
+        this.students = putLessonReq.getStudents();
+        this.feedback = putLessonReq.getFeedback();
+        this.progresses = putLessonReq.getProgresses();
+        this.date = putLessonReq.getDate();
+        this.time = putLessonReq.getTime();
+    }
 
     @Builder
     public Lesson(Lecture lecture, String type, List<Student> students, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {

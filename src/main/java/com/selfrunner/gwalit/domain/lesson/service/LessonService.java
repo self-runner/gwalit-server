@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
-import com.selfrunner.gwalit.domain.lesson.dto.request.LessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -21,12 +22,12 @@ public class LessonService {
     private final MemberAndLectureRepository memberAndLectureRepository;
 
     @Transactional
-    public Void register(Member member, LessonReq lessonReq) {
+    public Void register(Member member, PostLessonReq postLessonReq) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(postLessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Lesson lesson = lessonReq.toEntity(memberAndLecture.getLecture());
+        Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
 
         // Response
@@ -34,10 +35,13 @@ public class LessonService {
     }
 
     @Transactional
-    public Void update(Member member) {
+    public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {
         // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Buisness Logic
+        // Business Logic
+        lesson.update(putLessonReq);
 
         // Response
         return null;

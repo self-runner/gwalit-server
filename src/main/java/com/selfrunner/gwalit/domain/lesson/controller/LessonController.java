@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.controller;
 
-import com.selfrunner.gwalit.domain.lesson.dto.request.LessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.service.LessonService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -9,10 +10,9 @@ import com.selfrunner.gwalit.global.util.jwt.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,15 +24,15 @@ public class LessonController {
 
     @Operation(summary = "수업 리포트 생성")
     @PostMapping("")
-    public ApplicationResponse<Void> register(@Auth Member member, LessonReq lessonReq) {
-        lessonService.register(member, lessonReq);
+    public ApplicationResponse<Void> register(@Auth Member member, @Valid @RequestBody PostLessonReq postLessonReq) {
+        lessonService.register(member, postLessonReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "수업 리포트 수정")
-    @PutMapping("")
-    public ApplicationResponse<Void> update(@Auth Member member) {
-        lessonService.update(member);
+    @PutMapping("/{lesson_id}")
+    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
+        lessonService.update(member, lessonId, putLessonReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }
