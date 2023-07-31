@@ -1,6 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
-import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.LessonReq;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -21,12 +21,12 @@ public class LessonService {
     private final MemberAndLectureRepository memberAndLectureRepository;
 
     @Transactional
-    public Void register(Member member, PostLessonReq postLessonReq) {
+    public Void register(Member member, LessonReq lessonReq) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(postLessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
+        Lesson lesson = lessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
 
         // Response

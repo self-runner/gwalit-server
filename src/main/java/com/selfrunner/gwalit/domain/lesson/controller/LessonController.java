@@ -1,6 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.controller;
 
-import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.LessonReq;
 import com.selfrunner.gwalit.domain.lesson.service.LessonService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -24,8 +24,8 @@ public class LessonController {
 
     @Operation(summary = "수업 리포트 생성")
     @PostMapping("")
-    public ApplicationResponse<Void> register(@Auth Member member, PostLessonReq postLessonReq) {
-        lessonService.register(member, postLessonReq);
+    public ApplicationResponse<Void> register(@Auth Member member, LessonReq lessonReq) {
+        lessonService.register(member, lessonReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 

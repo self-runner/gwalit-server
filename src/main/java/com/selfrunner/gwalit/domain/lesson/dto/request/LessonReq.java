@@ -3,7 +3,6 @@ package com.selfrunner.gwalit.domain.lesson.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
-import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Student;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
@@ -17,7 +16,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class PostLessonReq {
+public class LessonReq {
 
     @NotEmpty(message = "연결된 Class가 없습니다.")
     private String lectureId;
