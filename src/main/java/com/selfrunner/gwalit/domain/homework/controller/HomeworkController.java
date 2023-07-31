@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.homework.controller;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.service.HomeworkService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -41,5 +42,11 @@ public class HomeworkController {
     public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("homework_id") Long homeworkId) {
         homeworkService.delete(member, homeworkId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "숙제 정보 반환")
+    @DeleteMapping("/{homework_id}")
+    public ApplicationResponse<HomeworkRes> get(@Auth Member member, @PathVariable("homework_id") Long homeworkId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.get(member, homeworkId));
     }
 }

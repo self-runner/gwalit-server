@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.homework.service;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
@@ -61,5 +62,16 @@ public class HomeworkService {
 
         // Response
         return null;
+    }
+
+    public HomeworkRes get(Member member, Long homeworkId) {
+        // Validation
+        Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        HomeworkRes homeworkRes = new HomeworkRes().toDto(homework);
+
+        // Response
+        return  homeworkRes;
     }
 }
