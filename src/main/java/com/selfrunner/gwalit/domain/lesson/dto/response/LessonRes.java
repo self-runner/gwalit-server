@@ -39,6 +39,7 @@ public class LessonRes {
         lessonRes.feedback = lesson.getFeedback();
         lessonRes.progresses = lesson.getProgresses();
         lessonRes.date = lesson.getDate().toString();
+        lessonRes.time = lesson.getTime();
 
         return lessonRes;
     }
