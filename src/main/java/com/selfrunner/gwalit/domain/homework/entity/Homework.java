@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.homework.entity;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
+import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @SQLDelete(sql = "UPDATE homework SET deleted_at = NOW() where homework_id = ?")
 @Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Homework {
+public class Homework extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
