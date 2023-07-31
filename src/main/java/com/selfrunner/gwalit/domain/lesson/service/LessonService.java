@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.service;
 
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -45,5 +46,17 @@ public class LessonService {
 
         // Response
         return null;
+    }
+
+    public LessonRes get(Member member, Long lessonId) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        LessonRes lessonRes = new LessonRes().toDto(lesson);
+
+        // Response
+        return lessonRes;
     }
 }

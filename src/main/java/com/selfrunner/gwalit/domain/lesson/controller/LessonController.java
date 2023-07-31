@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.controller;
 
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.service.LessonService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -34,5 +35,11 @@ public class LessonController {
     public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
         lessonService.update(member, lessonId, putLessonReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "수업 리포트 반환")
+    @GetMapping("/{lesson_id}")
+    public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
     }
 }
