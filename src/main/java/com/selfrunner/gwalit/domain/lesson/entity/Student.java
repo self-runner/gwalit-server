@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class Student {
 
-    private String studentId;
+    private String memberId;
 }
