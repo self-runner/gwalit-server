@@ -35,4 +35,11 @@ public class HomeworkController {
         homeworkService.update(member, homeworkId, putHomeworkReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
+
+    @Operation(summary = "숙제 삭제")
+    @DeleteMapping("/{homework_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("homework_id") Long homeworkId) {
+        homeworkService.delete(member, homeworkId);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 }

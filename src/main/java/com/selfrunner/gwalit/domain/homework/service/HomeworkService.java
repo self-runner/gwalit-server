@@ -50,4 +50,16 @@ public class HomeworkService {
         // Response
         return null;
     }
+
+    @Transactional
+    public Void delete(Member member, Long homeworkId) {
+        // Validation
+        Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        homeworkRepository.delete(homework);
+
+        // Response
+        return null;
+    }
 }
