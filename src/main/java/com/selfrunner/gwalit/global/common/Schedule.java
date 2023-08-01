@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.lecture.entity;
+package com.selfrunner.gwalit.global.common;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

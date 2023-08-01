@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.entity;
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
+import com.selfrunner.gwalit.global.common.Schedule;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
 import lombok.Builder;
