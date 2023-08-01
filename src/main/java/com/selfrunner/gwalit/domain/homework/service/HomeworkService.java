@@ -69,6 +69,9 @@ public class HomeworkService {
     public HomeworkRes get(Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(!homework.getMemberId().equals(member.getMemberId())) {
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
 
         // Business Logic
         HomeworkRes homeworkRes = new HomeworkRes().toDto(homework);
