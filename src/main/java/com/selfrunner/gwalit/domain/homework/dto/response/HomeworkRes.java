@@ -22,15 +22,12 @@ public class HomeworkRes {
 
     private Boolean isFinish;
 
-    public HomeworkRes toDto(Homework homework) {
-        HomeworkRes homeworkRes = new HomeworkRes();
-        homeworkRes.homeworkId = homework.getHomeworkId().toString();
-        homeworkRes.lessonId = (homework.getLessonId() == null) ? null : toString();
-        homeworkRes.memberId = homework.getMemberId().toString();
-        homeworkRes.body = homework.getBody();
-        homeworkRes.deadline = homework.getDeadline();
-        homeworkRes.isFinish = homework.getIsFinish();
-
-        return homeworkRes;
+    public HomeworkRes(Homework homework) {
+        this.homeworkId = homework.getHomeworkId().toString();
+        this.lessonId = (homework.getLessonId() == null) ? null : homework.getLessonId().toString();
+        this.memberId = homework.getMemberId().toString();
+        this.body = homework.getBody();
+        this.deadline = homework.getDeadline();
+        this.isFinish = homework.getIsFinish();
     }
 }

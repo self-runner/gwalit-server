@@ -7,12 +7,16 @@ import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -74,9 +78,25 @@ public class HomeworkService {
         }
 
         // Business Logic
-        HomeworkRes homeworkRes = new HomeworkRes().toDto(homework);
+        HomeworkRes homeworkRes = new HomeworkRes(homework);
 
         // Response
-        return  homeworkRes;
+        return homeworkRes;
+    }
+
+    public List<HomeworkRes> getAll(Member member) {
+        // Validation
+        if(member.getType().equals(MemberType.TEACHER)) { // 학생용 API 검증
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
+
+        // Business Logic
+        List<Homework> homeworkList = homeworkRepository.findAllByMemberId(member.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<HomeworkRes> homeworkResList = homeworkList.stream()
+                .map(HomeworkRes::new)
+                .collect(Collectors.toList());
+
+        // Response
+        return homeworkResList;
     }
 }

@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -48,4 +49,11 @@ public class HomeworkController {
     public ApplicationResponse<HomeworkRes> get(@Auth Member member, @PathVariable("homework_id") Long homeworkId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.get(member, homeworkId));
     }
+
+    @Operation(summary = "해당 학생이 가지고 있는 숙제 정보 모두 반환")
+    @GetMapping("")
+    public ApplicationResponse<List<HomeworkRes>> getAll(@Auth Member member) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getAll(member));
+    }
+
 }
