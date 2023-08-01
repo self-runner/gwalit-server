@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.homework.controller;
 
-import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
-import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.service.HomeworkService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -25,15 +24,15 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 생성")
     @PostMapping("")
-    public ApplicationResponse<Void> register(@Auth Member member, @Valid @RequestBody PostHomeworkReq postHomeworkReq) {
-        homeworkService.register(member, postHomeworkReq);
+    public ApplicationResponse<Void> register(@Auth Member member, @RequestParam(value = "lesson_id", required = false) Long lessonId, @Valid @RequestBody HomeworkReq homeworkReq) {
+        homeworkService.register(member, lessonId, homeworkReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "숙제 정보 수정")
     @PutMapping("/{homework_id}")
-    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody PutHomeworkReq putHomeworkReq) {
-        homeworkService.update(member, homeworkId, putHomeworkReq);
+    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody HomeworkReq homeworkReq) {
+        homeworkService.update(member, homeworkId, homeworkReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 

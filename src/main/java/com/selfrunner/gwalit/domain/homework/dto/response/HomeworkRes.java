@@ -25,7 +25,7 @@ public class HomeworkRes {
     public HomeworkRes toDto(Homework homework) {
         HomeworkRes homeworkRes = new HomeworkRes();
         homeworkRes.homeworkId = homework.getHomeworkId().toString();
-        homeworkRes.lessonId = homework.getLessonId().toString();
+        homeworkRes.lessonId = (homework.getLessonId() == null) ? null : toString();
         homeworkRes.memberId = homework.getMemberId().toString();
         homeworkRes.body = homework.getBody();
         homeworkRes.deadline = homework.getDeadline();

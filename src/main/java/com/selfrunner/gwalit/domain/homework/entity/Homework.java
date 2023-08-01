@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.homework.entity;
 
-import com.selfrunner.gwalit.domain.homework.dto.request.PostHomeworkReq;
-import com.selfrunner.gwalit.domain.homework.dto.request.PutHomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -41,15 +40,15 @@ public class Homework extends BaseTimeEntity {
     @Column(name = "isFinish")
     private Boolean isFinish;
 
-    public void update(PutHomeworkReq putHomeworkReq) {
-        this.body = putHomeworkReq.getBody();
-        this.deadline = putHomeworkReq.getDeadline();
-        this.isFinish = putHomeworkReq.getIsFinish();
+    public void update(HomeworkReq homeworkReq) {
+        this.body = homeworkReq.getBody();
+        this.deadline = homeworkReq.getDeadline();
+        this.isFinish = homeworkReq.getIsFinish();
     }
 
     @Builder
-    public Homework(String lessonId, Long memberId, String body, LocalDate deadline, Boolean isFinish) {
-        this.lessonId = (lessonId.equals(null)) ? -1L : Long.valueOf(lessonId);
+    public Homework(Long lessonId, Long memberId, String body, LocalDate deadline, Boolean isFinish) {
+        this.lessonId = lessonId;
         this.memberId = memberId;
         this.body = body;
         this.deadline = deadline;
