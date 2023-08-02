@@ -18,7 +18,7 @@ import javax.validation.Valid;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/lesson")
-@Tag(name = "Lecture", description = "수업 별 기본 정보 관련")
+@Tag(name = "Lesson", description = "수업 별 기본 정보 관련")
 public class LessonController {
 
     private final LessonService lessonService;
