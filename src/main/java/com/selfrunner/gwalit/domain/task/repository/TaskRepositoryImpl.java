@@ -22,9 +22,10 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
     public List<Task> findAllByMemberId(Member member) {
         return queryFactory
                 .selectFrom(task)
-                .leftJoin(lecture).fetchJoin()
-                .leftJoin(memberAndLecture).fetchJoin()
-                .where(memberAndLecture.member.eq(member))
+                .innerJoin(lecture).on(task.lecture.eq(lecture)).fetchJoin()
+                .innerJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture)).fetchJoin()
+                .where(memberAndLecture.member.eq(member)
+                        .and(task.isPinned).eq(true))
                 .fetch();
     }
 

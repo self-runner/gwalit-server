@@ -19,7 +19,7 @@ import java.util.List;
 
 @Entity
 @Getter
-@Table(name = "Subtask")
+@Table(name = "task")
 @TypeDef(name = "json", typeClass = JsonType.class)
 @SQLDelete(sql = "UPDATE task SET deleted_at = NOW() where task_id = ?")
 @Where(clause = "deleted_at IS NULL")

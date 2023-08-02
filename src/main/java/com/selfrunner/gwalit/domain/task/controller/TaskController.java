@@ -32,7 +32,7 @@ public class TaskController {
     }
 
     @Operation(description = "할 일 수정")
-    @PostMapping("/{task_id}")
+    @PutMapping("/{task_id}")
     public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("task_id") Long taskId, @Valid @RequestBody PutTaskReq putTaskReq) {
         taskService.update(member, taskId, putTaskReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
@@ -46,7 +46,7 @@ public class TaskController {
     }
 
     @Operation(description = "유저의 할 일 가져오기")
-    @GetMapping("")
+    @GetMapping("/main")
     public ApplicationResponse<List<TaskRes>> getTaskByUser(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByUser(member));
     }
