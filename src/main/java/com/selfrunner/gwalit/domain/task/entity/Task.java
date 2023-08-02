@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -42,4 +43,12 @@ public class Task extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "subtasks", columnDefinition = "json")
     private List<Subtask> subtasks;
+
+    @Builder
+    public Task(Lecture lecture, String title, LocalDate deadline, List<Subtask> subtasks) {
+        this.lecture = lecture;
+        this.title = title;
+        this.deadline = deadline;
+        this.subtasks = subtasks;
+    }
 }
