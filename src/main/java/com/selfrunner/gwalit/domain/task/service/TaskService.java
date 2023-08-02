@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.task.dto.request.PostTaskReq;
+import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
 import com.selfrunner.gwalit.domain.task.entity.Task;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -28,6 +29,19 @@ public class TaskService {
         // Business Logic
         Task task = postTaskReq.toEntity(memberAndLecture.getLecture());
         taskRepository.save(task);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void update(Member member, Long taskId, PutTaskReq putTaskReq) {
+        // Validation
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        task.update(putTaskReq);
 
         // Response
         return null;

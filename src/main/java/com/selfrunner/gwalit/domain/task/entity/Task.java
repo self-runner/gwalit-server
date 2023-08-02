@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.task.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import lombok.AccessLevel;
@@ -43,6 +44,12 @@ public class Task extends BaseTimeEntity {
     @Type(type = "json")
     @Column(name = "subtasks", columnDefinition = "json")
     private List<Subtask> subtasks;
+
+    public void update(PutTaskReq putTaskReq) {
+        this.title = putTaskReq.getTitle();
+        this.deadline = putTaskReq.getDeadline();
+        this.subtasks = putTaskReq.getSubtasks();
+    }
 
     @Builder
     public Task(Lecture lecture, String title, LocalDate deadline, List<Subtask> subtasks) {
