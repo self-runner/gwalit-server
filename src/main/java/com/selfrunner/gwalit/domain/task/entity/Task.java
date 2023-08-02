@@ -41,6 +41,9 @@ public class Task extends BaseTimeEntity {
     @Column(name = "deadline", columnDefinition = "date")
     private LocalDate deadline;
 
+    @Column(name = "isPinned")
+    private Boolean isPinned;
+
     @Type(type = "json")
     @Column(name = "subtasks", columnDefinition = "json")
     private List<Subtask> subtasks;
@@ -48,14 +51,16 @@ public class Task extends BaseTimeEntity {
     public void update(PutTaskReq putTaskReq) {
         this.title = putTaskReq.getTitle();
         this.deadline = putTaskReq.getDeadline();
+        this.isPinned = putTaskReq.getIsPinned();
         this.subtasks = putTaskReq.getSubtasks();
     }
 
     @Builder
-    public Task(Lecture lecture, String title, LocalDate deadline, List<Subtask> subtasks) {
+    public Task(Lecture lecture, String title, LocalDate deadline, Boolean isPinned, List<Subtask> subtasks) {
         this.lecture = lecture;
         this.title = title;
         this.deadline = deadline;
+        this.isPinned = isPinned;
         this.subtasks = subtasks;
     }
 }

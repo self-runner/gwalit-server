@@ -19,5 +19,8 @@ public class PutTaskReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate deadline;
 
+    @NotEmpty
+    private Boolean isPinned;
+
     private List<Subtask> subtasks;
 }

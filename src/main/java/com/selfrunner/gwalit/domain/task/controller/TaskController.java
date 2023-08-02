@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.task.controller;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.task.dto.request.PostTaskReq;
 import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
+import com.selfrunner.gwalit.domain.task.dto.response.TaskRes;
 import com.selfrunner.gwalit.domain.task.service.TaskService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,5 +43,11 @@ public class TaskController {
     public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("task_id") Long taskId) {
         taskService.delete(member, taskId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(description = "유저의 할 일 가져오기")
+    @GetMapping("")
+    public ApplicationResponse<List<TaskRes>> getTaskByUser(@Auth Member member) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByUser(member));
     }
 }

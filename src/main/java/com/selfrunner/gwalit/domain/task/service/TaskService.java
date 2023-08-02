@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.task.dto.request.PostTaskReq;
 import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
+import com.selfrunner.gwalit.domain.task.dto.response.TaskRes;
 import com.selfrunner.gwalit.domain.task.entity.Task;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -12,6 +13,10 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,5 +63,19 @@ public class TaskService {
 
         // Response
         return null;
+    }
+
+    public List<TaskRes> getTasksByUser(Member member) {
+        // Validation
+
+        // Business Login: 유저가 속한 Class 조회 및 관련 할 일들을 찾아서 반환
+        List<Task> tasks = taskRepository.findAllByMemberId(member);
+        List<TaskRes> taskRes = tasks
+                .stream()
+                .map(TaskRes::new)
+                .collect(Collectors.toList());
+
+        // Response
+        return taskRes;
     }
 }

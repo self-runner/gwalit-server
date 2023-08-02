@@ -24,6 +24,9 @@ public class PostTaskReq {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate deadline;
 
+    @NotEmpty
+    private Boolean isPinned;
+
     private List<Subtask> subtasks;
 
     public Task toEntity(Lecture lecture)  {
@@ -31,6 +34,7 @@ public class PostTaskReq {
                 .lecture(lecture)
                 .title(this.title)
                 .deadline(this.deadline)
+                .isPinned(this.isPinned)
                 .subtasks(this.subtasks)
                 .build();
 
