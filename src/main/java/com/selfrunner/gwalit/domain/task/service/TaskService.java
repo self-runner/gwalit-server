@@ -38,10 +38,23 @@ public class TaskService {
     public Void update(Member member, Long taskId, PutTaskReq putTaskReq) {
         // Validation
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         task.update(putTaskReq);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void delete(Member member, Long taskId) {
+        // Validation
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        taskRepository.delete(task);
 
         // Response
         return null;

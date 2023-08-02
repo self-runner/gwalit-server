@@ -35,4 +35,11 @@ public class TaskController {
         taskService.update(member, taskId, putTaskReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
+
+    @Operation(description = "할 일 삭제")
+    @DeleteMapping("/{task_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("task_id") Long taskId) {
+        taskService.delete(member, taskId);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 }
