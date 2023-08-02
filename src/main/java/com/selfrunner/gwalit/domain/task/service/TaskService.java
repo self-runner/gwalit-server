@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.task.service;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.task.dto.request.PostTaskReq;
 import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
@@ -67,9 +68,30 @@ public class TaskService {
 
     public List<TaskRes> getTasksByUser(Member member) {
         // Validation
+//        if(!member.getType().equals(MemberType.TEACHER)) {
+//            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+//        }
 
         // Business Login: 유저가 속한 Class 조회 및 관련 할 일들을 찾아서 반환
         List<Task> tasks = taskRepository.findAllByMemberId(member);
+        List<TaskRes> taskRes = tasks
+                .stream()
+                .map(TaskRes::new)
+                .collect(Collectors.toList());
+
+        // Response
+        return taskRes;
+    }
+
+    public List<TaskRes> getTasksByLecture(Member member, Long lectureId) {
+        /*
+        TODO: 정렬 순서는 현재 날짜 기준: 가장 가까운 날짜 / NULL / 지난 날짜 순
+         */
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        List<Task> tasks = taskRepository.findTasksByLectureLectureIdOrderByDeadlineDesc(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         List<TaskRes> taskRes = tasks
                 .stream()
                 .map(TaskRes::new)

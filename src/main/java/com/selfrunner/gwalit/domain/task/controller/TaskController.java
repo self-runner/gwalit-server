@@ -47,7 +47,13 @@ public class TaskController {
 
     @Operation(description = "유저의 할 일 가져오기")
     @GetMapping("/main")
-    public ApplicationResponse<List<TaskRes>> getTaskByUser(@Auth Member member) {
+    public ApplicationResponse<List<TaskRes>> getTasksByUser(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByUser(member));
+    }
+
+    @Operation(description = "Class별 할 일 가져오기")
+    @GetMapping("/lecture/{lecture_id}")
+    public ApplicationResponse<List<TaskRes>> getTasksByLecture(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByLecture(member, lectureId));
     }
 }

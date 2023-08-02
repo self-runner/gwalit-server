@@ -25,7 +25,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
                 .innerJoin(lecture).on(task.lecture.eq(lecture)).fetchJoin()
                 .innerJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture)).fetchJoin()
                 .where(memberAndLecture.member.eq(member)
-                        .and(task.isPinned).eq(true))
+                        .and(task.isPinned.isTrue()))
                 .fetch();
     }
 
