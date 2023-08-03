@@ -25,6 +25,9 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
 
     @Override
     public Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member m) {
+        /*
+        TODO: No constructor found for class com.selfrunner.gwalit.domain.member.entity.MemberMeta with parameters: [class java.lang.Long, class java.lang.String] 오류 해결 필요
+         */
         return Optional.ofNullable(queryFactory.selectFrom(memberAndLecture)
                 .where(memberAndLecture.member.eq(m))
                 .transform(groupBy(memberAndLecture.lecture)
@@ -33,4 +36,5 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                                 )))));
 
     }
+
 }
