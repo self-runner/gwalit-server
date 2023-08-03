@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.service;
 
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
@@ -13,6 +14,8 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -72,4 +75,13 @@ public class LessonService {
         // Response
         return null;
     }
+
+//    public List<LessonMetaRes>getAllLessonMeta(Member member, Long lectureId) {
+//        // Validation
+//
+//        // Business Logic
+//
+//        // Response
+//
+//    }
 }
