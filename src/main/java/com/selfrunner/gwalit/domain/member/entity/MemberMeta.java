@@ -10,4 +10,6 @@ public class MemberMeta {
     private Long memberId;
 
     private String name;
+
+    private Boolean isTeacher;
 }

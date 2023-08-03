@@ -14,6 +14,7 @@ import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
+import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
@@ -29,11 +30,12 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
         TODO: No constructor found for class com.selfrunner.gwalit.domain.member.entity.MemberMeta with parameters: [class java.lang.Long, class java.lang.String] 오류 해결 필요
          */
         return Optional.ofNullable(queryFactory.selectFrom(memberAndLecture)
+                .leftJoin(member).on(member.eq(memberAndLecture.member))
+                .leftJoin(lecture).on(lecture.eq(memberAndLecture.lecture))
                 .where(memberAndLecture.member.eq(m))
-                .transform(groupBy(memberAndLecture.lecture)
+                .transform(groupBy(memberAndLecture.lecture.lectureId)
                         .list(Projections.constructor(GetLectureMetaRes.class, memberAndLecture.lecture.lectureId, memberAndLecture.lecture.name, memberAndLecture.lecture.color,
-                                list(Projections.constructor(MemberMeta.class, memberAndLecture.member.memberId, memberAndLecture.member.name).as("memberMetas")
-                                )))));
+                                list(Projections.constructor(MemberMeta.class, memberAndLecture.member.memberId, memberAndLecture.member.name))))));
 
     }
 

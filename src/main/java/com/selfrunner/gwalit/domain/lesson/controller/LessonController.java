@@ -52,10 +52,10 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
-//    @Operation(summary = "수업 리포트 전체 반환 (진도 정보 제외)")
-//    @GetMapping("/list/{lecture_id}")
-//    public ApplicationResponse<List<LessonMetaRes>> getAllLessonMeta(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
-//        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMeta(member, lectureId));
-//    }
+    @Operation(summary = "수업 리포트 전체 반환 (진도 정보 제외)")
+    @GetMapping("/list/{lecture_id}")
+    public ApplicationResponse<List<LessonMetaRes>> getAllLessonMeta(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMeta(member, lectureId));
+    }
 
 }

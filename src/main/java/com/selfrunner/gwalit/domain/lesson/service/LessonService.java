@@ -76,12 +76,14 @@ public class LessonService {
         return null;
     }
 
-//    public List<LessonMetaRes>getAllLessonMeta(Member member, Long lectureId) {
-//        // Validation
-//
-//        // Business Logic
-//
-//        // Response
-//
-//    }
+    public List<LessonMetaRes>getAllLessonMeta(Member member, Long lectureId) {
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+
+        // Response
+        return lessonMetaRes;
+    }
 }
