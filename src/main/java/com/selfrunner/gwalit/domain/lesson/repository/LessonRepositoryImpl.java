@@ -14,6 +14,7 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
+import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
@@ -26,11 +27,12 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
-                        .leftJoin(lecture).on(lesson.lecture.eq(lecture))
-                        .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
+                        .leftJoin(lecture).on(lesson.lecture.eq(lecture)).fetchJoin()
+                        .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture)).fetchJoin()
+                        .leftJoin(member).on(member.eq(memberAndLecture.member)).fetchJoin()
                         .where(lesson.lecture.lectureId.eq(lectureId))
                         .transform(groupBy(lesson).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.date, lesson.time,
-                                list(Projections.constructor(MemberMeta.class, memberAndLecture.member.memberId, memberAndLecture.member.name, memberAndLecture.isTeacher))))));
+                                list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
     }
 
 }

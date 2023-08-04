@@ -58,4 +58,10 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMeta(member, lectureId));
     }
 
+    @Operation(summary = "진도 리스트 전체 반환")
+    @GetMapping("/progress/{lecture_id}")
+    ApplicationResponse<Void> getAllProgress(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
 }

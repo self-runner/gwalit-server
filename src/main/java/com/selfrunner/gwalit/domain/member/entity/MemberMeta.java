@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -7,9 +8,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MemberMeta {
 
-    private Long memberId;
+    private final Long memberId;
 
-    private String name;
+    private final String name;
 
-    private Boolean isTeacher;
+    private final Boolean isTeacher;
 }

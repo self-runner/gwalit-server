@@ -12,11 +12,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LessonMetaRes {
 
-    private Long lessonId;
+    private final Long lessonId;
 
-    private LocalDate date;
+    private final LocalDate date;
 
-    private Schedule time;
+    private final Schedule time;
 
-    private List<MemberMeta> memberMetas;
+    private final List<MemberMeta> memberMetas;
 }
