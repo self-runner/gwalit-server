@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lecture.controller;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.service.LectureService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -54,7 +55,13 @@ public class LectureController {
 
     @Operation(summary = "메인 페이지용 사용자별 Class 메타 데이터 모두 반환")
     @GetMapping("/main")
-    public ApplicationResponse<List<GetLectureMainRes>> getAllMeta(@Auth Member member) {
+    public ApplicationResponse<List<GetLectureMainRes>> getAllMain(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMain(member));
+    }
+
+    @Operation(summary = "일정 페이지용 사용자별 Class 메타 데이터 모두 반환")
+    @GetMapping("/calendar")
+    public ApplicationResponse<List<GetLectureMetaRes>> getAllMeta(@Auth Member member) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMeta(member));
     }
 }

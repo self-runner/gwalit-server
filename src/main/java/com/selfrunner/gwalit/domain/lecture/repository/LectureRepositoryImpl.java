@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lecture.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,15 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                         .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
 
+    }
+
+    @Override
+    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member m) {
+        return Optional.ofNullable(queryFactory.selectFrom(lecture)
+                .innerJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
+                .where(memberAndLecture.member.eq(m))
+                .transform(groupBy(lecture.lectureId)
+                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.schedules))));
     }
 
 }
