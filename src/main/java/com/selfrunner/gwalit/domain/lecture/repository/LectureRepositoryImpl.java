@@ -25,17 +25,23 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member m) {
-        /*
-        TODO: No constructor found for class com.selfrunner.gwalit.domain.member.entity.MemberMeta with parameters: [class java.lang.Long, class java.lang.String] 오류 해결 필요
-         */
-        return Optional.ofNullable(queryFactory.selectFrom(memberAndLecture)
-                .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .leftJoin(lecture).on(lecture.eq(memberAndLecture.lecture))
+    public Optional<List<Long>> findAllLectureIdByMember(Member m) {
+        return Optional.ofNullable(queryFactory.select(memberAndLecture.lecture.lectureId)
+                .from(memberAndLecture)
                 .where(memberAndLecture.member.eq(m))
+                .fetch()
+        );
+    }
+
+    @Override
+    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList) {
+        return Optional.ofNullable(queryFactory.selectFrom(lecture)
+                .innerJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
+                .innerJoin(member).on(member.eq(memberAndLecture.member))
+                .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
                 .transform(groupBy(memberAndLecture.lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMetaRes.class, memberAndLecture.lecture.lectureId, memberAndLecture.lecture.name, memberAndLecture.lecture.color,
-                                list(Projections.constructor(MemberMeta.class, memberAndLecture.member.memberId, memberAndLecture.member.name))))));
+                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color,
+                                list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
 
     }
 

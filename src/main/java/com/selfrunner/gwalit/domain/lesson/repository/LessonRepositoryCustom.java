@@ -6,6 +6,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface LessonRepositoryCustom {
-
-    public Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId);
+    Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId);
 }

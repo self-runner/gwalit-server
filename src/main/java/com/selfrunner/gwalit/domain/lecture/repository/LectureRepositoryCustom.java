@@ -8,5 +8,6 @@ import java.util.Optional;
 
 public interface LectureRepositoryCustom {
 
-    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member member);
+    Optional<List<Long>> findAllLectureIdByMember(Member member);
+    Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList);
 }

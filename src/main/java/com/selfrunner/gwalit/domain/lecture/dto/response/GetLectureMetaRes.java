@@ -10,11 +10,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetLectureMetaRes {
 
-    private Long lectureId;
+    private final Long lectureId;
 
-    private String name;
+    private final String name;
 
-    private String color;
+    private final String color;
 
-    private List<MemberMeta> memberMetas;
+    private final List<MemberMeta> memberMetas;
 }

@@ -87,7 +87,9 @@ public class LectureService {
         // Validation
 
         // Business Logic: member가 해당하는 Class들 조회 -> Class 기본 정보들 다 불러오고, 학생들 정보 역으로 참조해야 함.
-        List<GetLectureMetaRes> getLectureMetaResList = lectureRepository.findAllLectureMetaByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        List<GetLectureMetaRes> getLectureMetaResList = lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
         return getLectureMetaResList;

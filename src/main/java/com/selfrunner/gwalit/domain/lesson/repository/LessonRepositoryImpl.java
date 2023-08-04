@@ -27,9 +27,9 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
-                        .leftJoin(lecture).on(lesson.lecture.eq(lecture)).fetchJoin()
-                        .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture)).fetchJoin()
-                        .leftJoin(member).on(member.eq(memberAndLecture.member)).fetchJoin()
+                        .innerJoin(lecture).on(lesson.lecture.eq(lecture))
+                        .innerJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
+                        .innerJoin(member).on(member.eq(memberAndLecture.member))
                         .where(lesson.lecture.lectureId.eq(lectureId))
                         .transform(groupBy(lesson).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.date, lesson.time,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
