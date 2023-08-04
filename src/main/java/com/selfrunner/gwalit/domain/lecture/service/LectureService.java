@@ -3,6 +3,8 @@ package com.selfrunner.gwalit.domain.lecture.service;
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
@@ -15,6 +17,9 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -78,5 +83,27 @@ public class LectureService {
 
         // Response
         return null;
+    }
+
+    public List<GetLectureMainRes> getAllMain(Member member) {
+        // Validation
+
+        // Business Logic: member가 해당하는 Class들 조회 -> Class 기본 정보들 다 불러오고, 학생들 정보 역으로 참조해야 함.
+        List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        List<GetLectureMainRes> getLectureMainResList = lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Response
+        return getLectureMainResList;
+    }
+
+    public List<GetLectureMetaRes> getAllMeta(Member member) {
+        // Validation
+
+        // Business Logic
+        List<GetLectureMetaRes> getLectureMetaRes = lectureRepository.findAllLectureMetaByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Response
+        return getLectureMetaRes;
     }
 }
