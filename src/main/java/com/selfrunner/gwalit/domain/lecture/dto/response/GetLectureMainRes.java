@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
-public class GetLectureMetaRes {
+public class GetLectureMainRes {
 
     private final Long lectureId;
 

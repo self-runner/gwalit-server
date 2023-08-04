@@ -2,7 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
@@ -33,13 +33,13 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     }
 
     @Override
-    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList) {
+    public Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(List<Long> lectureIdList) {
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .innerJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
                 .innerJoin(member).on(member.eq(memberAndLecture.member))
                 .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
                 .transform(groupBy(memberAndLecture.lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color,
+                        .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
 
     }
