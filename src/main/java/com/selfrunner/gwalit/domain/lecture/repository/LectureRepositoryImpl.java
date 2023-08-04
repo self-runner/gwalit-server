@@ -1,6 +1,5 @@
 package com.selfrunner.gwalit.domain.lecture.repository;
 
-import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
