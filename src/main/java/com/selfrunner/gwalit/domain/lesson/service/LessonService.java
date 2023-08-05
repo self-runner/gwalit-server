@@ -78,6 +78,15 @@ public class LessonService {
 
         // Business Logic
         lesson.update(putLessonReq);
+        homeworkRepository.deleteHomeworkByLessonId(lessonId);
+        List<Homework> homeworkList = new ArrayList<>();
+        for (Participant participant : putLessonReq.getParticipants()) {
+            List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
+                    .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
+                    .collect(Collectors.toList());
+            homeworkList.addAll(tempHomeworkList);
+        }
+        homeworkRepository.saveAll(homeworkList);
 
         // Response
         return null;
