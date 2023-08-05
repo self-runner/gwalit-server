@@ -63,7 +63,7 @@ public class Lesson extends BaseTimeEntity {
     }
 
     @Builder
-    public Lesson(Lecture lecture, String type, List<Participant> participants, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {
+    public Lesson(Lecture lecture, String type, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {
         this.lecture = lecture;
         this.type = LessonType.valueOf(type);
         this.feedback = feedback;
