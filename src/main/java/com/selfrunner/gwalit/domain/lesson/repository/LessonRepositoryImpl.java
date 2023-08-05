@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
+import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -34,7 +35,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 queryFactory.selectFrom(lesson)
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.eq(lectureId))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.time, lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants)))
         );
     }
 
@@ -47,7 +48,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 queryFactory.selectFrom(lesson)
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.in(lectureIdList), yearDateFormat.eq(year), monthDateFormat.eq(month))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.time, lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants)))
         );
     }
 
@@ -55,7 +56,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public Optional<List<LessonProgressRes>> findAllProgressByLectureId(Long lectureId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
-                        .where(lesson.lecture.lectureId.eq(lectureId))
+                        .where(lesson.lecture.lectureId.eq(lectureId), lesson.type.ne(LessonType.Deleted))
                         .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.progresses)))
         );
     }

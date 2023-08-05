@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.dto.response;
 
+import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -16,6 +17,8 @@ public class LessonMetaRes {
     private final Long lessonId;
 
     private final Long lectureId;
+
+    private final LessonType type;
 
     private final LocalDate date;
 
