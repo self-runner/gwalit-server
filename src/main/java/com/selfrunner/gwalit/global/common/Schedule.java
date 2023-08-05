@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 @RequiredArgsConstructor
 public class Schedule {
 
-    private String day;
+    private String weekday;
 
     private String startTime;
 
