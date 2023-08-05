@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.controller;
 
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
@@ -47,10 +48,11 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
-    @Operation(summary = "수업 리포트 반환")
-    @GetMapping("/{lesson_id}")
-    public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
+    @Operation(summary = "기존 수업 리포트들 모두 삭제")
+    @PutMapping("/deleted/{lecture_id}")
+    public ApplicationResponse<Void> deleteAll(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PutLessonIdReq> putLessonIdReqList) {
+        lessonService.deleteAll(member, lectureId, putLessonIdReqList);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "수업 리포트 삭제")
@@ -58,6 +60,12 @@ public class LessonController {
     public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
         lessonService.delete(member, lessonId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "수업 리포트 반환")
+    @GetMapping("/{lesson_id}")
+    public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
     }
 
     @Operation(summary = "수업 리포트 전체 반환 (진도 정보 제외)")

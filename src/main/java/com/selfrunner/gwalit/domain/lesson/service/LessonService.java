@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
@@ -82,16 +83,20 @@ public class LessonService {
         return null;
     }
 
-    public LessonRes get(Member member, Long lessonId) {
+    @Transactional
+    public Void deleteAll(Member member, Long lectureId, List<PutLessonIdReq> putLessonIdReqList) {
         // Validation
-        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        LessonRes lessonRes = new LessonRes().toDto(lesson);
+        List<Long> lessonIdList = putLessonIdReqList.stream()
+                .map(putLessonIdReq -> putLessonIdReq.getLessonId())
+                .collect(Collectors.toList());
+        List<Lesson> lessonList = lessonRepository.findAllById(lessonIdList);
+        lessonRepository.deleteAll(lessonList);
 
         // Response
-        return lessonRes;
+        return null;
     }
 
     @Transactional
@@ -105,6 +110,18 @@ public class LessonService {
 
         // Response
         return null;
+    }
+
+    public LessonRes get(Member member, Long lessonId) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        LessonRes lessonRes = new LessonRes().toDto(lesson);
+
+        // Response
+        return lessonRes;
     }
 
     public List<LessonMetaRes> getAllLessonMeta(Member member, Long lectureId) {
