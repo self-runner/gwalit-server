@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
@@ -98,5 +99,16 @@ public class LessonService {
 
         // Response
         return lessonMetaRes;
+    }
+
+    public List<LessonProgressRes> getAllProgress(Member member, Long lectureId) {
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        List<LessonProgressRes> lessonProgressRes = lessonRepository.findAllProgressByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Response
+        return lessonProgressRes;
     }
 }

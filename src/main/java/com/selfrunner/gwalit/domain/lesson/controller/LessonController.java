@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lesson.controller;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.service.LessonService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -58,16 +59,15 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMeta(member, lectureId));
     }
 
-    @Operation(summary = "진도 리스트 전체 반환")
-    @GetMapping("/progress/{lecture_id}")
-    public ApplicationResponse<Void> getAllProgress(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
-    }
-
     @Operation(summary = "월별 수업 정보 반환")
     @GetMapping("/calendar/{year}/{month}")
     public ApplicationResponse<List<LessonMetaRes>> getAllLessonMetaByYearMonth(@Auth Member member, @PathVariable("year") String year, @PathVariable("month") String month) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMetaByYearMonth(member, year, month));
     }
 
+    @Operation(summary = "진도 리스트 전체 반환")
+    @GetMapping("/progress/{lecture_id}")
+    public ApplicationResponse<List<LessonProgressRes>> getAllProgress(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllProgress(member, lectureId));
+    }
 }
