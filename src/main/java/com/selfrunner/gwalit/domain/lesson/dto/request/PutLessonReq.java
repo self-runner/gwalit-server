@@ -21,7 +21,6 @@ public class PutLessonReq {
     @Pattern(regexp = "(Regular|Makeup|Deleted)", message = "올바르지 않은 수업 유형입니다.")
     private String type;
 
-    @NotNull(message = "선택된 참여자가 없습니다.")
     private List<Participant> participants;
 
     private String feedback;

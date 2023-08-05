@@ -20,14 +20,13 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostLessonReq {
 
-    @NotEmpty(message = "연결된 Class가 없습니다.")
-    private String lectureId;
+    @NotNull(message = "연결된 Class가 없습니다.")
+    private Long lectureId;
 
     @NotNull(message = "수업 유형이 선택되지 않았습니다.")
     @Pattern(regexp = "(Regular|Makeup|Deleted)", message = "올바르지 않은 수업 유형입니다.")
     private String type;
 
-    @NotNull(message = "선택된 참여자 없습니다.")
     private List<Participant> participants;
 
     private String feedback;
@@ -44,12 +43,26 @@ public class PostLessonReq {
     public Lesson toEntity(Lecture lecture) {
         Lesson lesson = Lesson.builder()
                 .lecture(lecture)
-                .type(this.type)
-                .participants(this.participants)
-                .feedback(this.feedback)
-                .progresses(this.progresses)
-                .date(this.date)
-                .time(this.time)
+                .type(this.getType())
+                .participants(this.getParticipants())
+                .feedback(this.getFeedback())
+                .progresses(this.getProgresses())
+                .date(this.getDate())
+                .time(this.getTime())
+                .build();
+
+        return lesson;
+    }
+
+    public static Lesson staticToEntity(PostLessonReq postLessonReq, Lecture lecture) {
+        Lesson lesson = Lesson.builder()
+                .lecture(lecture)
+                .type(postLessonReq.getType())
+                .participants(postLessonReq.getParticipants())
+                .feedback(postLessonReq.getFeedback())
+                .progresses(postLessonReq.getProgresses())
+                .date(postLessonReq.getDate())
+                .time(postLessonReq.getTime())
                 .build();
 
         return lesson;

@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
+import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
@@ -7,6 +9,7 @@ import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
@@ -17,7 +20,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -31,11 +36,34 @@ public class LessonService {
     @Transactional
     public Void register(Member member, PostLessonReq postLessonReq) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(postLessonReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
+        List<Homework> homeworkList = new ArrayList<>();
+        for (Participant participant : postLessonReq.getParticipants()) {
+            List<Homework> tempHomeworkList = postLessonReq.getHomeworks().stream()
+                    .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
+                    .collect(Collectors.toList());
+            homeworkList.addAll(tempHomeworkList);
+        }
+        homeworkRepository.saveAll(homeworkList);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
+        // Validation
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
+        List<Lesson> lessonList = postLessonReqList.stream()
+                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
+                .collect(Collectors.toList());
+        lessonRepository.saveAll(lessonList);
 
         // Response
         return null;
@@ -45,7 +73,7 @@ public class LessonService {
     public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         lesson.update(putLessonReq);
@@ -57,7 +85,7 @@ public class LessonService {
     public LessonRes get(Member member, Long lessonId) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         LessonRes lessonRes = new LessonRes().toDto(lesson);
@@ -70,7 +98,7 @@ public class LessonService {
     public Void delete(Member member, Long lessonId) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(lesson.getLecture().getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         lessonRepository.delete(lesson);

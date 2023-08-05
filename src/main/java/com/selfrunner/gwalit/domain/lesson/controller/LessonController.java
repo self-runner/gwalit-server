@@ -33,6 +33,13 @@ public class LessonController {
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
+    @Operation(summary = "수업 리포트 생성")
+    @PostMapping("/deleted/{lecture_id}")
+    public ApplicationResponse<Void> registerAllDeletedLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostLessonReq> postLessonReqList) {
+        lessonService.registerAllDeletedLesson(member, lectureId, postLessonReqList);
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    }
+
     @Operation(summary = "수업 리포트 수정")
     @PutMapping("/{lesson_id}")
     public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
