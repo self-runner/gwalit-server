@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
+import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
@@ -24,6 +25,7 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final HomeworkRepository homeworkRepository;
 
     @Transactional
     public Void register(Member member, PostLessonReq postLessonReq) {
@@ -76,12 +78,23 @@ public class LessonService {
         return null;
     }
 
-    public List<LessonMetaRes>getAllLessonMeta(Member member, Long lectureId) {
+    public List<LessonMetaRes> getAllLessonMeta(Member member, Long lectureId) {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+
+        // Response
+        return lessonMetaRes;
+    }
+
+    public List<LessonMetaRes> getAllLessonMetaByYearMonth(Member member, String year, String month) {
+        // Validation
+
+        // Business Logic
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
         return lessonMetaRes;

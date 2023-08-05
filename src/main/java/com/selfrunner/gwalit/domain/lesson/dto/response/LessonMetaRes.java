@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.dto.response;
 
+import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
@@ -14,9 +15,11 @@ public class LessonMetaRes {
 
     private final Long lessonId;
 
+    private final Long lectureId;
+
     private final LocalDate date;
 
     private final Schedule time;
 
-    private final List<MemberMeta> memberMetas;
+    private final List<Participant> participants;
 }

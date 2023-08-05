@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface LessonRepositoryCustom {
     Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId);
+
+    Optional<List<LessonMetaRes>> findAllLessonMetaByYearMonth(List<Long> lectureIdList, String year, String month);
 }

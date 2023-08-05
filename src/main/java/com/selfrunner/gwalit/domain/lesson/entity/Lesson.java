@@ -40,6 +40,10 @@ public class Lesson extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private LessonType type;
 
+    @Type(type = "json")
+    @Column(name = "participants", columnDefinition = "json")
+    private List<Participant> participants;
+
     @Column(name = "feedback")
     private String feedback;
 
@@ -56,6 +60,7 @@ public class Lesson extends BaseTimeEntity {
 
     public void update(PutLessonReq putLessonReq) {
         this.type = LessonType.valueOf(putLessonReq.getType());
+        this.participants = putLessonReq.getParticipants();
         this.feedback = putLessonReq.getFeedback();
         this.progresses = putLessonReq.getProgresses();
         this.date = putLessonReq.getDate();
@@ -63,9 +68,10 @@ public class Lesson extends BaseTimeEntity {
     }
 
     @Builder
-    public Lesson(Lecture lecture, String type, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {
+    public Lesson(Lecture lecture, String type, List<Participant> participants, String feedback, List<Progress> progresses, LocalDate date, Schedule time) {
         this.lecture = lecture;
         this.type = LessonType.valueOf(type);
+        this.participants = participants;
         this.feedback = feedback;
         this.progresses = progresses;
         this.date = date;

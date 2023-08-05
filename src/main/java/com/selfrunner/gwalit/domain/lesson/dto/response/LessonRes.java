@@ -2,25 +2,27 @@ package com.selfrunner.gwalit.domain.lesson.dto.response;
 
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
+import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.entity.Progress;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import javax.servlet.http.Part;
 import java.util.List;
 
 @Getter
 @RequiredArgsConstructor
 public class LessonRes {
 
-    private String lessonId;
+    private Long lessonId;
 
-    private String lecturId;
+    private Long lectureId;
 
     private LessonType type;
 
-    private List<MemberMeta> memberMetas;
+    private List<Participant> participants;
 
     private String feedback;
 
@@ -30,12 +32,12 @@ public class LessonRes {
 
     private Schedule time;
 
-    public LessonRes toDto(Lesson lesson, List<MemberMeta> memberMetas) {
+    public LessonRes toDto(Lesson lesson) {
         LessonRes lessonRes = new LessonRes();
-        lessonRes.lessonId = lesson.getLessonId().toString();
-        lessonRes.lecturId = lesson.getLecture().getLectureId().toString();
+        lessonRes.lessonId = lesson.getLessonId();
+        lessonRes.lectureId = lesson.getLecture().getLectureId();
         lessonRes.type = lesson.getType();
-        lessonRes.memberMetas = memberMetas;
+        lessonRes.participants = lesson.getParticipants();
         lessonRes.feedback = lesson.getFeedback();
         lessonRes.progresses = lesson.getProgresses();
         lessonRes.date = lesson.getDate().toString();
