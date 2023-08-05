@@ -1,10 +1,10 @@
 package com.selfrunner.gwalit.domain.lesson.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.Progress;
-import com.selfrunner.gwalit.domain.lesson.entity.Student;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,14 @@ public class PostLessonReq {
     @Pattern(regexp = "(Regular|Makeup|Deleted)", message = "올바르지 않은 수업 유형입니다.")
     private String type;
 
-    @NotNull(message = "선택된 학생이 없습니다.")
-    private List<Student> students;
+    @NotNull(message = "선택된 참여자 없습니다.")
+    private List<Long> participants;
 
     private String feedback;
 
     private List<Progress> progresses;
+
+    private List<HomeworkReq> homeworks;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate date;
@@ -42,7 +44,6 @@ public class PostLessonReq {
         Lesson lesson = Lesson.builder()
                 .lecture(lecture)
                 .type(this.type)
-                .students(this.students)
                 .feedback(this.feedback)
                 .progresses(this.progresses)
                 .date(this.date)
