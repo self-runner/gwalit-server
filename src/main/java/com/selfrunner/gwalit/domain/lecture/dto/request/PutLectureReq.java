@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -18,8 +19,10 @@ public class PutLectureReq {
     @NotEmpty(message = "Class 색상이 미정입니다.")
     private String color;
 
-    @NotEmpty(message = "기간이 설정되지 않았습니다.")
-    private String month;
+    @NotEmpty(message = "시작일자가 설정되지 않았습니다.")
+    private LocalDate startDate;
+
+    private LocalDate endDate;
 
     private List<Rule> rules;
 
