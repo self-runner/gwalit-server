@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
@@ -127,7 +128,9 @@ public class LessonService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        LessonRes lessonRes = new LessonRes().toDto(lesson);
+        List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
+
+        LessonRes lessonRes = new LessonRes().toDto(lesson, homeworkRes);
 
         // Response
         return lessonRes;

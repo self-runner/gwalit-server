@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.dto.response;
 
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
@@ -28,11 +29,13 @@ public class LessonRes {
 
     private List<Progress> progresses;
 
+    private List<HomeworkRes> homeworks;
+
     private String date;
 
     private Schedule time;
 
-    public LessonRes toDto(Lesson lesson) {
+    public LessonRes toDto(Lesson lesson, List<HomeworkRes> homeworks) {
         LessonRes lessonRes = new LessonRes();
         lessonRes.lessonId = lesson.getLessonId();
         lessonRes.lectureId = lesson.getLecture().getLectureId();
@@ -40,6 +43,7 @@ public class LessonRes {
         lessonRes.participants = lesson.getParticipants();
         lessonRes.feedback = lesson.getFeedback();
         lessonRes.progresses = lesson.getProgresses();
+        lessonRes.homeworks = homeworks;
         lessonRes.date = lesson.getDate().toString();
         lessonRes.time = lesson.getTime();
 
