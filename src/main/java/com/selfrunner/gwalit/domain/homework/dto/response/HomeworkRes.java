@@ -10,22 +10,22 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class HomeworkRes {
 
-    private String homeworkId;
+    private final Long homeworkId;
 
-    private String lessonId;
+    private final Long lessonId;
 
-    private String memberId;
+    private final Long memberId;
 
-    private String body;
+    private final String body;
 
-    private LocalDate deadline;
+    private final LocalDate deadline;
 
-    private Boolean isFinish;
+    private final Boolean isFinish;
 
     public HomeworkRes(Homework homework) {
-        this.homeworkId = homework.getHomeworkId().toString();
-        this.lessonId = (homework.getLessonId() == null) ? null : homework.getLessonId().toString();
-        this.memberId = homework.getMemberId().toString();
+        this.homeworkId = homework.getHomeworkId();
+        this.lessonId = (homework.getLessonId() == null) ? null : homework.getLessonId();
+        this.memberId = homework.getMemberId();
         this.body = homework.getBody();
         this.deadline = homework.getDeadline();
         this.isFinish = homework.getIsFinish();

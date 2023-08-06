@@ -14,6 +14,8 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -36,8 +38,11 @@ public class Lecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
-    @Column(name = "month")
-    private Integer month;
+    @Column(name = "startDate")
+    private LocalDate startDate;
+
+    @Column(name = "endDate")
+    private LocalDate endDate;
 
     @Type(type = "json")
     @Column(name = "rules", columnDefinition = "json")
@@ -50,16 +55,18 @@ public class Lecture extends BaseTimeEntity {
     public void update(PutLectureReq putLectureReq) {
         this.name = putLectureReq.getName();
         this.color = putLectureReq.getColor();
-        this.month = Integer.valueOf(putLectureReq.getMonth());
+        this.startDate = putLectureReq.getStartDate();
+        this.endDate = putLectureReq.getEndDate();
         this.rules = putLectureReq.getRules();
         this.schedules = putLectureReq.getSchedules();
     }
 
     @Builder
-    public Lecture(String name, String color, Integer month, List<Rule> rules, List<Schedule> schedules) {
+    public Lecture(String name, String color, LocalDate startDate, LocalDate endDate, List<Rule> rules, List<Schedule> schedules) {
         this.name = name;
         this.color = color;
-        this.month = month;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.rules = rules;
         this.schedules = schedules;
     }

@@ -51,7 +51,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                 .innerJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
                 .where(memberAndLecture.member.eq(m))
                 .transform(groupBy(lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.schedules))));
+                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules))));
     }
 
 }

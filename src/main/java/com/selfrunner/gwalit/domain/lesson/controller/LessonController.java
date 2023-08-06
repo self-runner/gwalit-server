@@ -1,8 +1,10 @@
 package com.selfrunner.gwalit.domain.lesson.controller;
 
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.service.LessonService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -32,6 +34,13 @@ public class LessonController {
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
+    @Operation(summary = "수업 리포트 생성")
+    @PostMapping("/deleted/{lecture_id}")
+    public ApplicationResponse<Void> registerAllDeletedLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostLessonReq> postLessonReqList) {
+        lessonService.registerAllDeletedLesson(member, lectureId, postLessonReqList);
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    }
+
     @Operation(summary = "수업 리포트 수정")
     @PutMapping("/{lesson_id}")
     public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
@@ -39,10 +48,11 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
-    @Operation(summary = "수업 리포트 반환")
-    @GetMapping("/{lesson_id}")
-    public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
+    @Operation(summary = "기존 수업 리포트들 모두 삭제")
+    @PutMapping("/deleted/{lecture_id}")
+    public ApplicationResponse<Void> deleteAll(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PutLessonIdReq> putLessonIdReqList) {
+        lessonService.deleteAll(member, lectureId, putLessonIdReqList);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "수업 리포트 삭제")
@@ -52,16 +62,27 @@ public class LessonController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
+    @Operation(summary = "수업 리포트 반환")
+    @GetMapping("/{lesson_id}")
+    public ApplicationResponse<LessonRes> get(@Auth Member member, @PathVariable("lesson_id") Long lessonId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.get(member, lessonId));
+    }
+
     @Operation(summary = "수업 리포트 전체 반환 (진도 정보 제외)")
     @GetMapping("/list/{lecture_id}")
     public ApplicationResponse<List<LessonMetaRes>> getAllLessonMeta(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMeta(member, lectureId));
     }
 
-    @Operation(summary = "진도 리스트 전체 반환")
-    @GetMapping("/progress/{lecture_id}")
-    ApplicationResponse<Void> getAllProgress(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    @Operation(summary = "월별 수업 정보 반환")
+    @GetMapping("/calendar/{year}/{month}")
+    public ApplicationResponse<List<LessonMetaRes>> getAllLessonMetaByYearMonth(@Auth Member member, @PathVariable("year") String year, @PathVariable("month") String month) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllLessonMetaByYearMonth(member, year, month));
     }
 
+    @Operation(summary = "진도 리스트 전체 반환")
+    @GetMapping("/progress/{lecture_id}")
+    public ApplicationResponse<List<LessonProgressRes>> getAllProgress(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.getAllProgress(member, lectureId));
+    }
 }

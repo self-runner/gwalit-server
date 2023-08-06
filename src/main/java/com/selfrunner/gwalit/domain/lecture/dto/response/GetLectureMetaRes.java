@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -16,6 +17,10 @@ public class GetLectureMetaRes {
     private final String name;
 
     private final String color;
+
+    private final LocalDate startDate;
+
+    private final LocalDate endDate;
 
     private final List<Schedule> schedules;
 }
