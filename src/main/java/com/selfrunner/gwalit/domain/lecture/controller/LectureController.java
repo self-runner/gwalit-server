@@ -64,4 +64,11 @@ public class LectureController {
     public ApplicationResponse<List<GetLectureMetaRes>> getAllMeta(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMeta(member));
     }
+
+    @Operation(summary = "학생 초대하기")
+    @PostMapping("/invite")
+    public ApplicationResponse<Void> inviteStudent(@Auth Member member) {
+        lectureService.inviteStudent(member);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 }

@@ -14,6 +14,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final SmsClient smsClient;
 
     @Transactional
     public Void register(Member member, PostLectureReq postLectureReq) {
@@ -105,5 +107,18 @@ public class LectureService {
 
         // Response
         return getLectureMetaRes;
+    }
+
+    @Transactional
+    public Void inviteStudent(Member member) {
+        // Validation
+        if (member.getType() != MemberType.TEACHER) {
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
+
+        // Business Logic
+
+        // Response
+        return null;
     }
 }
