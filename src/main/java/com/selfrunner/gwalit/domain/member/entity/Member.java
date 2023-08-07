@@ -30,6 +30,10 @@ public class Member extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private MemberType type;
 
+    @Column(name = "state")
+    @Enumerated(EnumType.STRING)
+    private MemberState state;
+
     @Column(name = "phone")
     private String phone;
     @Column(name = "password")
