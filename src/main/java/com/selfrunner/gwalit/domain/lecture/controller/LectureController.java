@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lecture.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
@@ -75,9 +76,16 @@ public class LectureController {
     TODO: 중간 심의 이후 적용 예정
      */
 //    @Operation(summary = "학생 초대하기")
-//    @PostMapping("/invite")
+//    @PostMapping("/student/invite")
 //    public ApplicationResponse<Void> inviteStudent(@Auth Member member, @Valid @RequestBody PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
 //        lectureService.inviteStudent(member, postInviteReq);
 //        return ApplicationResponse.ok(ErrorCode.SUCCESS);
 //    }
+
+    @Operation(summary = "학생 가계정 생성")
+    @PostMapping("/student/register/{lecture_id}")
+    public ApplicationResponse<Void> registerStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PostStudentReq postStudentReq) {
+        lectureService.registerStudent(member, lectureId, postStudentReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 }

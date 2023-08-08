@@ -4,6 +4,7 @@ package com.selfrunner.gwalit.domain.lecture.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
@@ -139,4 +140,25 @@ public class LectureService {
 //        // Response
 //        return null;
 //    }
+
+    @Transactional
+    public Void registerStudent(Member member, Long lectureId, PostStudentReq postStudentReq) {
+        // Validation
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        /*
+        TODO: java.lang.NullPointerException: Name is null 해결
+         */
+        Member student = postStudentReq.toEntity();
+        memberRepository.save(student);
+        MemberAndLecture studentAndLecture = MemberAndLecture.builder()
+                .member(student)
+                .lecture(memberAndLecture.getLecture())
+                .build();
+        memberAndLectureRepository.save(studentAndLecture);
+
+        // Response
+        return null;
+    }
 }
