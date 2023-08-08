@@ -50,7 +50,7 @@ public class LectureController {
 
     @Operation(summary = "특정 Class 정보 반환")
     @GetMapping("/{lecture_id}")
-    public ApplicationResponse<GetLectureRes> get(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+    public ApplicationResponse<GetLectureMetaRes> get(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.get(member, lectureId));
     }
 

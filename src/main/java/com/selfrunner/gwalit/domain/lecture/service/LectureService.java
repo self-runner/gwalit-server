@@ -73,15 +73,19 @@ public class LectureService {
         return null;
     }
 
-    public GetLectureRes get(Member member, Long lectureId) {
+    public GetLectureMetaRes get(Member member, Long lectureId) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture());
+        // GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture());
+        /*
+        TODO: org.springframework.dao.InvalidDataAccessApiUsageException: argument type mismatch; nested exception is java.lang.IllegalArgumentException: argument type mismatch
+         */
+        GetLectureMetaRes getLectureMetaRes = lectureRepository.findLectureMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return getLectureRes;
+        return getLectureMetaRes;
     }
 
     @Transactional

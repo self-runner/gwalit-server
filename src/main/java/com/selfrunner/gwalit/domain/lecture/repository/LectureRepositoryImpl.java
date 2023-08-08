@@ -56,4 +56,16 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
     }
 
+    @Override
+    public Optional<GetLectureMetaRes> findLectureMetaByLectureId(Long lectureId) {
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
+                        list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))
+                .from(lecture)
+                .innerJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
+                .innerJoin(member).on(member.eq(memberAndLecture.member))
+                .where(lecture.lectureId.eq(lectureId))
+                .fetchOne()
+        );
+    }
+
 }

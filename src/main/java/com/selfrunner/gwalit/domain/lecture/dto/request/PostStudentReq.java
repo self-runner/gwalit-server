@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.dto.request;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberState;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,7 @@ public class PostStudentReq {
     public Member toEntity() {
         Member member = Member.builder()
                 .name(this.name)
-                .type("STUDENT")
+                .type(MemberType.STUDENT.toString())
                 .state(MemberState.FAKE)
                 .phone(this.phone)
                 .isAdvertisement(Boolean.FALSE)
