@@ -28,7 +28,6 @@ public class PostLectureReq {
 
     private List<Rule> rules;
 
-    @NotEmpty(message = "수업 일정이 지정되지 않았습니다.")
     private List<Schedule> schedules;
 
     public Lecture toEntity() {
