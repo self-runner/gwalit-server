@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,4 +24,6 @@ public class GetLectureMetaRes {
     private final LocalDate endDate;
 
     private final List<Schedule> schedules;
+
+    private final List<MemberMeta> memberMetas;
 }

@@ -112,7 +112,8 @@ public class LectureService {
         // Validation
 
         // Business Logic
-        List<GetLectureMetaRes> getLectureMetaRes = lectureRepository.findAllLectureMetaByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<GetLectureMetaRes> getLectureMetaRes = lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
         return getLectureMetaRes;

@@ -46,12 +46,14 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     }
 
     @Override
-    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member m) {
+    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList) {
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .innerJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
-                .where(memberAndLecture.member.eq(m))
+                .innerJoin(member).on(member.eq(memberAndLecture.member))
+                .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
                 .transform(groupBy(lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules))));
+                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
+                                list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
     }
 
 }
