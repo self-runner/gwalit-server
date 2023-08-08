@@ -1,6 +1,8 @@
 package com.selfrunner.gwalit.domain.lecture.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
@@ -12,6 +14,7 @@ import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
@@ -19,6 +22,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +36,7 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final MemberRepository memberRepository;
     private final SmsClient smsClient;
 
     @Transactional
@@ -109,16 +117,26 @@ public class LectureService {
         return getLectureMetaRes;
     }
 
-    @Transactional
-    public Void inviteStudent(Member member) {
-        // Validation
-        if (member.getType() != MemberType.TEACHER) {
-            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
-        }
-
-        // Business Logic
-
-        // Response
-        return null;
-    }
+    /*
+    TODO: 중간 심의 이후 적용 예정
+     */
+//    @Transactional
+//    public Void inviteStudent(Member member, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+//        // Validation
+//        if (member.getType() != MemberType.TEACHER) {
+//            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+//        }
+//
+//        // Business Logic: MemberAndLecture 정보 저장 미 필요 (학생이 초대되었을 때는 연결될 필요 없지 않나..?)
+//        smsClient.sendInvitiation(member.getName(), postInviteReq);
+//        Member student = new Member();
+//        memberRepository.save(student);
+//        MemberAndLecture memberAndLecture = MemberAndLecture.builder()
+//                .member(member)
+//                .lecture()
+//                .build();
+//
+//        // Response
+//        return null;
+//    }
 }
