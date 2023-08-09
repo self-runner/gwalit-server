@@ -2,6 +2,8 @@ package com.selfrunner.gwalit.domain.lecture.dto.response;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Rule;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -13,27 +15,21 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GetLectureRes {
 
-    private Long lectureId;
+    private final Long lectureId;
 
-    private String name;
+    private final String name;
 
-    private String color;
+    private final String color;
 
-    private LocalDate startDate;
+    private final LocalDate startDate;
 
-    private LocalDate endDate;
+    private final LocalDate endDate;
 
-    private List<Rule> rules;
+    private final List<Rule> rules;
 
-    private List<Schedule> schedules;
+    private final List<Schedule> schedules;
 
-    public GetLectureRes(Lecture lecture) {
-        this.lectureId = lecture.getLectureId();
-        this.name = lecture.getName();
-        this.color = lecture.getColor();
-        this.startDate = lecture.getStartDate();
-        this.endDate = lecture.getEndDate();
-        this.rules = lecture.getRules();
-        this.schedules = lecture.getSchedules();
-    }
+    private final List<MemberMeta> memberMetas;
+
+    private final LessonMetaRes lessonMetaRes;
 }

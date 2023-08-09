@@ -1,7 +1,5 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
@@ -19,10 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 
@@ -70,6 +64,12 @@ public class LectureController {
     @GetMapping("/calendar")
     public ApplicationResponse<List<GetLectureMetaRes>> getAllMeta(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMeta(member));
+    }
+
+    @Operation(summary = "Class 메인페이지용 Class 및 Lesson 정보 반환")
+    @GetMapping("/class/{lecture_id}")
+    public ApplicationResponse<GetLectureRes> getLectureAndLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getLectureAndLesson(member, lectureId));
     }
 
     /*
