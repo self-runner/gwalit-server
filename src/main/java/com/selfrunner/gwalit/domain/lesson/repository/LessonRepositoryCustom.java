@@ -14,4 +14,6 @@ public interface LessonRepositoryCustom {
     Optional<List<LessonProgressRes>> findAllProgressByLectureId(Long lectureId);
 
     List<Long> findAllLessonIdByLectureId(Long lectureId);
+
+    LessonMetaRes findLessonMetaByLectureId(Long lectureId);
 }

@@ -11,6 +11,7 @@ import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,5 +68,14 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .innerJoin(lesson).on(lesson.lecture.lectureId.eq(lectureId)).fetchJoin()
                 .where(lesson.lecture.lectureId.eq(lectureId))
                 .fetch();
+    }
+
+    @Override
+    public LessonMetaRes findLessonMetaByLectureId(Long lectureId) {
+        return queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
+                .from(lesson)
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now()))
+                .orderBy(lesson.date.desc())
+                .fetchOne();
     }
 }

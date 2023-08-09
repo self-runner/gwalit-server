@@ -4,6 +4,8 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.Optional;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
+import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
@@ -55,16 +58,4 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                         .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
     }
-
-    @Override
-    public GetLectureMetaRes findLectureMetaByLectureId(Long id) {
-        return queryFactory.select(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
-                        list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))
-                .from(lecture)
-                .innerJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
-                .innerJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
-                .where(lecture.lectureId.eq(id))
-                .fetchOne();
-    }
-
 }
