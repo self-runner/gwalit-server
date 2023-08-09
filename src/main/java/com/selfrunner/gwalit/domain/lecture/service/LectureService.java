@@ -155,6 +155,9 @@ public class LectureService {
 
         // Business Logic
         /*
+        1. 가계정 생성
+        2. 가계정 등록
+        3. 학생 관리 정보 반환
         TODO: java.lang.NullPointerException: Name is null 해결
          */
         Member student = postStudentReq.toEntity();
