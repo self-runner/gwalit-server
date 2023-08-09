@@ -16,6 +16,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
@@ -38,7 +39,7 @@ public class LectureService {
     private final LectureRepository lectureRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final MemberRepository memberRepository;
-    private final SmsClient smsClient;
+    private final TaskRepository taskRepository;
 
     @Transactional
     public Void register(Member member, PostLectureReq postLectureReq) {
@@ -68,6 +69,7 @@ public class LectureService {
         // Business Logic
         memberAndLectureRepository.delete(memberAndLecture);
         lectureRepository.delete(memberAndLecture.getLecture());
+        taskRepository.deleteAllByLectureLectureId(lectureId);
 
         // Response
         return null;
