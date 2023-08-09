@@ -12,6 +12,7 @@ import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
@@ -78,11 +79,12 @@ public class LectureService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        // GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture());
         /*
-        TODO: org.springframework.dao.InvalidDataAccessApiUsageException: argument type mismatch; nested exception is java.lang.IllegalArgumentException: argument type mismatch
+        TODO: 쿼리 튜닝을 통한 성능향상 필요
          */
-        GetLectureMetaRes getLectureMetaRes = lectureRepository.findLectureMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS));
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
 
         // Response
         return getLectureMetaRes;
