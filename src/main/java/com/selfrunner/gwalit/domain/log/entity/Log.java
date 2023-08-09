@@ -24,6 +24,10 @@ public class Log {
     @Column(name = "memberId")
     private Long memberId;
 
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private LogType type;
+
     @Column(name = "endPoint", columnDefinition = "TEXT")
     private String endPoint;
 
@@ -31,8 +35,9 @@ public class Log {
     private Boolean isSuccess;
 
     @Builder
-    public Log(Long memberId, String endPoint, Boolean isSuccess) {
+    public Log(Long memberId, String type, String endPoint, Boolean isSuccess) {
         this.memberId = memberId;
+        this.type = LogType.valueOf(type);
         this.endPoint = endPoint;
         this.isSuccess = isSuccess;
     }

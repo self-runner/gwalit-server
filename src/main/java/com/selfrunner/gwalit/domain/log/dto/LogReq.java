@@ -10,6 +10,8 @@ public class LogReq {
 
     private Long memberId;
 
+    private String type;
+
     private String endPoint;
 
     private Boolean isSuccess;
@@ -17,6 +19,7 @@ public class LogReq {
     public Log toEntity() {
         Log log = Log.builder()
                 .memberId(this.memberId)
+                .type(this.type)
                 .endPoint(this.endPoint)
                 .isSuccess(this.isSuccess)
                 .build();
