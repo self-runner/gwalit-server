@@ -116,6 +116,7 @@ public class LessonService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
+        homeworkRepository.deleteAllByLessonId(lessonId);
         lessonRepository.delete(lesson);
 
         // Response

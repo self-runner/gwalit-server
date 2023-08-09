@@ -10,4 +10,6 @@ public interface HomeworkRepository extends JpaRepository<Homework, Long>, Homew
 
     // 특정 학생에 해당하는 모든 숙제 반환
     Optional<List<Homework>> findAllByMemberId(Long memberId);
+
+    void deleteAllByLessonId(Long lessonId);
 }
