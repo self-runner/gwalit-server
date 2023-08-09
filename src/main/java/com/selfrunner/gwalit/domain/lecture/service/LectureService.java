@@ -82,7 +82,7 @@ public class LectureService {
         /*
         TODO: org.springframework.dao.InvalidDataAccessApiUsageException: argument type mismatch; nested exception is java.lang.IllegalArgumentException: argument type mismatch
          */
-        GetLectureMetaRes getLectureMetaRes = lectureRepository.findLectureMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        GetLectureMetaRes getLectureMetaRes = lectureRepository.findLectureMetaByLectureId(lectureId);
 
         // Response
         return getLectureMetaRes;
