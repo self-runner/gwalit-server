@@ -1,6 +1,9 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
@@ -16,6 +19,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 
@@ -43,7 +50,7 @@ public class LectureController {
 
     @Operation(summary = "특정 Class 정보 반환")
     @GetMapping("/{lecture_id}")
-    public ApplicationResponse<GetLectureRes> get(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+    public ApplicationResponse<GetLectureMetaRes> get(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.get(member, lectureId));
     }
 
@@ -63,5 +70,22 @@ public class LectureController {
     @GetMapping("/calendar")
     public ApplicationResponse<List<GetLectureMetaRes>> getAllMeta(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMeta(member));
+    }
+
+    /*
+    TODO: 중간 심의 이후 적용 예정
+     */
+//    @Operation(summary = "학생 초대하기")
+//    @PostMapping("/student/invite")
+//    public ApplicationResponse<Void> inviteStudent(@Auth Member member, @Valid @RequestBody PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+//        lectureService.inviteStudent(member, postInviteReq);
+//        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+//    }
+
+    @Operation(summary = "학생 가계정 생성")
+    @PostMapping("/student/register/{lecture_id}")
+    public ApplicationResponse<Void> registerStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PostStudentReq postStudentReq) {
+        lectureService.registerStudent(member, lectureId, postStudentReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }

@@ -12,26 +12,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskRes {
 
-    private String taskId;
+    private final Long taskId;
 
-    private String lectureId;
+    private final Long lectureId;
 
-    private String title;
+    private final String color;
 
-    private LocalDate deadline;
+    private final String title;
 
-    private Boolean isPinned;
+    private final LocalDate deadline;
 
-    private List<Subtask> subtasks;
+    private final Boolean isPinned;
 
-    public TaskRes(Task task) {
-        this.taskId = task.getTaskId().toString();
-        this.lectureId = task.getLecture().getLectureId().toString();
-        this.title = task.getTitle();
-        this.deadline = task.getDeadline();
-        this.isPinned = task.getIsPinned();
-        this.subtasks = task.getSubtasks();
-    }
-
-
+    private final List<Subtask> subtasks;
 }

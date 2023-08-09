@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.member.dto.request;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -42,6 +43,7 @@ public class PostMemberReq {
         return Member.builder()
                 .name(this.name)
                 .type(this.type)
+                .state(MemberState.ACTIVE)
                 .phone(this.phone)
                 .password(this.password)
                 .school(this.school)

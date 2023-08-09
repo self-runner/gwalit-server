@@ -12,4 +12,6 @@ public interface LessonRepositoryCustom {
     Optional<List<LessonMetaRes>> findAllLessonMetaByYearMonth(List<Long> lectureIdList, String year, String month);
 
     Optional<List<LessonProgressRes>> findAllProgressByLectureId(Long lectureId);
+
+    List<Long> findAllLessonIdByLectureId(Long lectureId);
 }

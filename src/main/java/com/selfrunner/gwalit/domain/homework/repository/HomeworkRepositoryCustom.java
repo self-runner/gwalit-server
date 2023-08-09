@@ -10,4 +10,6 @@ public interface HomeworkRepositoryCustom {
     void deleteHomeworkByLessonId(Long lessonId);
 
     List<HomeworkRes> findAllByMemberIdAndLessonId(Long memberId, Long lessonId);
+
+    void deleteAllByLessonIdList(List<Long> lessonIdList);
 }
