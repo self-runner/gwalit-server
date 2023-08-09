@@ -2,7 +2,6 @@ package com.selfrunner.gwalit.domain.task.service;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.task.dto.request.PostTaskReq;
 import com.selfrunner.gwalit.domain.task.dto.request.PutTaskReq;
@@ -15,9 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -73,11 +70,7 @@ public class TaskService {
 //        }
 
         // Business Login: 유저가 속한 Class 조회 및 관련 할 일들을 찾아서 반환
-        List<Task> tasks = taskRepository.findAllByMemberId(member);
-        List<TaskRes> taskRes = tasks
-                .stream()
-                .map(TaskRes::new)
-                .collect(Collectors.toList());
+        List<TaskRes> taskRes = taskRepository.findAllByMemberId(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
         return taskRes;
@@ -91,11 +84,7 @@ public class TaskService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        List<Task> tasks = taskRepository.findTasksByLectureLectureIdOrderByDeadlineDesc(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<TaskRes> taskRes = tasks
-                .stream()
-                .map(TaskRes::new)
-                .collect(Collectors.toList());
+        List<TaskRes> taskRes = taskRepository.findTasksByLectureLectureIdOrderByDeadlineDesc(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
         return taskRes;

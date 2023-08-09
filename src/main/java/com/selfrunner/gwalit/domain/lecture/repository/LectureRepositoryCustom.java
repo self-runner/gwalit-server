@@ -12,5 +12,7 @@ public interface LectureRepositoryCustom {
     Optional<List<Long>> findAllLectureIdByMember(Member member);
     Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(List<Long> lectureIdList);
 
-    Optional<List<GetLectureMetaRes>> findAllLectureMetaByMember(Member member);
+    Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList);
+
+    Optional<GetLectureMetaRes> findLectureMetaByLectureId(Long lectureId);
 }

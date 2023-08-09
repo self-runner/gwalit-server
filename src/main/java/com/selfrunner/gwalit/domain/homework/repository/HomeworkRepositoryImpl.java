@@ -6,6 +6,7 @@ import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,5 +30,13 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return queryFactory.selectFrom(homework)
                         .where(homework.memberId.eq(memberId), homework.lessonId.eq(lessonId))
                         .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkRes.class, homework.homeworkId, homework.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)));
+    }
+
+    @Override
+    public void deleteAllByLessonIdList(List<Long> lessonIdList) {
+        queryFactory.update(homework)
+                .set(homework.deletedAt, LocalDateTime.now())
+                .where(homework.lessonId.in(lessonIdList))
+                .execute();
     }
 }

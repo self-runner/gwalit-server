@@ -8,7 +8,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -59,5 +58,14 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .where(lesson.lecture.lectureId.eq(lectureId), lesson.type.ne(LessonType.Deleted))
                         .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.progresses)))
         );
+    }
+
+    @Override
+    public List<Long> findAllLessonIdByLectureId(Long lectureId) {
+        return queryFactory.select(lesson.lessonId)
+                .from(lesson)
+                .innerJoin(lesson).on(lesson.lecture.lectureId.eq(lectureId)).fetchJoin()
+                .where(lesson.lecture.lectureId.eq(lectureId))
+                .fetch();
     }
 }
