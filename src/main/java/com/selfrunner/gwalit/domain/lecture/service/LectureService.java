@@ -1,16 +1,15 @@
 package com.selfrunner.gwalit.domain.lecture.service;
 
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostInviteReq;
+import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
-import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
@@ -19,17 +18,11 @@ import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
-import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,6 +33,8 @@ public class LectureService {
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final MemberRepository memberRepository;
     private final TaskRepository taskRepository;
+    private final LessonRepository lessonRepository;
+    private final HomeworkRepository homeworkRepository;
 
     @Transactional
     public Void register(Member member, PostLectureReq postLectureReq) {
@@ -68,8 +63,11 @@ public class LectureService {
 
         // Business Logic
         memberAndLectureRepository.delete(memberAndLecture);
-        lectureRepository.delete(memberAndLecture.getLecture());
         taskRepository.deleteAllByLectureLectureId(lectureId);
+        List<Long> lessonIdList = lessonRepository.findAllLessonIdByLectureId(lectureId);
+        homeworkRepository.deleteAllByLessonIdList(lessonIdList);
+        lessonRepository.deleteAllByLectureLectureId(lectureId);
+        lectureRepository.delete(memberAndLecture.getLecture());
 
         // Response
         return null;
