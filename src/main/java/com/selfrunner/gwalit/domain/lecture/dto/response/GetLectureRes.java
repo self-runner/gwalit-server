@@ -32,4 +32,16 @@ public class GetLectureRes {
     private final List<MemberMeta> memberMetas;
 
     private final LessonMetaRes lessonMetaRes;
+
+    public GetLectureRes(Lecture lecture, List<MemberMeta> memberMetas, LessonMetaRes lessonMetaRes) {
+        this.lectureId = lecture.getLectureId();
+        this.name = lecture.getName();
+        this.color = lecture.getColor();
+        this.startDate = lecture.getStartDate();
+        this.endDate = lecture.getEndDate();
+        this.rules = lecture.getRules();
+        this.schedules = lecture.getSchedules();
+        this.memberMetas = memberMetas;
+        this.lessonMetaRes = lessonMetaRes;
+    }
 }

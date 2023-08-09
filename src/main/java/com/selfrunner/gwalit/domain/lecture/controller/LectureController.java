@@ -66,7 +66,7 @@ public class LectureController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getAllMeta(member));
     }
 
-    @Operation(summary = "Class 메인페이지용 Class 및 Lesson 정보 반환")
+    @Operation(summary = "Class 메인 페이지용 Class 및 Lesson 정보 반환")
     @GetMapping("/class/{lecture_id}")
     public ApplicationResponse<GetLectureRes> getLectureAndLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getLectureAndLesson(member, lectureId));
