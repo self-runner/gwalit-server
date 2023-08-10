@@ -175,7 +175,7 @@ public class LectureService {
         /*
         1. 가계정 생성
         2. 가계정 등록
-        3. 학생 관리 정보 반환
+        3. 학생 관리 정보 반환 시 가계정 여부 포함해서 반환하도록 수정
         TODO: java.lang.NullPointerException: Name is null 해결
          */
         Member student = postStudentReq.toEntity();
