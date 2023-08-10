@@ -27,7 +27,7 @@ public class TaskService {
     @Transactional
     public Void register(Member member, PostTaskReq postTaskReq) {
         // Validation: 사용자 접근 권한 확인
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, Long.valueOf(postTaskReq.getLectureId())).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postTaskReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         Task task = postTaskReq.toEntity(memberAndLecture.getLecture());

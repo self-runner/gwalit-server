@@ -16,8 +16,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostTaskReq {
 
-    @NotEmpty(message = "연결된 Class가 없습니다.")
-    private String lectureId;
+    @NotNull(message = "연결된 Class가 없습니다.")
+    private Long lectureId;
 
     @NotEmpty(message = "할 일 제목이 입력되지 않았습니다.")
     private String title;
