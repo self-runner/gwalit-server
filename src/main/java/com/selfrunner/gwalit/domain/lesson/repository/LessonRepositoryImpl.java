@@ -74,8 +74,8 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public LessonMetaRes findLessonMetaByLectureId(Long lectureId) {
         return queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
                 .from(lesson)
-                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now()))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)), lesson.type.ne(LessonType.Deleted))
                 .orderBy(lesson.date.desc())
-                .fetchOne();
+                .fetchFirst();
     }
 }
