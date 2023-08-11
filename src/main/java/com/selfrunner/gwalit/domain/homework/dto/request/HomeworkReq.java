@@ -18,6 +18,7 @@ public class HomeworkReq {
     @NotEmpty
     private String body;
 
+    @NotNull
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate deadline;
 

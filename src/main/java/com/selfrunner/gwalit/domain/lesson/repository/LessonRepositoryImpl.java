@@ -57,7 +57,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
                         .where(lesson.lecture.lectureId.eq(lectureId), lesson.type.ne(LessonType.Deleted))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.progresses)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.time, lesson.progresses)))
         );
     }
 
@@ -71,11 +71,11 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     }
 
     @Override
-    public LessonMetaRes findLessonMetaByLectureId(Long lectureId) {
-        return queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
+    public Optional<LessonMetaRes> findLessonMetaByLectureId(Long lectureId) {
+        return Optional.of(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
                 .from(lesson)
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)), lesson.type.ne(LessonType.Deleted))
                 .orderBy(lesson.date.desc())
-                .fetchFirst();
+                .fetchFirst());
     }
 }

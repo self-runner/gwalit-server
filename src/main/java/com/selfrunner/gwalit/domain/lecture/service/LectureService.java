@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -136,7 +138,7 @@ public class LectureService {
         TODO: NullPointException 발생 -> 쿼리 수정 필요
          */
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId);
+        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId).orElse(null);
         GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
 
         // Response

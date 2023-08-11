@@ -15,5 +15,5 @@ public interface LessonRepositoryCustom {
 
     List<Long> findAllLessonIdByLectureId(Long lectureId);
 
-    LessonMetaRes findLessonMetaByLectureId(Long lectureId);
+    Optional<LessonMetaRes> findLessonMetaByLectureId(Long lectureId);
 }
