@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,6 +19,7 @@ import java.util.List;
 public class PostTaskReq {
 
     @NotNull(message = "연결된 Class가 없습니다.")
+    @Positive
     private Long lectureId;
 
     @NotEmpty(message = "할 일 제목이 입력되지 않았습니다.")
