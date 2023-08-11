@@ -57,7 +57,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
                         .where(lesson.lecture.lectureId.eq(lectureId), lesson.type.ne(LessonType.Deleted))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.progresses)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.time, lesson.progresses)))
         );
     }
 
