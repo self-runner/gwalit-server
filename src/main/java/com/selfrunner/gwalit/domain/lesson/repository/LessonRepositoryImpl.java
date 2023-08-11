@@ -71,11 +71,11 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     }
 
     @Override
-    public Optional<List<LessonMetaRes>> findLessonMetaByLectureId(Long lectureId) {
+    public Optional<LessonMetaRes> findLessonMetaByLectureId(Long lectureId) {
         return Optional.of(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
                 .from(lesson)
-                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(LocalDate.now().minusDays(7l), LocalDate.now().plusDays(1l)), lesson.type.ne(LessonType.Deleted))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)), lesson.type.ne(LessonType.Deleted))
                 .orderBy(lesson.date.desc())
-                .fetch());
+                .fetchFirst());
     }
 }

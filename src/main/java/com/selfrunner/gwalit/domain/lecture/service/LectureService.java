@@ -138,15 +138,8 @@ public class LectureService {
         TODO: NullPointException 발생 -> 쿼리 수정 필요
          */
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<LessonMetaRes> lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId).orElse(null);
-        System.out.println(lessonMetaRes.isEmpty());
-        // Sorting 에러
-        if(lessonMetaRes != null) {
-            Collections.sort(lessonMetaRes, lessonMetaRes.spliterator().getComparator());
-        }
-        System.out.println(lessonMetaRes.isEmpty());
-        GetLectureRes getLectureRes = (lessonMetaRes != null) ? new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes.get(0)) : new GetLectureRes(memberAndLecture.getLecture(), memberMetas, null);
-        System.out.println(lessonMetaRes.isEmpty());
+        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId).orElse(null);
+        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
 
         // Response
         return getLectureRes;
