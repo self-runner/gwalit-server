@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lesson.controller;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonIdRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
@@ -29,9 +30,8 @@ public class LessonController {
 
     @Operation(summary = "수업 리포트 생성")
     @PostMapping("")
-    public ApplicationResponse<Void> register(@Auth Member member, @Valid @RequestBody PostLessonReq postLessonReq) {
-        lessonService.register(member, postLessonReq);
-        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    public ApplicationResponse<LessonIdRes> register(@Auth Member member, @Valid @RequestBody PostLessonReq postLessonReq) {
+        return ApplicationResponse.create(ErrorCode.SUCCESS, lessonService.register(member, postLessonReq));
     }
 
     @Operation(summary = "수업 리포트 생성")

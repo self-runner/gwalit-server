@@ -7,6 +7,7 @@ import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.domain.lesson.dto.response.LessonIdRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
@@ -36,7 +37,7 @@ public class LessonService {
     private final HomeworkRepository homeworkRepository;
 
     @Transactional
-    public Void register(Member member, PostLessonReq postLessonReq) {
+    public LessonIdRes register(Member member, PostLessonReq postLessonReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
@@ -53,7 +54,8 @@ public class LessonService {
         homeworkRepository.saveAll(homeworkList);
 
         // Response
-        return null;
+        LessonIdRes lessonIdRes = new LessonIdRes(lesson.getLessonId());
+        return lessonIdRes;
     }
 
     @Transactional
