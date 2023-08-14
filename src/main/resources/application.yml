@@ -18,7 +18,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
     open-in-view: false
   redis:
-    host: ENC(B/H8/liFqFHSiEA7uqb/tsl2bAlNlUQY)
+    host: ENC(/pCADeFbKU1tbUEz34J/Bm9Aow4ic+WoWNTpST3AkRs=)
     port: 6379
     password: ENC(IDxTSfQKMZjHv0pDXXf8OGCsgS61Eljt)
   swagger-ui:
