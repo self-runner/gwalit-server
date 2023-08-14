@@ -20,6 +20,7 @@ spring:
   redis:
     host: ENC(B/H8/liFqFHSiEA7uqb/tsl2bAlNlUQY)
     port: 6379
+    password: ENC(IDxTSfQKMZjHv0pDXXf8OGCsgS61Eljt)
   swagger-ui:
     path: ENC(WTBg/5W0RzdfjEYWeHF/lvHH8XFo0FJA0Ue3wuWoTRM=)
     use-root-path: true
