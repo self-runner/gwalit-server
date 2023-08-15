@@ -12,6 +12,7 @@ import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -42,6 +43,18 @@ public class LessonService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
+        // 삭제 정보 등록
+        if(postLessonReq.getType().equals(LessonType.Regular)) {
+            Lesson deletedLesson = Lesson.builder()
+                    .lecture(memberAndLecture.getLecture())
+                    .type("Deleted")
+                    .date(postLessonReq.getDate())
+                    .time(postLessonReq.getTime())
+                    .build();
+            lessonRepository.save(deletedLesson);
+        }
+
+        // 정규 수업 정보 등록
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
         List<Homework> homeworkList = new ArrayList<>();
