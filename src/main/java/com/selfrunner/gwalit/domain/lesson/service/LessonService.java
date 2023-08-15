@@ -44,7 +44,7 @@ public class LessonService {
 
         // Business Logic
         // 삭제 정보 등록
-        if(postLessonReq.getType().equals(LessonType.Regular)) {
+        if(LessonType.valueOf(postLessonReq.getType()).equals(LessonType.Regular)) {
             Lesson deletedLesson = Lesson.builder()
                     .lecture(memberAndLecture.getLecture())
                     .type("Deleted")
