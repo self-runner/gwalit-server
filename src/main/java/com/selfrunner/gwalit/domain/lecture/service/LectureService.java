@@ -138,7 +138,7 @@ public class LectureService {
         TODO: NullPointException 발생 -> 쿼리 수정 필요
          */
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId);
+        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
         System.out.println(lessonMetaRes);
         GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
 
