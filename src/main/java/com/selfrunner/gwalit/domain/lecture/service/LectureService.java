@@ -131,7 +131,7 @@ public class LectureService {
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION)); // Class 소속 여부 확인
 
         // Business Logic
         /*
