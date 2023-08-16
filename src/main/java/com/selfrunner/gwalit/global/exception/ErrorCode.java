@@ -33,6 +33,7 @@ public enum ErrorCode {
     // JWT
     WRONG_TOKEN(HttpStatus.UNAUTHORIZED, 4000, "유효하지 않은 토큰입니다."),
     EXPIRE_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "만료된 토큰입니다."),
+    LOGOUT_TOKEN(HttpStatus.UNAUTHORIZED, 4002, "로그아웃된 토큰입니다"),
 
 
     // Class
