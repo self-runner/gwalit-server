@@ -16,8 +16,12 @@ public class PutPasswordReq {
     @NotBlank
     private Long memberId;
 
+    private String oldPassword;
+
     @NotNull
     @Size(min = 8, max = 20)
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
-    private String password;
+    private String newPassword;
+
+    private String newPasswordCheck;
 }
