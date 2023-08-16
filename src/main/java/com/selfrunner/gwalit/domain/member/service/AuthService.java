@@ -98,6 +98,9 @@ public class AuthService {
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
             throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
         }
+        if(!postMemberReq.getPassword().equals(postMemberReq.getPasswordCheck())) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
 
         // Business Logic: 비밀번호 암호화 및 회원 정보 저장
         Member member = postMemberReq.toEntity();

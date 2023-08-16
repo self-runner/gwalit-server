@@ -7,6 +7,7 @@ import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +55,15 @@ public class MemberService {
         if(!member.getMemberId().equals(putPasswordReq.getMemberId())) {
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
+        if(!SHA256.encrypt(putPasswordReq.getOldPassword()).equals(change.getPassword())) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
+        if(!putPasswordReq.getNewPassword().equals(putPasswordReq.getNewPasswordCheck())) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
 
         // Business Logic
-        change.encryptPassword(putPasswordReq.getPassword());
+        change.encryptPassword(putPasswordReq.getNewPassword());
 
         // Response
         return null;
