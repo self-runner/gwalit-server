@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.setting.controller;
 
 import com.selfrunner.gwalit.domain.setting.dto.request.SettingReq;
 import com.selfrunner.gwalit.domain.setting.dto.response.SettingRes;
+import com.selfrunner.gwalit.domain.setting.dto.response.TosRes;
 import com.selfrunner.gwalit.domain.setting.service.SettingService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -26,12 +27,6 @@ public class SettingController {
         return ApplicationResponse.create(ErrorCode.SUCCESS, settingService.register(settingReq));
     }
 
-    @Operation(description = "설정 정보 반환 API")
-    @GetMapping("")
-    public ApplicationResponse<SettingRes> get() {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.get());
-    }
-
     @Operation(description = "설정 정보 수정 API")
     @PutMapping("/{setting_id}")
     public ApplicationResponse<SettingRes> update(@PathVariable("setting_id") Long settingId, @Valid @RequestBody SettingReq settingReq) {
@@ -43,5 +38,17 @@ public class SettingController {
     public ApplicationResponse<Void> delete(@PathVariable("setting_id") Long settingId) {
         settingService.delete(settingId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(description = "설정 정보 반환 API")
+    @GetMapping("")
+    public ApplicationResponse<SettingRes> getSettingInform() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.getSettingInform());
+    }
+
+    @Operation(description = "이용 약관 주소 반환 API")
+    @GetMapping("/tos")
+    public ApplicationResponse<TosRes> getTermsOfService() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.getTermsOfService());
     }
 }

@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.setting.service;
 
 import com.selfrunner.gwalit.domain.setting.dto.request.SettingReq;
 import com.selfrunner.gwalit.domain.setting.dto.response.SettingRes;
+import com.selfrunner.gwalit.domain.setting.dto.response.TosRes;
 import com.selfrunner.gwalit.domain.setting.entity.Setting;
 import com.selfrunner.gwalit.domain.setting.repository.SettingRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -28,7 +29,7 @@ public class SettingService {
         return settingRes;
     }
 
-    public SettingRes get() {
+    public SettingRes getSettingInform() {
         // Business Logic
         Setting setting = settingRepository.findById(1L).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
@@ -55,5 +56,14 @@ public class SettingService {
 
         // Response
         return null;
+    }
+
+    public TosRes getTermsOfService() {
+        // Business Logic
+        Setting setting = settingRepository.findById(3L).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Response
+        TosRes tosRes= new TosRes(setting.getSettingId(), setting.getInform().getNotice(), setting.getInform().getContact());
+        return tosRes;
     }
 }
