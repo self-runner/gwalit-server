@@ -43,9 +43,9 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         }
 
         // 토큰 유효 여부 확인
-        if(redisClient.getValue(authorization).equals("logout")) {
-            throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
-        }
+//        if(redisClient.getValue(authorization).equals("logout")) {
+//            throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+//        }
         tokenProvider.validateToken(authorization);
 
         // 토큰에서 사용자 정보 추출
