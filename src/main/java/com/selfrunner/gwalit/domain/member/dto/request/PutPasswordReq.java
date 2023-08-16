@@ -13,9 +13,12 @@ import javax.validation.constraints.Size;
 @RequiredArgsConstructor
 public class PutPasswordReq {
 
-    @NotBlank
+    @NotNull
     private Long memberId;
 
+    @NotNull
+    @Size(min = 8, max = 20)
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
     private String oldPassword;
 
     @NotNull
@@ -23,5 +26,8 @@ public class PutPasswordReq {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
     private String newPassword;
 
+    @NotNull
+    @Size(min = 8, max = 20)
+    @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
     private String newPasswordCheck;
 }

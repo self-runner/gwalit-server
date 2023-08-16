@@ -81,7 +81,7 @@ public class Member extends BaseTimeEntity {
         this.phone = phone;
         this.password = password;
         this.school = school;
-        this.grade = MemberGrade.valueOf(grade);
+        this.grade = (grade != null) ? MemberGrade.valueOf(grade) : null;
         this.needNotification = Boolean.FALSE;
         this.isAdvertisement = isAdvertisement;
         this.isPrivacy = isPrivacy;
