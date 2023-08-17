@@ -79,7 +79,7 @@ public class AuthService {
             throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
         }
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new RuntimeException("인증번호가 일치하지 않습니다.");
+            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Business Logic
