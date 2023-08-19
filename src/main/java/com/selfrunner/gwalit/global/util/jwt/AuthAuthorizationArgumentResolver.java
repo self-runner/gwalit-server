@@ -44,7 +44,6 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
 
         // 토큰 유효 여부 확인
         String value = redisClient.getValue(authorization);
-        System.out.println(value);
         if(value != null && value.equals("logout")) {
             throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
         }
