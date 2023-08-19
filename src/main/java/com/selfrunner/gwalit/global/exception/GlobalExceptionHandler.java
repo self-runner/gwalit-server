@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.global.exception;
 
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.common.ErrorResponse;
+import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponse> applicationException(ApplicationException e) {
+        Sentry.captureException(e);
         log.error(e.toString());
 
         return ResponseEntity
@@ -24,6 +26,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException e) {
+        Sentry.captureException(e);
         log.error(e.getMessage());
 
         return ResponseEntity
@@ -33,6 +36,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> runtimeException(RuntimeException e) {
+        Sentry.captureException(e);
         log.error(e.toString());
 
         return ResponseEntity
