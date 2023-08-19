@@ -150,7 +150,10 @@ public class LectureService {
         // 해당하는 일주일의 기간 중 수업 주기와 일치하는 날짜 뽑아오기
         List<Schedule> schedules = memberAndLecture.getLecture().getSchedules();
         for(LocalDate date = LocalDate.now().minusWeeks(1l).plusDays(1l); date.isBefore(LocalDate.now().plusDays(1l)); date = date.plusDays(1l)) {
-            for(Schedule s : schedules) {;
+            if(date.isBefore(memberAndLecture.getLecture().getStartDate())) {
+                continue;
+            }
+            for(Schedule s : schedules) {
                 if (date.getDayOfWeek().equals(getDayOfWeek(s.getWeekday()))) {
                     Boolean check = true;
                     for(LessonMetaRes l : lessonMetaResList) {
