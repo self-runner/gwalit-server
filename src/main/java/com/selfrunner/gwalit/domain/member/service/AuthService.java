@@ -150,7 +150,8 @@ public class AuthService {
         // Validation: RTK 조회
         String rtk = httpServletRequest.getHeader("Authorization");
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
-        if(rtk.isBlank() || !redisClient.getValue(key).equals(rtk)) {
+        String value = redisClient.getValue(key);
+        if(rtk.isBlank() || value == null || !value.equals(rtk)) {
             throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
         Member member = memberRepository.findByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)));
