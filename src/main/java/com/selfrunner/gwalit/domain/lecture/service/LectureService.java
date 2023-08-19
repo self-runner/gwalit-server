@@ -11,6 +11,7 @@ import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
@@ -19,12 +20,16 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
+import com.selfrunner.gwalit.global.common.Day;
+import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -135,9 +140,42 @@ public class LectureService {
 
         // Business Logic
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
-        System.out.println(lessonMetaRes);
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
+
+        // DB에 저장된 리포트 중 가장 최근 리포트 조회 로직 (Old ver.)
+//        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
+//        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
+
+        // 일주일 중 가장 최근 데이터 조회하는 로직 (New ver.)
+        List<LessonMetaRes> lessonMetaResList = lessonRepository.findAllLessonMetaByLectureIdAndDate(lectureId).orElse(null); // 일주일 기간에 해당하는 모든 LessonMeta 조회
+        // 해당하는 일주일의 기간 중 수업 주기와 일치하는 날짜 뽑아오기
+        List<Schedule> schedules = memberAndLecture.getLecture().getSchedules();
+        for(LocalDate date = LocalDate.now().minusWeeks(1l).plusDays(1l); date.isBefore(LocalDate.now().plusDays(1l)); date = date.plusDays(1l)) {
+            for(Schedule s : schedules) {;
+                if (date.getDayOfWeek().equals(getDayOfWeek(s.getWeekday()))) {
+                    Boolean check = true;
+                    for(LessonMetaRes l : lessonMetaResList) {
+                        if(l.getDate().equals(date)) {
+                            check = false;
+                            break;
+                        }
+                    }
+                    if(check) {
+                        LessonMetaRes temp = new LessonMetaRes(null, lectureId, LessonType.Regular, date, s, null);
+                        lessonMetaResList.add(temp);
+                    }
+                }
+            }
+        }
+        Collections.sort(lessonMetaResList); // 오류 발생 지점
+        int idx = -1;
+        for(int i = 0; i < lessonMetaResList.size(); i++) {
+            if(!lessonMetaResList.get(i).getType().equals(LessonType.Deleted)) {
+                idx = i;
+                break;
+            }
+        }
+
+        GetLectureRes getLectureRes = (idx != -1) ?  new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaResList.get(idx)) : new GetLectureRes(memberAndLecture.getLecture(), memberMetas, null);
 
         // Response
         return getLectureRes;
@@ -185,5 +223,28 @@ public class LectureService {
 
         // Response
         return null;
+    }
+
+
+    // DB 저장된 Json 객체에서 요일 뽑아오기 위한 메소드
+    public DayOfWeek getDayOfWeek(Day day) {
+        switch (day) {
+            case MON:
+                return DayOfWeek.MONDAY;
+            case TUE:
+                return DayOfWeek.TUESDAY;
+            case WED:
+                return DayOfWeek.WEDNESDAY;
+            case THU:
+                return DayOfWeek.THURSDAY;
+            case FRI:
+                return DayOfWeek.FRIDAY;
+            case SAT:
+                return DayOfWeek.SATURDAY;
+            case SUN:
+                return DayOfWeek.SUNDAY;
+            default:
+                throw new IllegalArgumentException("Invalid Day enum value: " + day);
+        }
     }
 }

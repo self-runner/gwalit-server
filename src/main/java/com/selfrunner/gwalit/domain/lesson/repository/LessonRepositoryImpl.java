@@ -81,4 +81,14 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .fetchFirst();
         //);
     }
+
+    @Override
+    public Optional<List<LessonMetaRes>> findAllLessonMetaByLectureIdAndDate(Long lectureId) {
+        return Optional.ofNullable(
+                queryFactory.select(lesson)
+                        .from(lesson)
+                        .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(LocalDate.now().minusDays(8), LocalDate.now()))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants)))
+        );
+    }
 }
