@@ -52,6 +52,9 @@ public class LectureService {
         if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
+        if(memberAndLectureRepository.findCountByMember(member) > 3) {
+            throw new ApplicationException(ErrorCode.FAILED_MAKE_CLASS);
+        }
 
         // Business Logic
         Lecture lecture = postLectureReq.toEntity();
