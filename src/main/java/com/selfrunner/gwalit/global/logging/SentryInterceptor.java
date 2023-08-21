@@ -11,7 +11,7 @@ public class SentryInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        String userIp = request.getRemoteAddr();
+        String userIp = request.getHeader("X-Forwarded-For");
 
         // Add user IP to Sentry context
         Sentry.configureScope(scope -> {
