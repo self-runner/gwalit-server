@@ -33,11 +33,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-//    @Operation(summary = "인증번호 전송 요청")
-//    @PostMapping("/phone")
-//    public ApplicationResponse<String> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-//        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendAuthorizationCode(postAuthPhoneReq));
-//    }
+    @Operation(summary = "인증번호 전송 요청")
+    @PostMapping("/phone")
+    public ApplicationResponse<String> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendAuthorizationCode(postAuthPhoneReq));
+    }
 
     @Operation(summary = "인증번호 확인 요청")
     @PostMapping("/authorization")
