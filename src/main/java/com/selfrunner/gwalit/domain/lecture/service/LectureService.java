@@ -11,6 +11,7 @@ import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -30,9 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -58,12 +57,25 @@ public class LectureService {
 
         // Business Logic
         Lecture lecture = postLectureReq.toEntity();
+        Lecture saveLecture = lectureRepository.save(lecture);
         MemberAndLecture memberAndLecture = MemberAndLecture.builder()
                         .member(member)
-                        .lecture(lecture)
+                        .lecture(saveLecture)
                         .build();
-        lectureRepository.save(lecture);
         memberAndLectureRepository.save(memberAndLecture);
+        // TODO: 모든 Lesson 생성 로직 -> 주차별로 돌면서 list 추가해서 insert할까? -> 비동기 실행으로 인한 에러 발생
+        List<Lesson> lessonList = new ArrayList<>();
+        for(LocalDate now = postLectureReq.getStartDate(); now.isBefore(postLectureReq.getEndDate()); now = now.plusDays(1L)) {
+            System.out.println(now.toString());
+            for(Schedule schedule : postLectureReq.getSchedules()) {
+                if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                    Lesson temp = new Lesson(saveLecture, "Regular", null, null, null, now, schedule);
+                    lessonList.add(temp);
+                }
+            }
+        }
+        System.out.println(lessonList.size());
+        lessonRepository.saveAll(lessonList);
 
         // Response
         return null;
@@ -174,12 +186,12 @@ public class LectureService {
         }
         Collections.sort(lessonMetaResList); // 오류 발생 지점
         int idx = -1;
-        for(int i = 0; i < lessonMetaResList.size(); i++) {
-            if(!lessonMetaResList.get(i).getType().equals(LessonType.Deleted)) {
-                idx = i;
-                break;
-            }
-        }
+//        for(int i = 0; i < lessonMetaResList.size(); i++) {
+//            if(!lessonMetaResList.get(i).getType().equals(LessonType.Deleted)) {
+//                idx = i;
+//                break;
+//            }
+//        }
 
         GetLectureRes getLectureRes = (idx != -1) ?  new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaResList.get(idx)) : new GetLectureRes(memberAndLecture.getLecture(), memberMetas, null);
 

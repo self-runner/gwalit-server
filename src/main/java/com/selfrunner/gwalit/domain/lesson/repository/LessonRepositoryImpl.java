@@ -56,7 +56,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public Optional<List<LessonProgressRes>> findAllProgressByLectureId(Long lectureId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
-                        .where(lesson.lecture.lectureId.eq(lectureId), lesson.type.ne(LessonType.Deleted))
+                        .where(lesson.lecture.lectureId.eq(lectureId))
                         .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, lesson.time, lesson.progresses)))
         );
     }
@@ -76,7 +76,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return
                 queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
                 .from(lesson)
-                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)), lesson.type.ne(LessonType.Deleted))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)))
                 .orderBy(lesson.date.desc())
                 .fetchFirst();
         //);
