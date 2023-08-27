@@ -43,17 +43,6 @@ public class LessonService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        // 삭제 정보 등록
-        if(LessonType.valueOf(postLessonReq.getType()).equals(LessonType.Regular)) {
-            Lesson deletedLesson = Lesson.builder()
-                    .lecture(memberAndLecture.getLecture())
-                    .type("Deleted")
-                    .date(postLessonReq.getDate())
-                    .time(postLessonReq.getTime())
-                    .build();
-            lessonRepository.save(deletedLesson);
-        }
-
         // 정규 수업 정보 등록
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
