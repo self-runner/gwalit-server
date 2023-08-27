@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -147,6 +148,8 @@ public class LessonService {
 
         // Business Logic
         List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        // 오름차순 정렬
+        Collections.sort(lessonMetaRes);
 
         // Response
         return lessonMetaRes;
@@ -157,7 +160,9 @@ public class LessonService {
 
         // Business Logic
         List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElse(null);
+        // 오름차순 정렬
+        Collections.sort(lessonMetaRes);
 
         // Response
         return lessonMetaRes;
