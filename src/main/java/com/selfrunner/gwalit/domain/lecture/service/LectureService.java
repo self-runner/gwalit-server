@@ -56,25 +56,21 @@ public class LectureService {
         }
 
         // Business Logic
-        Lecture lecture = postLectureReq.toEntity();
-        Lecture saveLecture = lectureRepository.save(lecture);
+        Lecture lecture = lectureRepository.save(postLectureReq.toEntity());
         MemberAndLecture memberAndLecture = MemberAndLecture.builder()
                         .member(member)
-                        .lecture(saveLecture)
+                        .lecture(lecture)
                         .build();
         memberAndLectureRepository.save(memberAndLecture);
-        // TODO: 모든 Lesson 생성 로직 -> 주차별로 돌면서 list 추가해서 insert할까? -> 비동기 실행으로 인한 에러 발생
         List<Lesson> lessonList = new ArrayList<>();
         for(LocalDate now = postLectureReq.getStartDate(); now.isBefore(postLectureReq.getEndDate()); now = now.plusDays(1L)) {
-            System.out.println(now.toString());
             for(Schedule schedule : postLectureReq.getSchedules()) {
                 if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
-                    Lesson temp = new Lesson(saveLecture, "Regular", null, null, null, now, schedule);
+                    Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
                     lessonList.add(temp);
                 }
             }
         }
-        System.out.println(lessonList.size());
         lessonRepository.saveAll(lessonList);
 
         // Response
