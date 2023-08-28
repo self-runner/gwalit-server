@@ -151,45 +151,8 @@ public class LectureService {
 
         // Business Logic
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-
-        // DB에 저장된 리포트 중 가장 최근 리포트 조회 로직 (Old ver.)
-//        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
-//        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
-
-        // 일주일 중 가장 최근 데이터 조회하는 로직 (New ver.)
-        List<LessonMetaRes> lessonMetaResList = lessonRepository.findAllLessonMetaByLectureIdAndDate(lectureId).orElse(null); // 일주일 기간에 해당하는 모든 LessonMeta 조회
-        // 해당하는 일주일의 기간 중 수업 주기와 일치하는 날짜 뽑아오기
-        List<Schedule> schedules = memberAndLecture.getLecture().getSchedules();
-        for(LocalDate date = LocalDate.now().minusWeeks(1l).plusDays(1l); date.isBefore(LocalDate.now().plusDays(1l)); date = date.plusDays(1l)) {
-            if(date.isBefore(memberAndLecture.getLecture().getStartDate())) {
-                continue;
-            }
-            for(Schedule s : schedules) {
-                if (date.getDayOfWeek().equals(getDayOfWeek(s.getWeekday()))) {
-                    Boolean check = true;
-                    for(LessonMetaRes l : lessonMetaResList) {
-                        if(l.getDate().equals(date)) {
-                            check = false;
-                            break;
-                        }
-                    }
-                    if(check) {
-                        LessonMetaRes temp = new LessonMetaRes(null, lectureId, LessonType.Regular, date, s, null);
-                        lessonMetaResList.add(temp);
-                    }
-                }
-            }
-        }
-        Collections.sort(lessonMetaResList); // 오류 발생 지점
-        int idx = -1;
-//        for(int i = 0; i < lessonMetaResList.size(); i++) {
-//            if(!lessonMetaResList.get(i).getType().equals(LessonType.Deleted)) {
-//                idx = i;
-//                break;
-//            }
-//        }
-
-        GetLectureRes getLectureRes = (idx != -1) ?  new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaResList.get(idx)) : new GetLectureRes(memberAndLecture.getLecture(), memberMetas, null);
+        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
+        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
 
         // Response
         return getLectureRes;
