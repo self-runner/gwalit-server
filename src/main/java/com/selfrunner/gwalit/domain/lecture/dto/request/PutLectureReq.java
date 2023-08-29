@@ -28,4 +28,7 @@ public class PutLectureReq {
     private List<Rule> rules;
 
     private List<Schedule> schedules;
+
+    @NotNull
+    private Boolean deleteBefore;
 }

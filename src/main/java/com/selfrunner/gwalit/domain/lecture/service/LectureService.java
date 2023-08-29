@@ -116,7 +116,38 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        memberAndLecture.getLecture().update(putLectureReq);
+        Lecture lecture = memberAndLecture.getLecture();
+        // TODO: 이전 수업 리포트들도 다 지울 것인지, 아닌지에 따른 조건 분기
+        if(!lecture.getStartDate().equals(putLectureReq.getStartDate()) || !lecture.getEndDate().equals(putLectureReq.getEndDate())) {
+            if(putLectureReq.getDeleteBefore().equals(Boolean.TRUE)) {
+                lessonRepository.deleteAllByLectureIdAndDate(lecture.getLectureId(), lecture.getStartDate(), lecture.getEndDate());
+                List<Lesson> lessonList = new ArrayList<>();
+                for(LocalDate now = putLectureReq.getStartDate(); now.isBefore(putLectureReq.getEndDate()); now = now.plusDays(1L)) {
+                    for(Schedule schedule : putLectureReq.getSchedules()) {
+                        if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                            Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
+                            lessonList.add(temp);
+                        }
+                    }
+                }
+                lessonRepository.saveAll(lessonList);
+            }
+            if(putLectureReq.getDeleteBefore().equals(Boolean.FALSE)) {
+                lessonRepository.deleteAllByLectureIdAndDate(lectureId, LocalDate.now(), lecture.getEndDate());
+                List<Lesson> lessonList = new ArrayList<>();
+                for(LocalDate now = LocalDate.now(); now.isBefore(putLectureReq.getEndDate()); now = now.plusDays(1L)) {
+                    for(Schedule schedule : putLectureReq.getSchedules()) {
+                        if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                            Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
+                            lessonList.add(temp);
+                        }
+                    }
+                }
+                lessonRepository.saveAll(lessonList);
+            }
+        }
+
+        lecture.update(putLectureReq);
 
         // Response
         return null;

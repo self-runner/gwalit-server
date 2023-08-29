@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,5 +91,12 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(LocalDate.now().minusDays(8), LocalDate.now()))
                         .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants)))
         );
+    }
+
+    @Override
+    public void deleteAllByLectureIdAndDate(Long lectureId, LocalDate startDate, LocalDate endDate) {
+        queryFactory.update(lesson)
+                .set(lesson.deletedAt, LocalDateTime.now())
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(startDate, endDate), lesson.type.eq(LessonType.Regular));
     }
 }
