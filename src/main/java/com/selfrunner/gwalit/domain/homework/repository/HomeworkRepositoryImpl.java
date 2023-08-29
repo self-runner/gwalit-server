@@ -20,7 +20,8 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
     private final JPAQueryFactory queryFactory;
     @Override
     public void deleteHomeworkByLessonId(Long lessonId) {
-        queryFactory.delete(homework)
+        queryFactory.update(homework)
+                .set(homework.deletedAt, LocalDateTime.now())
                 .where(homework.lessonId.eq(lessonId))
                 .execute();
     }

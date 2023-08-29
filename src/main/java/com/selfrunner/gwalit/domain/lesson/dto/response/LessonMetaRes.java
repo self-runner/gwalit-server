@@ -38,23 +38,23 @@ public class LessonMetaRes implements Comparable<LessonMetaRes> {
                         return 0;
                 }
                 if(LocalTime.parse(this.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm")).isAfter(LocalTime.parse(l2.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm")))) {
-                    return -1;
+                    return 1;
                 }
                 if(LocalTime.parse(this.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm")).isBefore(LocalTime.parse(l2.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm")))) {
-                    return 1;
+                    return -1;
                 }
             }
             if((LocalTime.parse(this.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm")).isAfter(LocalTime.parse(l2.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"))))) {
-                return -1;
+                return 1;
             }
             if((LocalTime.parse(this.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm")).isBefore(LocalTime.parse(l2.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"))))) {
-                return 1;
+                return -1;
             }
         }
         if(this.getDate().isAfter(l2.getDate())) {
-            return -1;
+            return 1;
         }
 
-        return 1;
+        return -1;
     }
 }

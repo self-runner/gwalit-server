@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,17 +44,6 @@ public class LessonService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        // 삭제 정보 등록
-        if(LessonType.valueOf(postLessonReq.getType()).equals(LessonType.Regular)) {
-            Lesson deletedLesson = Lesson.builder()
-                    .lecture(memberAndLecture.getLecture())
-                    .type("Deleted")
-                    .date(postLessonReq.getDate())
-                    .time(postLessonReq.getTime())
-                    .build();
-            lessonRepository.save(deletedLesson);
-        }
-
         // 정규 수업 정보 등록
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
@@ -158,6 +148,8 @@ public class LessonService {
 
         // Business Logic
         List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_LESSON));
+        // 오름차순 정렬
+        Collections.sort(lessonMetaRes);
 
         // Response
         return lessonMetaRes;
@@ -168,7 +160,9 @@ public class LessonService {
 
         // Business Logic
         List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElse(null);
+        // 오름차순 정렬
+        Collections.sort(lessonMetaRes);
 
         // Response
         return lessonMetaRes;

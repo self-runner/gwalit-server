@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lesson.repository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +16,11 @@ public interface LessonRepositoryCustom {
 
     List<Long> findAllLessonIdByLectureId(Long lectureId);
 
-    LessonMetaRes findLessonMetaByLectureId(Long lectureId);
+    Optional<LessonMetaRes> findLessonMetaByLectureIdBeforeNow(Long lectureId);
+
+    Optional<LessonMetaRes> findLessonMetaByLectureIdAfterNow(Long lectureId);
 
     Optional<List<LessonMetaRes>> findAllLessonMetaByLectureIdAndDate(Long lectureId);
+
+    void deleteAllByLectureIdAndDate(Long lectureId, LocalDate startDate, LocalDate endDate);
 }
