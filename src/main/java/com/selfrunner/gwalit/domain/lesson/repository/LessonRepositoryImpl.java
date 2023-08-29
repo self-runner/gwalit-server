@@ -72,15 +72,21 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     }
 
     @Override
-    public LessonMetaRes findLessonMetaByLectureId(Long lectureId) {
-        //return Optional.of(
-        return
-                queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
+    public Optional<LessonMetaRes> findLessonMetaByLectureIdBeforeNow(Long lectureId) {
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
                 .from(lesson)
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)))
                 .orderBy(lesson.date.desc())
-                .fetchFirst();
-        //);
+                .fetchFirst());
+    }
+
+    @Override
+    public Optional<LessonMetaRes> findLessonMetaByLectureIdAfterNow(Long lectureId) {
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, lesson.time, lesson.participants))
+                .from(lesson)
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.after(LocalDate.now()))
+                .orderBy(lesson.date.asc())
+                .fetchFirst());
     }
 
     @Override

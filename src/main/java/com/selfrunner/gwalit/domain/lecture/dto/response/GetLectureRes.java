@@ -31,9 +31,9 @@ public class GetLectureRes {
 
     private final List<MemberMeta> memberMetas;
 
-    private final LessonMetaRes lessonMetaRes;
+    private final List<LessonMetaRes> lessonMetaRess;
 
-    public GetLectureRes(Lecture lecture, List<MemberMeta> memberMetas, LessonMetaRes lessonMetaRes) {
+    public GetLectureRes(Lecture lecture, List<MemberMeta> memberMetas, List<LessonMetaRes> lessonMetaRess) {
         this.lectureId = lecture.getLectureId();
         this.name = lecture.getName();
         this.color = lecture.getColor();
@@ -42,6 +42,6 @@ public class GetLectureRes {
         this.rules = lecture.getRules();
         this.schedules = lecture.getSchedules();
         this.memberMetas = memberMetas;
-        this.lessonMetaRes = lessonMetaRes;
+        this.lessonMetaRess = lessonMetaRess;
     }
 }

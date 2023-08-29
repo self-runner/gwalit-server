@@ -182,8 +182,10 @@ public class LectureService {
 
         // Business Logic
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
+        List<LessonMetaRes> lessonMetaRess = new ArrayList<>();
+        lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdBeforeNow(lectureId).orElse(null)); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
+        lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdAfterNow(lectureId).orElse(null));
+        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRess);
 
         // Response
         return getLectureRes;
