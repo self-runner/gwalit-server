@@ -11,6 +11,8 @@ import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
@@ -19,13 +21,17 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
+import com.selfrunner.gwalit.global.common.Day;
+import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,15 +51,27 @@ public class LectureService {
         if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
+        if(memberAndLectureRepository.findCountByMember(member) > 3) {
+            throw new ApplicationException(ErrorCode.FAILED_MAKE_CLASS);
+        }
 
         // Business Logic
-        Lecture lecture = postLectureReq.toEntity();
+        Lecture lecture = lectureRepository.save(postLectureReq.toEntity());
         MemberAndLecture memberAndLecture = MemberAndLecture.builder()
                         .member(member)
                         .lecture(lecture)
                         .build();
-        lectureRepository.save(lecture);
         memberAndLectureRepository.save(memberAndLecture);
+        List<Lesson> lessonList = new ArrayList<>();
+        for(LocalDate now = postLectureReq.getStartDate(); now.isBefore(postLectureReq.getEndDate()); now = now.plusDays(1L)) {
+            for(Schedule schedule : postLectureReq.getSchedules()) {
+                if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                    Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
+                    lessonList.add(temp);
+                }
+            }
+        }
+        lessonRepository.saveAll(lessonList);
 
         // Response
         return null;
@@ -98,7 +116,38 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        memberAndLecture.getLecture().update(putLectureReq);
+        Lecture lecture = memberAndLecture.getLecture();
+        // TODO: 이전 수업 리포트들도 다 지울 것인지, 아닌지에 따른 조건 분기
+        if(!lecture.getStartDate().equals(putLectureReq.getStartDate()) || !lecture.getEndDate().equals(putLectureReq.getEndDate())) {
+            if(putLectureReq.getDeleteBefore().equals(Boolean.TRUE)) {
+                lessonRepository.deleteAllByLectureIdAndDate(lecture.getLectureId(), lecture.getStartDate(), lecture.getEndDate());
+                List<Lesson> lessonList = new ArrayList<>();
+                for(LocalDate now = putLectureReq.getStartDate(); now.isBefore(putLectureReq.getEndDate()); now = now.plusDays(1L)) {
+                    for(Schedule schedule : putLectureReq.getSchedules()) {
+                        if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                            Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
+                            lessonList.add(temp);
+                        }
+                    }
+                }
+                lessonRepository.saveAll(lessonList);
+            }
+            if(putLectureReq.getDeleteBefore().equals(Boolean.FALSE)) {
+                lessonRepository.deleteAllByLectureIdAndDate(lectureId, LocalDate.now(), lecture.getEndDate());
+                List<Lesson> lessonList = new ArrayList<>();
+                for(LocalDate now = LocalDate.now(); now.isBefore(putLectureReq.getEndDate()); now = now.plusDays(1L)) {
+                    for(Schedule schedule : putLectureReq.getSchedules()) {
+                        if(now.getDayOfWeek().equals(getDayOfWeek(schedule.getWeekday()))) {
+                            Lesson temp = new Lesson(lecture, "Regular", null, null, null, now, schedule);
+                            lessonList.add(temp);
+                        }
+                    }
+                }
+                lessonRepository.saveAll(lessonList);
+            }
+        }
+
+        lecture.update(putLectureReq);
 
         // Response
         return null;
@@ -129,15 +178,14 @@ public class LectureService {
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION)); // Class 소속 여부 확인
 
         // Business Logic
-        /*
-        TODO: NullPointException 발생 -> 쿼리 수정 필요
-         */
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        LessonMetaRes lessonMetaRes = lessonRepository.findLessonMetaByLectureId(lectureId);
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRes);
+        List<LessonMetaRes> lessonMetaRess = new ArrayList<>();
+        lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdBeforeNow(lectureId).orElse(null)); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
+        lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdAfterNow(lectureId).orElse(null));
+        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRess);
 
         // Response
         return getLectureRes;
@@ -188,5 +236,28 @@ public class LectureService {
 
         // Response
         return null;
+    }
+
+
+    // DB 저장된 Json 객체에서 요일 뽑아오기 위한 메소드
+    public DayOfWeek getDayOfWeek(Day day) {
+        switch (day) {
+            case MON:
+                return DayOfWeek.MONDAY;
+            case TUE:
+                return DayOfWeek.TUESDAY;
+            case WED:
+                return DayOfWeek.WEDNESDAY;
+            case THU:
+                return DayOfWeek.THURSDAY;
+            case FRI:
+                return DayOfWeek.FRIDAY;
+            case SAT:
+                return DayOfWeek.SATURDAY;
+            case SUN:
+                return DayOfWeek.SUNDAY;
+            default:
+                throw new IllegalArgumentException("Invalid Day enum value: " + day);
+        }
     }
 }

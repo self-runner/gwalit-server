@@ -11,4 +11,6 @@ public interface MemberAndLectureRepositoryCustom {
     Optional<List<Long>> findLectureIdByMember(Member member);
 
     Optional<List<MemberMeta>> findMemberMetaByLectureLectureId(Long lectureId);
+
+    Long findCountByMember(Member member);
 }

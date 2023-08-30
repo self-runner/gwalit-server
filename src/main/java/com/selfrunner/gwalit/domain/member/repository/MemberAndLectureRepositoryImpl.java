@@ -41,4 +41,12 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                         ))
         );
     }
+
+    @Override
+    public Long findCountByMember(Member member) {
+        return queryFactory.select(memberAndLecture.count())
+                .from(memberAndLecture)
+                .where(memberAndLecture.member.eq(member))
+                .fetchFirst();
+    }
 }

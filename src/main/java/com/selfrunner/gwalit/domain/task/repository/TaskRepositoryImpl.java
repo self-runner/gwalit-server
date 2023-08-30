@@ -38,8 +38,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
         return Optional.ofNullable(queryFactory
                 .selectFrom(task)
                 .innerJoin(lecture).on(task.lecture.eq(lecture)).fetchJoin()
-                .where(lecture.lectureId.eq(lectureId)
-                        .and(task.isPinned.isTrue()))
+                .where(lecture.lectureId.eq(lectureId))
                 .transform(groupBy(task.taskId)
                         .list(Projections.constructor(TaskRes.class, task.taskId, task.lecture.lectureId, lecture.color, task.title, task.deadline, task.isPinned, task.subtasks))));
     }

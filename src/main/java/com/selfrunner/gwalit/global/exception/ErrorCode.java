@@ -33,6 +33,7 @@ public enum ErrorCode {
     // JWT
     WRONG_TOKEN(HttpStatus.UNAUTHORIZED, 4000, "유효하지 않은 토큰입니다."),
     EXPIRE_TOKEN(HttpStatus.UNAUTHORIZED, 4001, "만료된 토큰입니다."),
+    LOGOUT_TOKEN(HttpStatus.UNAUTHORIZED, 4002, "로그아웃된 토큰입니다"),
 
 
     // Class
@@ -40,6 +41,7 @@ public enum ErrorCode {
     NOT_EXIST_LESSON(HttpStatus.NOT_FOUND, 5002, "존재하지 않는 수업입니다."),
     NO_MORE_CLASS(HttpStatus.BAD_REQUEST, 5003, "더 이상 가져올 수업이 없습니다."),
     NOT_EXIST_DEADLINE(HttpStatus.BAD_REQUEST, 5004, "숙제의 기한이 설정되지 않았습니다."),
+    FAILED_MAKE_CLASS(HttpStatus.BAD_REQUEST, 5005, "생성할 수 있는 수를 초과했습니다"),
 
     // Banner
     NO_BANNER_IMAGE(HttpStatus.BAD_REQUEST, 6000, "배너 이미지 파일이 존재하지 않습니다."),

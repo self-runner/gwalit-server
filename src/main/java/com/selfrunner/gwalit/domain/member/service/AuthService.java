@@ -79,7 +79,7 @@ public class AuthService {
             throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
         }
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new RuntimeException("인증번호가 일치하지 않습니다.");
+            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Business Logic
@@ -97,6 +97,9 @@ public class AuthService {
         // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
             throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
+        }
+        if(!postMemberReq.getPassword().equals(postMemberReq.getPasswordCheck())) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
 
         // Business Logic: 비밀번호 암호화 및 회원 정보 저장
@@ -147,7 +150,8 @@ public class AuthService {
         // Validation: RTK 조회
         String rtk = httpServletRequest.getHeader("Authorization");
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
-        if(rtk.isBlank() || !redisClient.getValue(key).equals(rtk)) {
+        String value = redisClient.getValue(key);
+        if(rtk.isBlank() || value == null || !value.equals(rtk)) {
             throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
         Member member = memberRepository.findByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)));
