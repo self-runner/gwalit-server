@@ -7,6 +7,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,13 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                 .from(memberAndLecture)
                 .where(memberAndLecture.member.eq(member))
                 .fetchFirst();
+    }
+
+    @Override
+    public void deleteMemberAndLectureByMemberIdList(List<Long> memberIdList) {
+        queryFactory.update(memberAndLecture)
+                .set(memberAndLecture.deletedAt, LocalDateTime.now())
+                .where(memberAndLecture.member.memberId.in(memberIdList))
+                .execute();
     }
 }

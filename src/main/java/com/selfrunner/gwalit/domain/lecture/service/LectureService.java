@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.lecture.service;
 
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentIdReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
@@ -32,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -233,6 +235,22 @@ public class LectureService {
                 .lecture(memberAndLecture.getLecture())
                 .build();
         memberAndLectureRepository.save(studentAndLecture);
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void emitStudent(Member member, Long lectureId, List<PostStudentIdReq> postStudentIdReqList) {
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        List<Long> memberIdList = postStudentIdReqList.stream()
+                .map(postStudentIdReq -> postStudentIdReq.getMemberId())
+                .collect(Collectors.toList());
+        memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(memberIdList);
+        memberRepository.deleteMemberByMemberIdList(memberIdList);
 
         // Response
         return null;

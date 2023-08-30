@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentIdReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
@@ -86,6 +87,13 @@ public class LectureController {
     @PostMapping("/student/register/{lecture_id}")
     public ApplicationResponse<Void> registerStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PostStudentReq postStudentReq) {
         lectureService.registerStudent(member, lectureId, postStudentReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "학생 내보내기")
+    @PostMapping("/student/emit/{lecture_id}")
+    public ApplicationResponse<Void> emitStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostStudentIdReq> postStudentIdReqList) {
+        lectureService.emitStudent(member, lectureId, postStudentIdReqList);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }

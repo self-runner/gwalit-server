@@ -13,4 +13,6 @@ public interface MemberAndLectureRepositoryCustom {
     Optional<List<MemberMeta>> findMemberMetaByLectureLectureId(Long lectureId);
 
     Long findCountByMember(Member member);
+
+    void deleteMemberAndLectureByMemberIdList(List<Long> memberIdList);
 }
