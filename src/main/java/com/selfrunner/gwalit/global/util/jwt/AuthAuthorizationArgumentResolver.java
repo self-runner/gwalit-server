@@ -54,7 +54,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         String type = tokenProvider.getType(authorization);
 
         // 사용자 정보 획득
-        Member member = memberRepository.findByPhoneAndType(phone, MemberType.valueOf(type));
+        Member member = memberRepository.findActiveByPhoneAndType(phone, MemberType.valueOf(type)).orElse(null);
         if(member == null) {
             throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
