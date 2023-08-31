@@ -1,9 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.controller;
 
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentIdReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.gwalit.domain.lecture.dto.request.*;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
@@ -18,6 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 
@@ -73,15 +75,12 @@ public class LectureController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getLectureAndLesson(member, lectureId));
     }
 
-    /*
-    TODO: 중간 심의 이후 적용 예정
-     */
-//    @Operation(summary = "학생 초대하기")
-//    @PostMapping("/student/invite")
-//    public ApplicationResponse<Void> inviteStudent(@Auth Member member, @Valid @RequestBody PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-//        lectureService.inviteStudent(member, postInviteReq);
-//        return ApplicationResponse.ok(ErrorCode.SUCCESS);
-//    }
+    @Operation(summary = "학생 초대하기")
+    @PostMapping("/student/invite/{lecture_id}")
+    public ApplicationResponse<Void> inviteStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        lectureService.inviteStudent(member, lectureId, postInviteReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
 
     @Operation(summary = "학생 가계정 생성")
     @PostMapping("/student/register/{lecture_id}")

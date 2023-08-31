@@ -1,11 +1,9 @@
 package com.selfrunner.gwalit.domain.lecture.service;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostLectureReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentIdReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PostStudentReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.*;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
@@ -13,7 +11,6 @@ import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
-import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
@@ -26,10 +23,15 @@ import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.*;
@@ -46,6 +48,7 @@ public class LectureService {
     private final TaskRepository taskRepository;
     private final LessonRepository lessonRepository;
     private final HomeworkRepository homeworkRepository;
+    private final SmsClient smsClient;
 
     @Transactional
     public Void register(Member member, PostLectureReq postLectureReq) {
@@ -205,28 +208,27 @@ public class LectureService {
         return getLectureRes;
     }
 
-    /*
-    TODO: 중간 심의 이후 적용 예정
-     */
-//    @Transactional
-//    public Void inviteStudent(Member member, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-//        // Validation
-//        if (member.getType() != MemberType.TEACHER) {
-//            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
-//        }
-//
-//        // Business Logic: MemberAndLecture 정보 저장 미 필요 (학생이 초대되었을 때는 연결될 필요 없지 않나..?)
-//        smsClient.sendInvitiation(member.getName(), postInviteReq);
-//        Member student = new Member();
-//        memberRepository.save(student);
-//        MemberAndLecture memberAndLecture = MemberAndLecture.builder()
-//                .member(member)
-//                .lecture()
-//                .build();
-//
-//        // Response
-//        return null;
-//    }
+    @Transactional
+    public Void inviteStudent(Member member, Long lectureId, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // Validation
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        if(!member.getType().equals(MemberType.TEACHER)) {
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
+
+        // Business Logic
+        smsClient.sendInvitation(member.getName(), postInviteReq);
+        Member student = postInviteReq.toEntity();
+        memberRepository.save(student);
+        MemberAndLecture studentAndLecture = MemberAndLecture.builder()
+                .member(student)
+                .lecture(memberAndLecture.getLecture())
+                .build();
+        memberAndLectureRepository.save(studentAndLecture);
+
+        // Response
+        return null;
+    }
 
     @Transactional
     public Void registerStudent(Member member, Long lectureId, PostStudentReq postStudentReq) {
@@ -234,12 +236,6 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        /*
-        1. 가계정 생성
-        2. 가계정 등록
-        3. 학생 관리 정보 반환 시 가계정 여부 포함해서 반환하도록 수정
-        TODO: java.lang.NullPointerException: Name is null 해결
-         */
         Member student = postStudentReq.toEntity();
         memberRepository.save(student);
         MemberAndLecture studentAndLecture = MemberAndLecture.builder()

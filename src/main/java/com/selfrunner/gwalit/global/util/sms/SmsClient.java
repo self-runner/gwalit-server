@@ -122,39 +122,35 @@ public class SmsClient {
         return temporaryPassword;
     }
 
-    /*
-    TODO: 중간 심의 이후 적용 예정
-     */
-//    public Void sendInvitiation(String name, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-//        // API 요청 Header, Body 구성
-//        Long time = System.currentTimeMillis();
-//        List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
-//
-//        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + "선생님으로부터 초대가 도착했습니다." + "링크" + "링크를 눌러 설치 후 접속해주세요."));
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, name, smsMessageDtoList));
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        headers.set("x-ncp-apigw-timestamp", time.toString());
-//        headers.set("x-ncp-iam-access-key", this.accessKey);
-//        String sig = makeSignature(time); // 암호화
-//        headers.set("x-ncp-apigw-signature-v2", sig);
-//
-//        // Header 포함 전송
-//        HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
-//
-//        RestTemplate restTemplate = new RestTemplate();
-//        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
-//        SmsNaverRes smsNaverRes = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+this.serviceId+"/messages"), body, SmsNaverRes.class);
-//
-//        // 실페 시, Error 던지기
-//        if(!smsNaverRes.getStatusCode().equals("202")) {
-//            throw new RuntimeException("문자 전송에 실패했습니다.");
-//        }
-//
-//        // 성공 시, 임시 비밀번호 반환
-//        return null;
-//    }
+    public Void sendInvitation(String name, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // API 요청 Header, Body 구성
+        Long time = System.currentTimeMillis();
+        List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
+
+        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + "선생님으로부터 초대가 도착했습니다." + "아래 링크를 통해 수업에 참여해보세요!" + "링크"));
+        ObjectMapper objectMapper = new ObjectMapper();
+        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, name, smsMessageDtoList));
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-ncp-apigw-timestamp", time.toString());
+        headers.set("x-ncp-iam-access-key", this.accessKey);
+        String sig = makeSignature(time); // 암호화
+        headers.set("x-ncp-apigw-signature-v2", sig);
+
+        // Header 포함 전송
+        HttpEntity<String> body = new HttpEntity<>(jsonBody, headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
+        SmsNaverRes smsNaverRes = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+this.serviceId+"/messages"), body, SmsNaverRes.class);
+
+        // 실페 시, Error 던지기
+        if(!smsNaverRes.getStatusCode().equals("202")) {
+            throw new RuntimeException("문자 전송에 실패했습니다.");
+        }
+
+        return null;
+    }
 
     public String makeSignature(Long time) throws UnsupportedEncodingException, InvalidKeyException, NoSuchAlgorithmException {
         String space = " ";					// one space
