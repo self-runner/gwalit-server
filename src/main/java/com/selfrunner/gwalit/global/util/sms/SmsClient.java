@@ -127,7 +127,7 @@ public class SmsClient {
         Long time = System.currentTimeMillis();
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
-        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + "선생님으로부터 초대가 도착했습니다." + "아래 링크를 통해 수업에 참여해보세요!" + "링크"));
+        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 수업에 참여해보세요!" + "\n" + "링크"));
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, name, smsMessageDtoList));
         HttpHeaders headers = new HttpHeaders();
