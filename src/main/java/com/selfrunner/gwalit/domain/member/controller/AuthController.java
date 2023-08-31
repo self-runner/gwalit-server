@@ -35,8 +35,9 @@ public class AuthController {
 
     @Operation(summary = "인증번호 전송 요청")
     @PostMapping("/phone")
-    public ApplicationResponse<String> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendAuthorizationCode(postAuthPhoneReq));
+    public ApplicationResponse<Void> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        authService.sendAuthorizationCode(postAuthPhoneReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "인증번호 확인 요청")
@@ -47,15 +48,17 @@ public class AuthController {
 
     @Operation(summary = "임시 비밀번호 발급")
     @PostMapping("/password")
-    public ApplicationResponse<String> sendTemporaryPassword(@Valid @RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.sendTemporaryPassword(postAuthCodeReq));
+    public ApplicationResponse<Void> sendTemporaryPassword(@Valid @RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        authService.sendTemporaryPassword(postAuthCodeReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "일반 회원가입")
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApplicationResponse<String> register(@Valid @RequestBody PostMemberReq postMemberReq) {
-        return ApplicationResponse.create(ErrorCode.SUCCESS, authService.register(postMemberReq));
+    public ApplicationResponse<Void> register(@Valid @RequestBody PostMemberReq postMemberReq) {
+        authService.register(postMemberReq);
+        return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "일반 로그인")
@@ -66,8 +69,9 @@ public class AuthController {
 
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ApplicationResponse<String> logout(HttpServletRequest httpServletRequest, @Auth Member member) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.logout(httpServletRequest.getHeader("Authorization"), member));
+    public ApplicationResponse<Void> logout(HttpServletRequest httpServletRequest, @Auth Member member) {
+        authService.logout(httpServletRequest.getHeader("Authorization"), member);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "토큰 재발급")
@@ -78,7 +82,8 @@ public class AuthController {
 
     @Operation(summary = "회원탈퇴")
     @PostMapping("/withdrawal")
-    public ApplicationResponse<String> withdrawal(@Auth Member member) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.withdrawal(member));
+    public ApplicationResponse<Void> withdrawal(@Auth Member member) {
+        authService.withdrawal(member);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }

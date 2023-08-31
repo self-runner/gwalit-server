@@ -39,15 +39,14 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
-    public String sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
         redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
 
         // Response
-        String response = "인증 번호를 전송했습니다.";
-        return response;
+        return null;
     }
     public Void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
@@ -62,7 +61,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
         Member member = memberRepository.findByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType()));
         if(member == null) {
@@ -88,12 +87,11 @@ public class AuthService {
         member.setNeedNotification();
 
         // Response
-        String response = "임시 비밀번호가 전송되었습니다.";
-        return response;
+        return null;
     }
 
     @Transactional
-    public String register(PostMemberReq postMemberReq) {
+    public Void register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
             throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
@@ -108,8 +106,7 @@ public class AuthService {
         memberRepository.save(member);
 
         // Response
-        String response = "회원가입을 성공했습니다.";
-        return response;
+        return null;
     }
 
     @Transactional
@@ -134,15 +131,14 @@ public class AuthService {
         return postLoginRes;
     }
 
-    public String logout(String atk, Member member) {
+    public Void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
         redisClient.deleteValue(key);
         redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
 
         // Response
-        String response = "로그아웃이 완료되었습니다";
-        return response;
+        return null;
     }
 
     @Transactional
@@ -169,7 +165,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String withdrawal(Member member) {
+    public Void withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
@@ -180,7 +176,6 @@ public class AuthService {
         memberRepository.delete(member);
 
         // Response
-        String response = "회원 탈퇴가 완료되었습니다";
-        return response;
+        return null;
     }
 }
