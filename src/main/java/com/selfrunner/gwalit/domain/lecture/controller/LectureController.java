@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.domain.lecture.dto.request.*;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureRes;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
 import com.selfrunner.gwalit.domain.lecture.service.LectureService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -94,5 +95,11 @@ public class LectureController {
     public ApplicationResponse<Void> emitStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostStudentIdReq> postStudentIdReqList) {
         lectureService.emitStudent(member, lectureId, postStudentIdReqList);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "학생 관리")
+    @GetMapping("/student/list/{lecture_id}")
+    public ApplicationResponse<List<GetStudentRes>> getStudent(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getStudent(member, lectureId));
     }
 }

@@ -2,8 +2,11 @@ package com.selfrunner.gwalit.domain.member.repository;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.entity.QMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -57,5 +60,15 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                 .set(memberAndLecture.deletedAt, LocalDateTime.now())
                 .where(memberAndLecture.member.memberId.in(memberIdList))
                 .execute();
+    }
+
+    @Override
+    public Optional<List<GetStudentRes>> findStudentByMemberAndLectureId(Member member, Long lectureId) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(memberAndLecture)
+                        .leftJoin(QMember.member).on(QMember.member.memberId.eq(memberAndLecture.member.memberId))
+                        .where(memberAndLecture.lecture.lectureId.eq(lectureId), QMember.member.type.ne(MemberType.TEACHER))
+                        .transform(groupBy(QMember.member.memberId).list(Projections.constructor(GetStudentRes.class, QMember.member.memberId, QMember.member.name, QMember.member.type, QMember.member.state, QMember.member.school, QMember.member.grade)))
+        );
     }
 }
