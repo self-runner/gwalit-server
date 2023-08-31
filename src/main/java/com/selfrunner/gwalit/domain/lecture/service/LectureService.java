@@ -119,8 +119,20 @@ public class LectureService {
 
         // Business Logic
         Lecture lecture = memberAndLecture.getLecture();
-        // TODO: 이전 수업 리포트들도 다 지울 것인지, 아닌지에 따른 조건 분기
-        if(!lecture.getStartDate().equals(putLectureReq.getStartDate()) || !lecture.getEndDate().equals(putLectureReq.getEndDate())) {
+        Boolean check = Boolean.TRUE;
+        if(putLectureReq.getSchedules().size() == lecture.getSchedules().size()) {
+            for(int i = 0; i < putLectureReq.getSchedules().size(); i++) {
+                if(!putLectureReq.getSchedules().get(i).equals(lecture.getSchedules().get(i))) {
+                    check = Boolean.FALSE;
+                    break;
+                }
+            }
+        }
+        else {
+            check = Boolean.FALSE;
+        }
+
+        if(!lecture.getStartDate().equals(putLectureReq.getStartDate()) || !lecture.getEndDate().equals(putLectureReq.getEndDate()) || !check) {
             if(putLectureReq.getDeleteBefore().equals(Boolean.TRUE)) {
                 lessonRepository.deleteAllByLectureIdAndDate(lecture.getLectureId(), lecture.getStartDate(), lecture.getEndDate());
                 List<Lesson> lessonList = new ArrayList<>();
