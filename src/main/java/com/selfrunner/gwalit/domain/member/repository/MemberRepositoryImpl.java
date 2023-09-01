@@ -33,7 +33,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     public Optional<Member> findInviteByPhoneAndTypeAndState(String phone, MemberType type) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(member)
-                        .where(member.phone.eq(phone), member.type.eq(type), member.state.eq(MemberState.ACTIVE), member.deletedAt.isNull())
+                        .where(member.phone.eq(phone), member.type.eq(type), member.state.eq(MemberState.INVITE), member.deletedAt.isNull())
                         .fetchFirst()
         );
     }
