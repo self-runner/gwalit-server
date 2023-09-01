@@ -35,6 +35,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -59,6 +60,9 @@ public class LectureService {
         }
         if(memberAndLectureRepository.findCountByMember(member) > 3) {
             throw new ApplicationException(ErrorCode.FAILED_MAKE_CLASS);
+        }
+        if(ChronoUnit.DAYS.between(postLectureReq.getStartDate(), postLectureReq.getEndDate()) > 365) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
 
         // Business Logic
@@ -120,6 +124,9 @@ public class LectureService {
     public Void update(Member member, Long lectureId, PutLectureReq putLectureReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        if(ChronoUnit.DAYS.between(putLectureReq.getStartDate(), putLectureReq.getEndDate()) > 365) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
 
         // Business Logic
         Lecture lecture = memberAndLecture.getLecture();
