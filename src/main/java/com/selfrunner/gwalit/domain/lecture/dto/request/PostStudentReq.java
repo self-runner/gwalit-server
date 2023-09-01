@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.UUID;
 
 @Getter
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ public class PostStudentReq {
                 .type(MemberType.STUDENT.toString())
                 .state(MemberState.FAKE)
                 .phone(this.phone)
+                .password(UUID.randomUUID().toString())
                 .isAdvertisement(Boolean.FALSE)
                 .isPrivacy(Boolean.FALSE)
                 .build();

@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.util.SHA256;
@@ -71,6 +72,17 @@ public class Member extends BaseTimeEntity {
         this.grade = (putMemberReq.getGrade() != null) ? MemberGrade.valueOf(putMemberReq.getGrade()) : this.grade;
         this.isAdvertisement = putMemberReq.getIsAdvertisement();
         this.isPrivacy = putMemberReq.getIsPrivacy();
+    }
+
+    public void update(PostMemberReq postMemberReq) {
+        this.name = postMemberReq.getName();
+        this.state = MemberState.ACTIVE;
+        this.password = SHA256.encrypt(postMemberReq.getPassword());
+        this.school = postMemberReq.getSchool();
+        this.grade = (grade != null) ? MemberGrade.valueOf(postMemberReq.getGrade()) : null;
+        this.needNotification = Boolean.FALSE;
+        this.isAdvertisement = postMemberReq.getIsAdvertisement();
+        this.isPrivacy = postMemberReq.getIsPrivacy();
     }
 
     @Builder

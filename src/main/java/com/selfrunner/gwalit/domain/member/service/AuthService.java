@@ -8,6 +8,7 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -39,15 +40,14 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
 
-    public String sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
         redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
 
         // Response
-        String response = "인증 번호를 전송했습니다.";
-        return response;
+        return null;
     }
     public Void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
@@ -62,17 +62,17 @@ public class AuthService {
     }
 
     @Transactional
-    public String sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
-        Member member = memberRepository.findByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType()));
+        Member member = memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType())).orElse(null);
         if(member == null) {
             if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
-                if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT)) {
+                if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT).orElse(null) != null) {
                     throw new ApplicationException(ErrorCode.WRONG_TYPE);
                 }
             }
             else {
-                if(memberRepository.existsByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER)) {
+                if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER).orElse(null) != null) {
                     throw new ApplicationException(ErrorCode.WRONG_TYPE);
                 }
             }
@@ -88,34 +88,39 @@ public class AuthService {
         member.setNeedNotification();
 
         // Response
-        String response = "임시 비밀번호가 전송되었습니다.";
-        return response;
+        return null;
     }
 
     @Transactional
-    public String register(PostMemberReq postMemberReq) {
-        // Validation: 전화번호와 타입으로 회원가입 이미 진행했는지 여부 확인
-        if(memberRepository.existsByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType()))) {
+    public Void register(PostMemberReq postMemberReq) {
+        // Validation: 전화번호와 타입 및 논리적 삭제 여부로 회원가입 이미 진행했는지 여부 확인
+        if(memberRepository.findActiveByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null) != null) {
             throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
         }
+        // 비밀번호와 비밀번호 확인 일치 여부 확인
         if(!postMemberReq.getPassword().equals(postMemberReq.getPasswordCheck())) {
             throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
 
         // Business Logic: 비밀번호 암호화 및 회원 정보 저장
-        Member member = postMemberReq.toEntity();
-        member.encryptPassword(member.getPassword());
-        memberRepository.save(member);
+        Member inviter = memberRepository.findInviteByPhoneAndTypeAndState(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null);
+        if(inviter == null) {
+            Member member = postMemberReq.toEntity();
+            member.encryptPassword(member.getPassword());
+            memberRepository.save(member);
+        }
+        if(inviter != null) {
+            inviter.update(postMemberReq);
+        }
 
         // Response
-        String response = "회원가입을 성공했습니다.";
-        return response;
+        return null;
     }
 
     @Transactional
     public PostLoginRes login(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
-        Member member = memberRepository.findByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()));
+        Member member = memberRepository.findActiveByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType())).orElse(null);
         if(member.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
@@ -134,15 +139,14 @@ public class AuthService {
         return postLoginRes;
     }
 
-    public String logout(String atk, Member member) {
+    public Void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
         redisClient.deleteValue(key);
         redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
 
         // Response
-        String response = "로그아웃이 완료되었습니다";
-        return response;
+        return null;
     }
 
     @Transactional
@@ -154,7 +158,7 @@ public class AuthService {
         if(rtk.isBlank() || value == null || !value.equals(rtk)) {
             throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
-        Member member = memberRepository.findByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)));
+        Member member = memberRepository.findActiveByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk))).orElse(null);
         if(member == null) {
             throw new ApplicationException(ErrorCode.WRONG_TOKEN);
         }
@@ -169,7 +173,7 @@ public class AuthService {
     }
 
     @Transactional
-    public String withdrawal(Member member) {
+    public Void withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
@@ -180,7 +184,6 @@ public class AuthService {
         memberRepository.delete(member);
 
         // Response
-        String response = "회원 탈퇴가 완료되었습니다";
-        return response;
+        return null;
     }
 }
