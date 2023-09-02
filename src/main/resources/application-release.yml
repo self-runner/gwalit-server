@@ -2,9 +2,6 @@ server:
   port: 8080
 
 spring:
-  profiles:
-    include: secret
-    active: local
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: ENC(a9LR/kaafzMrkwHbAMAHhvJSlDupcGYZ47PYR0hRfMI0yQevvhkAE6DNu7CxIXnrClM0o+P3eAkdXVnG5PkWBW3CeKrsl8ohJhQsuDfsYGNjL8fVcVAb+k4H46ZYV9KMH/sx05dfB6U=)
