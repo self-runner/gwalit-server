@@ -23,10 +23,10 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "bannerId")
     private Long bannerId;
 
-    @Column(name = "imageUrl")
+    @Column(name = "imageUrl", columnDefinition = "text")
     private String imageUrl;
 
-    @Column(name = "linkUrl")
+    @Column(name = "linkUrl", columnDefinition = "text")
     private String linkUrl;
 
     public void updateImage(String imageUrl) {

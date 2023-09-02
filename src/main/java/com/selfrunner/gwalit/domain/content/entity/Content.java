@@ -33,10 +33,10 @@ public class Content extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private ContentType type;
 
-    @Column(name = "linkUrl")
+    @Column(name = "linkUrl", columnDefinition = "text")
     private String linkUrl;
 
-    @Column(name = "thumbnail")
+    @Column(name = "thumbnail", columnDefinition = "text")
     private String thumbnail;
 
     @Column(name = "duration")
