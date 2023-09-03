@@ -43,13 +43,13 @@ jobs:
           echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
         shell: bash
 
-      # makeFiles.config 반영
-      - name: Make 00-makeFiles.config
-        run: |
-          cd ./.ebextensions
-          touch ./00-makeFiles.config
-          echo "${{ secrets.DEV_MAKEFILES}}" > ./00-makeFiles.config
-        shell: bash
+#      # makeFiles.config 반영
+#      - name: Make 00-makeFiles.config
+#        run: |
+#          cd ./.ebextensions
+#          touch ./00-makeFiles.config
+#          echo "${{ secrets.DEV_MAKEFILES}}" > ./00-makeFiles.config
+#        shell: bash
 
       # Gradle BootJar
       - name: BootJar with Gradle
