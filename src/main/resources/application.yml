@@ -4,45 +4,12 @@ server:
 spring:
   profiles:
     include: secret
-    active: local
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ENC(r8hRoOVKXzq2QGA9uOoM4y3XYtR2lxhqnH2svMdrc9vgpQc65UD9UhIposQd4Cqd8BnkCmFbNwPh7Ycf2uuVmOQ81NDKaGOcgKw+cy72C6xpQm2ly6s82/B0lQNqGYZG)
-    username: ENC(qHpLntcREcuy4ANFoiu4S5rvu3B4WM4a)
-    password: ENC(kos0w5kmyEhYlfJ+xRyrYmNppiAVztcg)
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
-  redis:
-    host: ENC(Ttm4ftqXqrtpqHUNX09DHrNBhGEmLuo6)
-    port: 6379
-    password: ENC(IDxTSfQKMZjHv0pDXXf8OGCsgS61Eljt)
-  swagger-ui:
-    path: ENC(WTBg/5W0RzdfjEYWeHF/lvHH8XFo0FJA0Ue3wuWoTRM=)
-    use-root-path: true
-  jpa:
-    open-in-view: false
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        show_sql: true
-        format_sql: true
+    active: default
 
-
-jasypt:
-  encryptor:
-    bean: jasyptStringEncryptor
-    algorithm: PBEWithMD5AndDES
-    iv-generator-classname: org.jasypt.iv.NoIvGenerator
-
-sentry:
-  dsn: ENC(o7fYLq7Pt70FSsLOf0n5iWIEyZk0ce1FCHcVfzhiF1KssDlEWU17F6LUAK8xVBZ/TQiYnMBze9osHkaaRTDjR/dHPG08jPn7hRkDYfVxZpenz6Rrf7MtW2RV8Z+xusgifUzmLvUIRKs=)
-  traces-sample-rate: 1.0
+---
+spring:
+  profiles:
+    active: dev
 
 ---
 spring:
