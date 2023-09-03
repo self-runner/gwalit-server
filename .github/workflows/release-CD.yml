@@ -35,13 +35,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # yml 반영
+      # secret.yml 반영
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources
           touch ./application-secret.yml
           echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
         shell: bash
+
+      # release.yml 반영
+      - name: Make application-release.yml
+        run: |
+          cd ./src/main/resources
+          echo "${{ secrets.APPLICATION_RELEASE}}" > ./application-release.yml
+        shell: bash
+
 
 #      # makeFiles.config 반영
 #      - name: Make 00-makeFiles.config
