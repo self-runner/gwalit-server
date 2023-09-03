@@ -48,7 +48,7 @@ jobs:
         run: |
           cd ./.ebextensions
           touch ./00-makeFiles.config
-          echo "${{ secrets.DEV_MAKEFILS}}" > ./00-makeFiles.config
+          echo "${{ secrets.DEV_MAKEFILES}}" > ./00-makeFiles.config
         shell: bash
 
       # Gradle BootJar
