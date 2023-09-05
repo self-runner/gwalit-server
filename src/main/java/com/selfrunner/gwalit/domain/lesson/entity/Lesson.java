@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -16,6 +17,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -53,6 +55,16 @@ public class Lesson extends BaseTimeEntity {
 
     @Column(name = "date")
     private LocalDate date;
+
+    @Column(name = "weekday")
+    @Enumerated(EnumType.STRING)
+    private Day weekday;
+
+    @Column(name = "startTime", columnDefinition = "time")
+    private LocalTime startTime;
+
+    @Column(name = "endTime", columnDefinition = "time")
+    private LocalTime endTime;
 
     @Type(type = "json")
     @Column(name = "time", columnDefinition = "json")
