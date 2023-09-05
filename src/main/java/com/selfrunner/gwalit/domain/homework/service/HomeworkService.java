@@ -1,11 +1,13 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
+import com.selfrunner.gwalit.domain.log.entity.Log;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
@@ -15,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,5 +101,22 @@ public class HomeworkService {
 
         // Response
         return homeworkResList;
+    }
+
+    public List<HomeworkMainRes> getMain(Member member) {
+        // Validation
+
+        // Business Logic
+        /*
+        TODO: 학생이 가지고 있는 lecture 조회 / lecture별 가장 최신 lesson 조회 / lesson별 homework 조회 및 반 -> lesson별로 그루핑 필요 X
+
+        lecture컬러도 알아야 함.
+         */
+        List<Long> lessonIdList = new ArrayList<>();
+        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findAllByMemberIdAndLessonIdList(member, lessonIdList).orElse(null);
+
+
+        // Response
+        return homeworkMainResList;
     }
 }
