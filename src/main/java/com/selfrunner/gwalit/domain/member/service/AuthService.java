@@ -64,6 +64,9 @@ public class AuthService {
     @Transactional
     public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
+        if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
+            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+        }
         Member member = memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType())).orElse(null);
         if(member == null) {
             if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
@@ -77,9 +80,6 @@ public class AuthService {
                 }
             }
             throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
-        }
-        if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Business Logic
