@@ -61,20 +61,20 @@ public class LessonService {
         return lessonIdRes;
     }
 
-    @Transactional
-    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
-        // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
-
-        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
-        List<Lesson> lessonList = postLessonReqList.stream()
-                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
-                .collect(Collectors.toList());
-        lessonRepository.saveAll(lessonList);
-
-        // Response
-        return null;
-    }
+//    @Transactional
+//    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
+//        // Validation
+//        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+//
+//        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
+//        List<Lesson> lessonList = postLessonReqList.stream()
+//                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
+//                .collect(Collectors.toList());
+//        lessonRepository.saveAll(lessonList);
+//
+//        // Response
+//        return null;
+//    }
 
     @Transactional
     public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {

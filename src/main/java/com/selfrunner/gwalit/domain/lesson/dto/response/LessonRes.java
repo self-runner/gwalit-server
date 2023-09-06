@@ -45,7 +45,7 @@ public class LessonRes {
         lessonRes.progresses = lesson.getProgresses();
         lessonRes.homeworks = homeworks;
         lessonRes.date = lesson.getDate().toString();
-        lessonRes.time = lesson.getTime();
+        lessonRes.time = new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime());
 
         return lessonRes;
     }
