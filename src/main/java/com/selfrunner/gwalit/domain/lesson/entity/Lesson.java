@@ -67,10 +67,6 @@ public class Lesson extends BaseTimeEntity {
     @Column(name = "endTime", columnDefinition = "time")
     private LocalTime endTime;
 
-    @Type(type = "json")
-    @Column(name = "time", columnDefinition = "json")
-    private Schedule time;
-
     public void update(PutLessonReq putLessonReq) {
         this.type = LessonType.valueOf(putLessonReq.getType());
         this.participants = putLessonReq.getParticipants();
