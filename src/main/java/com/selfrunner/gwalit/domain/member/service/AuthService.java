@@ -121,8 +121,8 @@ public class AuthService {
     public PostLoginRes login(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findActiveByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType())).orElse(null);
-        if(member.getDeletedAt() != null) {
-            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
+        if(member == null) {
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
         if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
             throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
