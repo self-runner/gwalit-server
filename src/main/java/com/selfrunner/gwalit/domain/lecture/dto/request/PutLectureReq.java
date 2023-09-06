@@ -20,6 +20,10 @@ public class PutLectureReq {
     @NotEmpty(message = "Class 색상이 미정입니다.")
     private String color;
 
+    private String category;
+
+    private String subject;
+
     @NotNull(message = "시작일자가 설정되지 않았습니다.")
     private LocalDate startDate;
 

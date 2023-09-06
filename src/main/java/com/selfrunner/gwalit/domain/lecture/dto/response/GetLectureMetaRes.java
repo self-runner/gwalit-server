@@ -19,6 +19,10 @@ public class GetLectureMetaRes {
 
     private final String color;
 
+    private final String category;
+
+    private final String subject;
+
     private final LocalDate startDate;
 
     private final LocalDate endDate;

@@ -16,5 +16,9 @@ public class GetLectureMainRes {
 
     private final String color;
 
+    private final String category;
+
+    private final String subject;
+
     private final List<MemberMeta> memberMetas;
 }

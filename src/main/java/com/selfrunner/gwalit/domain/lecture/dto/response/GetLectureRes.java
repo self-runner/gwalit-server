@@ -21,6 +21,10 @@ public class GetLectureRes {
 
     private final String color;
 
+    private final String category;
+
+    private final String subject;
+
     private final LocalDate startDate;
 
     private final LocalDate endDate;
@@ -37,6 +41,8 @@ public class GetLectureRes {
         this.lectureId = lecture.getLectureId();
         this.name = lecture.getName();
         this.color = lecture.getColor();
+        this.category = lecture.getCategory().toString();
+        this.subject = lecture.getSubject().toString();
         this.startDate = lecture.getStartDate();
         this.endDate = lecture.getEndDate();
         this.rules = lecture.getRules();
