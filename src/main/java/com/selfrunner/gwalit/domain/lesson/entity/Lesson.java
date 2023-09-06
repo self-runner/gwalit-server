@@ -18,6 +18,7 @@ import org.hibernate.annotations.Where;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -77,6 +78,9 @@ public class Lesson extends BaseTimeEntity {
         this.progresses = putLessonReq.getProgresses();
         this.date = putLessonReq.getDate();
         this.time = putLessonReq.getTime();
+        this.weekday = putLessonReq.getTime().getWeekday();
+        this.startTime = LocalTime.parse(putLessonReq.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        this.endTime = LocalTime.parse(putLessonReq.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     @Builder
