@@ -77,7 +77,6 @@ public class Lesson extends BaseTimeEntity {
         this.feedback = putLessonReq.getFeedback();
         this.progresses = putLessonReq.getProgresses();
         this.date = putLessonReq.getDate();
-        this.time = putLessonReq.getTime();
         this.weekday = putLessonReq.getTime().getWeekday();
         this.startTime = LocalTime.parse(putLessonReq.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(putLessonReq.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
@@ -91,7 +90,6 @@ public class Lesson extends BaseTimeEntity {
         this.feedback = feedback;
         this.progresses = progresses;
         this.date = date;
-        this.time = time;
         this.weekday = time.getWeekday();
         this.startTime = LocalTime.parse(time.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(time.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
