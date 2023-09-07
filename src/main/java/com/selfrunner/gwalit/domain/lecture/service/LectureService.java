@@ -114,7 +114,20 @@ public class LectureService {
          */
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS));
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
-        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
+        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), (lecture.getCategory() != null) ? lecture.getCategory().toString() : null, (lecture.getSubject() != null) ? lecture.getSubject().toString() : null, lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
+        if(lecture.getCategory() == null && lecture.getSubject() == null) {
+
+        }
+        if(lecture.getCategory() == null && lecture.getSubject() != null) {
+
+        }
+        if(lecture.getCategory() != null && lecture.getSubject() == null) {
+
+        }
+        if(lecture.getCategory() != null && lecture.getSubject() != null) {
+
+        }
+
 
         // Response
         return getLectureMetaRes;

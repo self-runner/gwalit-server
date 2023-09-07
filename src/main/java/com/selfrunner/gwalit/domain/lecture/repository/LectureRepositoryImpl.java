@@ -43,7 +43,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                 .innerJoin(member).on(member.eq(memberAndLecture.member))
                 .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
                 .transform(groupBy(memberAndLecture.lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color,
+                        .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.category, lecture.subject,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
 
     }
@@ -55,7 +55,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                 .innerJoin(member).on(member.eq(memberAndLecture.member))
                 .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
                 .transform(groupBy(lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
+                        .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.category, lecture.subject, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
     }
 }
