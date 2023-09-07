@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
+import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -16,6 +17,8 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Entity
@@ -54,9 +57,15 @@ public class Lesson extends BaseTimeEntity {
     @Column(name = "date")
     private LocalDate date;
 
-    @Type(type = "json")
-    @Column(name = "time", columnDefinition = "json")
-    private Schedule time;
+    @Column(name = "weekday")
+    @Enumerated(EnumType.STRING)
+    private Day weekday;
+
+    @Column(name = "startTime", columnDefinition = "time")
+    private LocalTime startTime;
+
+    @Column(name = "endTime", columnDefinition = "time")
+    private LocalTime endTime;
 
     public void update(PutLessonReq putLessonReq) {
         this.type = LessonType.valueOf(putLessonReq.getType());
@@ -64,7 +73,10 @@ public class Lesson extends BaseTimeEntity {
         this.feedback = putLessonReq.getFeedback();
         this.progresses = putLessonReq.getProgresses();
         this.date = putLessonReq.getDate();
-        this.time = putLessonReq.getTime();
+        this.weekday = putLessonReq.getTime().getWeekday();
+        this.startTime = LocalTime.parse(putLessonReq.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        this.endTime = LocalTime.parse(putLessonReq.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+
     }
 
     @Builder
@@ -75,6 +87,9 @@ public class Lesson extends BaseTimeEntity {
         this.feedback = feedback;
         this.progresses = progresses;
         this.date = date;
-        this.time = time;
+        this.weekday = time.getWeekday();
+        this.startTime = LocalTime.parse(time.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        this.endTime = LocalTime.parse(time.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+
     }
 }
