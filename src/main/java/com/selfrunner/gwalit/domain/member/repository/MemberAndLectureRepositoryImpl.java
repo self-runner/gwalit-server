@@ -68,7 +68,7 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                 queryFactory.selectFrom(memberAndLecture)
                         .leftJoin(QMember.member).on(QMember.member.memberId.eq(memberAndLecture.member.memberId))
                         .where(memberAndLecture.lecture.lectureId.eq(lectureId), QMember.member.type.ne(MemberType.TEACHER))
-                        .transform(groupBy(QMember.member.memberId).list(Projections.constructor(GetStudentRes.class, QMember.member.memberId, QMember.member.name, QMember.member.type, QMember.member.state, QMember.member.school, QMember.member.grade)))
+                        .transform(groupBy(QMember.member.memberId).list(Projections.constructor(GetStudentRes.class, QMember.member.memberId, QMember.member.name, QMember.member.type, QMember.member.state, QMember.member.phone, QMember.member.school, QMember.member.grade)))
         );
     }
 }

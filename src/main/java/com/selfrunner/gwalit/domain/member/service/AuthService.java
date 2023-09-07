@@ -64,6 +64,9 @@ public class AuthService {
     @Transactional
     public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
+        if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
+            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+        }
         Member member = memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType())).orElse(null);
         if(member == null) {
             if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
@@ -77,9 +80,6 @@ public class AuthService {
                 }
             }
             throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
-        }
-        if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Business Logic
@@ -121,8 +121,8 @@ public class AuthService {
     public PostLoginRes login(PostLoginReq postLoginReq) {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findActiveByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType())).orElse(null);
-        if(member.getDeletedAt() != null) {
-            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
+        if(member == null) {
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
         if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
             throw new ApplicationException(ErrorCode.WRONG_PASSWORD);

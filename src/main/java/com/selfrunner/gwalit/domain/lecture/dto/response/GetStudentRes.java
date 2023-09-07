@@ -16,7 +16,9 @@ public class GetStudentRes {
 
     private final MemberType type;
 
-    private final MemberState memberState;
+    private final MemberState state;
+
+    private final String phone;
 
     private final String school;
 
