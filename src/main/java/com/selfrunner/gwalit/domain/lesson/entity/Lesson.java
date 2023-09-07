@@ -19,7 +19,6 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Entity
 @Getter
@@ -76,6 +75,7 @@ public class Lesson extends BaseTimeEntity {
         this.weekday = putLessonReq.getTime().getWeekday();
         this.startTime = LocalTime.parse(putLessonReq.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(putLessonReq.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+
     }
 
     @Builder
@@ -89,5 +89,6 @@ public class Lesson extends BaseTimeEntity {
         this.weekday = time.getWeekday();
         this.startTime = LocalTime.parse(time.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(time.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+
     }
 }
