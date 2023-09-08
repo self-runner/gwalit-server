@@ -224,9 +224,10 @@ public class LectureService {
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
+
         // Business Logic: 기존에
         Member check = memberRepository.findActiveByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
-        if(check == null) {
+        if(check != null) {
             smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.FALSE);
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
                     .member(check)
@@ -234,7 +235,7 @@ public class LectureService {
                     .build();
             memberAndLectureRepository.save(studentAndLecture);
         }
-        if(check != null) {
+        if(check == null) {
             smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.TRUE);
             Member student = postInviteReq.toEntity();
             memberRepository.save(student);
