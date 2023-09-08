@@ -35,7 +35,9 @@ public class LessonRes {
 
     private Schedule time;
 
-    public LessonRes toDto(Lesson lesson, List<HomeworkRes> homeworks) {
+    private List<MemberMeta> memberMetas;
+
+    public LessonRes toDto(Lesson lesson, List<HomeworkRes> homeworks, List<MemberMeta> memberMetas) {
         LessonRes lessonRes = new LessonRes();
         lessonRes.lessonId = lesson.getLessonId();
         lessonRes.lectureId = lesson.getLecture().getLectureId();
@@ -46,6 +48,7 @@ public class LessonRes {
         lessonRes.homeworks = homeworks;
         lessonRes.date = lesson.getDate().toString();
         lessonRes.time = new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime());
+        lessonRes.memberMetas = memberMetas;
 
         return lessonRes;
     }
