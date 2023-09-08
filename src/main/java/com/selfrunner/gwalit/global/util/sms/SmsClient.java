@@ -128,7 +128,7 @@ public class SmsClient {
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
         if(type.equals(Boolean.TRUE)) {
-            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 수업에 참여해보세요!" + "\n" + "링크"));
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "애플: " + "https://bit.ly/gwarit-apple"));
         }
         if(type.equals(Boolean.FALSE)) {
             smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "앱 접속 후 수업에 참여해보세요!"));
