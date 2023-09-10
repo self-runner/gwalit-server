@@ -15,5 +15,5 @@ public interface HomeworkRepositoryCustom {
 
     void deleteAllByLessonIdList(List<Long> lessonIdList);
 
-    Optional<List<HomeworkMainRes>> findAllByMemberIdAndLessonIdList(Member member, List<Long> lessonIdList);
+    Optional<List<HomeworkMainRes>> findRecentHomeworkByMemberAndLessonIdList(Member member, List<Long> lessonIdList);
 }

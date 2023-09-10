@@ -106,13 +106,22 @@ public class HomeworkService {
         // Validation
 
         // Business Logic
-        /*
-        TODO: 학생이 가지고 있는 lecture 조회 / lecture별 가장 최신 lesson 조회 / lesson별 homework 조회 및 반 -> lesson별로 그루핑 필요 X
+        List<Long> lessonIdList = lessonRepository.findRecentLessonIdByMember(member).orElse(null);
+        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
 
-        lecture컬러도 알아야 함.
-         */
+
+        // Response
+        return homeworkMainResList;
+    }
+
+    public List<HomeworkMainRes> getLecture(Member member, Long lectureId) {
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
         List<Long> lessonIdList = new ArrayList<>();
-        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findAllByMemberIdAndLessonIdList(member, lessonIdList).orElse(null);
+        lessonIdList.add(lessonRepository.findRecentLessonIdByLectureId(lectureId).orElse(null));
+        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
 
 
         // Response

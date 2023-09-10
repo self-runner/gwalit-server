@@ -63,4 +63,10 @@ public class HomeworkController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getMain(member));
     }
 
+    @Operation(summary = "클래스 페이지용 가장 최근 수업에 해당하는 수업 정보 반환")
+    @GetMapping("/lecture/{lecture_id}")
+    public ApplicationResponse<List<HomeworkMainRes>> getLecture(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getLecture(member, lectureId));
+    }
+
 }
