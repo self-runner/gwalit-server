@@ -122,14 +122,20 @@ public class SmsClient {
         return temporaryPassword;
     }
 
-    public Void sendInvitation(String name, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendInvitation(String name, PostInviteReq postInviteReq, Boolean type) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // API 요청 Header, Body 구성
         Long time = System.currentTimeMillis();
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
-        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 수업에 참여해보세요!" + "\n" + "링크"));
+        if(type.equals(Boolean.TRUE)) {
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+        }
+        if(type.equals(Boolean.FALSE)) {
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "앱 접속 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, name, smsMessageDtoList));
+        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("MMS", this.senderPhone, name, smsMessageDtoList));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-ncp-apigw-timestamp", time.toString());

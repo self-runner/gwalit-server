@@ -17,6 +17,7 @@ import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -61,20 +62,20 @@ public class LessonService {
         return lessonIdRes;
     }
 
-    @Transactional
-    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
-        // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
-
-        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
-        List<Lesson> lessonList = postLessonReqList.stream()
-                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
-                .collect(Collectors.toList());
-        lessonRepository.saveAll(lessonList);
-
-        // Response
-        return null;
-    }
+//    @Transactional
+//    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
+//        // Validation
+//        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+//
+//        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
+//        List<Lesson> lessonList = postLessonReqList.stream()
+//                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
+//                .collect(Collectors.toList());
+//        lessonRepository.saveAll(lessonList);
+//
+//        // Response
+//        return null;
+//    }
 
     @Transactional
     public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {
@@ -135,8 +136,9 @@ public class LessonService {
 
         // Business Logic
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        LessonRes lessonRes = new LessonRes().toDto(lesson, homeworkRes);
+        LessonRes lessonRes = new LessonRes().toDto(lesson, lesson.getLecture().getColor(), homeworkRes, memberMetas, (lesson.getCreatedAt().equals(lesson.getModifiedAt())) ? Boolean.TRUE : Boolean.FALSE);
 
         // Response
         return lessonRes;
