@@ -117,20 +117,19 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(queryFactory.select(lesson.lessonId)
                 .from(lesson)
                 .leftJoin(lecture).on(lesson.lecture.lectureId.eq(lecture.lectureId))
-                .where(lesson.deletedAt.isNull())
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
                 .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
                 .fetchFirst()
         );
     }
 
     @Override
-    public Optional<List<Long>> findRecentLessonIdByMember(Member member) {
+    public Optional<List<Long>> findRecentLessonIdByLectureIdList(List<Long> lectureIdList) {
         return Optional.ofNullable(
             queryFactory.select(lesson.lessonId)
                     .from(lesson)
                     .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
-                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
-                    .where(memberAndLecture.member.memberId.eq(member.getMemberId()), lecture.deletedAt.isNull())
+                    .where(lecture.lectureId.in(lectureIdList), lecture.deletedAt.isNull(), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
                     .groupBy(lecture.lectureId)
                     .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
                     .fetch()

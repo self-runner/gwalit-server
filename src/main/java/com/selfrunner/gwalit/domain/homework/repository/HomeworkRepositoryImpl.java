@@ -50,9 +50,9 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.selectFrom(homework)
                     .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lessonId))
+                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
                     .where(homework.lessonId.in(lessonIdList), homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull())
-                    .transform(groupBy(homework.lessonId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 }
