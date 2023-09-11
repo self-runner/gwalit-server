@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -87,9 +88,35 @@ public class SmsClient {
 
         String temporaryPassword = "";
 
-        for(Integer i = 0; i < 10; i++) {
-            Integer idx = (int)(Math.random() * (list.length - 0 + 1)) + 0;
+        // 숫자 하나 추가
+        int idx = (int)(Math.random() * 10); // 0에서 9 사이의 인덱스 선택
+        temporaryPassword += list[idx];
+
+        // 문자 하나 추가
+        idx = (int)(Math.random() * 26) + 10; // 10에서 35 사이의 인덱스 선택 (알파벳 대문자)
+        temporaryPassword += list[idx];
+
+        // 특수 문자 하나 추가
+        idx = (int)(Math.random() * 9) + 36; // 36에서 44 사이의 인덱스 선택 (특수 문자)
+        temporaryPassword += list[idx];
+
+        for(Integer i = 3; i < 10; i++) {
+            idx = (int)(Math.random() * (list.length + 1)) + 0;
             temporaryPassword += list[idx];
+        }
+        // 문자열을 문자 리스트로 변환
+        List<Character> charList = new ArrayList<>();
+        for (char c : temporaryPassword.toCharArray()) {
+            charList.add(c);
+        }
+
+        // 문자 리스트를 섞기
+        Collections.shuffle(charList);
+
+        // 섞인 문자 리스트를 다시 문자열로 변환
+        StringBuilder shuffledPassword = new StringBuilder();
+        for (char c : charList) {
+            shuffledPassword.append(c);
         }
         Long time = System.currentTimeMillis();
 
