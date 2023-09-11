@@ -97,7 +97,7 @@ public class SmsClient {
         temporaryPassword += list[idx];
 
         // 특수 문자 하나 추가
-        idx = (int)(Math.random() * 9) + 36; // 36에서 44 사이의 인덱스 선택 (특수 문자)
+        idx = (int)(Math.random() * 9) + 62; // 36에서 44 사이의 인덱스 선택 (특수 문자)
         temporaryPassword += list[idx];
 
         for(Integer i = 3; i < 10; i++) {
