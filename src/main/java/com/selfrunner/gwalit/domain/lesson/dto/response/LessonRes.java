@@ -21,6 +21,8 @@ public class LessonRes {
 
     private Long lectureId;
 
+    private String color;
+
     private LessonType type;
 
     private List<Participant> participants;
@@ -35,10 +37,15 @@ public class LessonRes {
 
     private Schedule time;
 
-    public LessonRes toDto(Lesson lesson, List<HomeworkRes> homeworks) {
+    private List<MemberMeta> memberMetas;
+
+    private Boolean isFirst;
+
+    public LessonRes toDto(Lesson lesson, String color, List<HomeworkRes> homeworks, List<MemberMeta> memberMetas, Boolean isFirst) {
         LessonRes lessonRes = new LessonRes();
         lessonRes.lessonId = lesson.getLessonId();
         lessonRes.lectureId = lesson.getLecture().getLectureId();
+        lessonRes.color = color;
         lessonRes.type = lesson.getType();
         lessonRes.participants = lesson.getParticipants();
         lessonRes.feedback = lesson.getFeedback();
@@ -46,6 +53,8 @@ public class LessonRes {
         lessonRes.homeworks = homeworks;
         lessonRes.date = lesson.getDate().toString();
         lessonRes.time = new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime());
+        lessonRes.memberMetas = memberMetas;
+        lessonRes.isFirst = isFirst;
 
         return lessonRes;
     }

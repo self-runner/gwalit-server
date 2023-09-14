@@ -41,7 +41,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .where(lecture.lectureId.in(lectureIdList))
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
@@ -51,9 +51,9 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     @Override
     public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList) {
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
-                .innerJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
-                .innerJoin(member).on(member.eq(memberAndLecture.member))
-                .where(memberAndLecture.lecture.lectureId.in(lectureIdList))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
+                .leftJoin(member).on(member.eq(memberAndLecture.member))
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));

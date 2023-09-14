@@ -224,15 +224,27 @@ public class LectureService {
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
-        // Business Logic
-        smsClient.sendInvitation(member.getName(), postInviteReq);
-        Member student = postInviteReq.toEntity();
-        memberRepository.save(student);
-        MemberAndLecture studentAndLecture = MemberAndLecture.builder()
-                .member(student)
-                .lecture(memberAndLecture.getLecture())
-                .build();
-        memberAndLectureRepository.save(studentAndLecture);
+
+        // Business Logic: 기존에
+        Member check = memberRepository.findActiveByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
+        if(check != null) {
+            smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.FALSE);
+            MemberAndLecture studentAndLecture = MemberAndLecture.builder()
+                    .member(check)
+                    .lecture(memberAndLecture.getLecture())
+                    .build();
+            memberAndLectureRepository.save(studentAndLecture);
+        }
+        if(check == null) {
+            smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.TRUE);
+            Member student = postInviteReq.toEntity();
+            memberRepository.save(student);
+            MemberAndLecture studentAndLecture = MemberAndLecture.builder()
+                    .member(student)
+                    .lecture(memberAndLecture.getLecture())
+                    .build();
+            memberAndLectureRepository.save(studentAndLecture);
+        }
 
         // Response
         return null;

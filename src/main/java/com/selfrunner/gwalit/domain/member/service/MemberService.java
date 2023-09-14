@@ -56,7 +56,7 @@ public class MemberService {
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
         if(!SHA256.encrypt(putPasswordReq.getOldPassword()).equals(change.getPassword())) {
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
         }
         if(!putPasswordReq.getNewPassword().equals(putPasswordReq.getNewPasswordCheck())) {
             throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);

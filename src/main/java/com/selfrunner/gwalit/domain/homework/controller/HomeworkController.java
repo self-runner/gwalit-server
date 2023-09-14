@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.homework.controller;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.service.HomeworkService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -54,6 +55,18 @@ public class HomeworkController {
     @GetMapping("")
     public ApplicationResponse<List<HomeworkRes>> getAll(@Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getAll(member));
+    }
+
+    @Operation(summary = "메인 페이지용 학생이 가지고 있는 숙제 정보 반환")
+    @GetMapping("/main")
+    public ApplicationResponse<List<HomeworkMainRes>> getMain(@Auth Member member) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getMain(member));
+    }
+
+    @Operation(summary = "클래스 페이지용 가장 최근 수업에 해당하는 수업 정보 반환")
+    @GetMapping("/lecture/{lecture_id}")
+    public ApplicationResponse<List<HomeworkMainRes>> getLecture(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getLecture(member, lectureId));
     }
 
 }

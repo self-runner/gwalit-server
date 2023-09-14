@@ -8,6 +8,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
+import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -20,6 +21,7 @@ import java.util.Optional;
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
+import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
 @RequiredArgsConstructor
@@ -108,5 +110,29 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .set(lesson.deletedAt, LocalDateTime.now())
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(startDate, endDate), lesson.type.eq(LessonType.Regular))
                 .execute();
+    }
+
+    @Override
+    public Optional<Long> findRecentLessonIdByLectureId(Long lectureId) {
+        return Optional.ofNullable(queryFactory.select(lesson.lessonId)
+                .from(lesson)
+                .leftJoin(lecture).on(lesson.lecture.lectureId.eq(lecture.lectureId))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
+                .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
+                .fetchFirst()
+        );
+    }
+
+    @Override
+    public Optional<List<Long>> findRecentLessonIdByLectureIdList(List<Long> lectureIdList) {
+        return Optional.ofNullable(
+            queryFactory.select(lesson.lessonId)
+                    .from(lesson)
+                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                    .where(lecture.lectureId.in(lectureIdList), lecture.deletedAt.isNull(), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
+                    .groupBy(lecture.lectureId)
+                    .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
+                    .fetch()
+        );
     }
 }
