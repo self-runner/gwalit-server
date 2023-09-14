@@ -64,6 +64,9 @@ public class LectureService {
         if(ChronoUnit.DAYS.between(postLectureReq.getStartDate(), postLectureReq.getEndDate()) > 365) {
             throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
+        if(postLectureReq.getSchedules().size() > 20) {
+            throw new ApplicationException(ErrorCode.TOO_MANY_SCHEDULE);
+        }
 
         // Business Logic
         Lecture lecture = lectureRepository.save(postLectureReq.toEntity());
@@ -126,6 +129,9 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
         if(ChronoUnit.DAYS.between(putLectureReq.getStartDate(), putLectureReq.getEndDate()) > 365) {
             throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
+        if(putLectureReq.getSchedules().size() > 20) {
+            throw new ApplicationException(ErrorCode.TOO_MANY_SCHEDULE);
         }
 
         // Business Logic
