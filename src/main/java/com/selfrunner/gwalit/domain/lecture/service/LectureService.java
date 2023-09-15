@@ -96,7 +96,7 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        memberAndLectureRepository.delete(memberAndLecture);
+        memberAndLectureRepository.deleteMemberAndLectureByLectureId(lectureId);
         taskRepository.deleteAllByLectureLectureId(lectureId);
         List<Long> lessonIdList = lessonRepository.findAllLessonIdByLectureId(lectureId);
         homeworkRepository.deleteAllByLessonIdList(lessonIdList);
