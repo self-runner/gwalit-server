@@ -26,6 +26,7 @@ import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -87,9 +88,35 @@ public class SmsClient {
 
         String temporaryPassword = "";
 
-        for(Integer i = 0; i < 10; i++) {
-            Integer idx = (int)(Math.random() * (list.length - 0 + 1)) + 0;
+        // 숫자 하나 추가
+        int idx = (int)(Math.random() * 10); // 0에서 9 사이의 인덱스 선택
+        temporaryPassword += list[idx];
+
+        // 문자 하나 추가
+        idx = (int)(Math.random() * 26) + 10; // 10에서 35 사이의 인덱스 선택 (알파벳 대문자)
+        temporaryPassword += list[idx];
+
+        // 특수 문자 하나 추가
+        idx = (int)(Math.random() * 9) + 62; // 36에서 44 사이의 인덱스 선택 (특수 문자)
+        temporaryPassword += list[idx];
+
+        for(Integer i = 3; i < 10; i++) {
+            idx = (int)(Math.random() * (list.length + 1)) + 0;
             temporaryPassword += list[idx];
+        }
+        // 문자열을 문자 리스트로 변환
+        List<Character> charList = new ArrayList<>();
+        for (char c : temporaryPassword.toCharArray()) {
+            charList.add(c);
+        }
+
+        // 문자 리스트를 섞기
+        Collections.shuffle(charList);
+
+        // 섞인 문자 리스트를 다시 문자열로 변환
+        StringBuilder shuffledPassword = new StringBuilder();
+        for (char c : charList) {
+            shuffledPassword.append(c);
         }
         Long time = System.currentTimeMillis();
 
@@ -122,14 +149,20 @@ public class SmsClient {
         return temporaryPassword;
     }
 
-    public Void sendInvitation(String name, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendInvitation(String name, PostInviteReq postInviteReq, Boolean type) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // API 요청 Header, Body 구성
         Long time = System.currentTimeMillis();
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
-        smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 수업에 참여해보세요!" + "\n" + "링크"));
+        if(type.equals(Boolean.TRUE)) {
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+        }
+        if(type.equals(Boolean.FALSE)) {
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "앱 접속 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+        }
+
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, name, smsMessageDtoList));
+        String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("MMS", this.senderPhone, name, smsMessageDtoList));
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.set("x-ncp-apigw-timestamp", time.toString());

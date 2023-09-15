@@ -1,12 +1,14 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -98,5 +102,36 @@ public class HomeworkService {
 
         // Response
         return homeworkResList;
+    }
+
+    public List<HomeworkMainRes> getMain(Member member) {
+        // Validation
+
+
+        // Business Logic
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
+        List<Long> lessonIdList = lessonRepository.findRecentLessonIdByLectureIdList(lectureIdList).orElse(null);
+        for(Long id : lessonIdList) {
+            System.out.println("id" + id);
+        }
+        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
+
+
+        // Response
+        return homeworkMainResList;
+    }
+
+    public List<HomeworkMainRes> getLecture(Member member, Long lectureId) {
+        // Validation
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        List<Long> lessonIdList = new ArrayList<>();
+        lessonIdList.add(lessonRepository.findRecentLessonIdByLectureId(lectureId).orElse(null));
+        List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
+
+
+        // Response
+        return homeworkMainResList;
     }
 }
