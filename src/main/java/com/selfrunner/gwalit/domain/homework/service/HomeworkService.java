@@ -111,9 +111,6 @@ public class HomeworkService {
         // Business Logic
         List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
         List<Long> lessonIdList = lessonRepository.findRecentLessonIdByLectureIdList(lectureIdList).orElse(null);
-        for(Long id : lessonIdList) {
-            System.out.println("id" + id);
-        }
         List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
 
 
@@ -127,7 +124,10 @@ public class HomeworkService {
 
         // Business Logic
         List<Long> lessonIdList = new ArrayList<>();
-        lessonIdList.add(lessonRepository.findRecentLessonIdByLectureId(lectureId).orElse(null));
+        Long lessonId = lessonRepository.findRecentLessonIdByLectureId(lectureId).orElse(null);
+        if(lessonId != null) {
+            lessonIdList.add(lessonId);
+        }
         List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
 
 
