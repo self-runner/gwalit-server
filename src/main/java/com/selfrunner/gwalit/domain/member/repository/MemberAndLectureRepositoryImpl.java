@@ -71,4 +71,12 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                         .transform(groupBy(QMember.member.memberId).list(Projections.constructor(GetStudentRes.class, QMember.member.memberId, QMember.member.name, QMember.member.type, QMember.member.state, QMember.member.phone, QMember.member.school, QMember.member.grade)))
         );
     }
+
+    @Override
+    public void deleteMemberAndLectureByLectureId(Long lectureId) {
+        queryFactory.update(memberAndLecture)
+                .set(memberAndLecture.deletedAt, LocalDateTime.now())
+                .where(memberAndLecture.lecture.lectureId.eq(lectureId))
+                .execute();
+    }
 }
