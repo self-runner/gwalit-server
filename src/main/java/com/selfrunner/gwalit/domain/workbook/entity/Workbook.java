@@ -20,4 +20,18 @@ public class Workbook {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "workbook_id", columnDefinition = "bigint")
     private Long workbookId;
+
+
+    @Column(name = "title", columnDefinition = "varchar(255)")
+    private String title;
+
+    @Column(name = "type", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private WorkbookType type;
+
+    @Column(name = "thumbnail_link", columnDefinition = "text")
+    private String thumbnailLink;
+
+    @Column(name = "explain", columnDefinition = "text")
+    private String explain;
 }
