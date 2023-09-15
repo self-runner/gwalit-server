@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.content.entity;
+package com.selfrunner.gwalit.domain.workbook.entity;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -10,8 +10,8 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "Content")
-@SQLDelete(sql = "UPDATE content set deleted_at = NOW() where content_id = ?")
+@Table(name = "Workbook")
+@SQLDelete(sql = "UPDATE workbook set deleted_at = NOW() where workbook_id = ?")
 @Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Workbook {
