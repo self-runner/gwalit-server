@@ -107,12 +107,13 @@ public class HomeworkService {
     public List<HomeworkMainRes> getMain(Member member) {
         // Validation
 
-
         // Business Logic
         List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
         List<Long> lessonIdList = lessonRepository.findRecentLessonIdByLectureIdList(lectureIdList).orElse(null);
+        for(Long id: lessonIdList) {
+            System.out.println(id);
+        }
         List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
-
 
         // Response
         return homeworkMainResList;
