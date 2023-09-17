@@ -43,6 +43,9 @@ public class LessonService {
     public LessonIdRes register(Member member, PostLessonReq postLessonReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        if(memberAndLecture.getIsTeacher().equals(Boolean.FALSE)) {
+            throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
 
         // Business Logic
         // 정규 수업 정보 등록

@@ -128,11 +128,9 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.select(lesson.lessonId)
                     .from(lesson)
-                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
-                    .where(lecture.lectureId.in(lectureIdList), lecture.deletedAt.isNull(), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
-                    .groupBy(lecture.lectureId)
+                    .where(lesson.lecture.lectureId.in(lectureIdList), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
                     .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
-                    .fetch()
+                    .transform(groupBy(lesson.lecture.lectureId).list(lesson.lessonId))
         );
     }
 }
