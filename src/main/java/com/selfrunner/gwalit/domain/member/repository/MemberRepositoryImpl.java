@@ -42,7 +42,7 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
     public void deleteMemberByMemberIdList(List<Long> memberIdList) {
         queryFactory.update(member)
                 .set(member.deletedAt, LocalDateTime.now())
-                .where(member.memberId.in(memberIdList), member.state.eq(MemberState.FAKE))
+                .where(member.memberId.in(memberIdList), member.type.eq(MemberType.STUDENT), member.state.eq(MemberState.FAKE))
                 .execute();
     }
 
