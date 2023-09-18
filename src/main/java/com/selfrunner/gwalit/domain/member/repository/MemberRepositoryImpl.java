@@ -45,4 +45,13 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                 .where(member.memberId.in(memberIdList), member.state.eq(MemberState.FAKE))
                 .execute();
     }
+
+    @Override
+    public Optional<Member> findNotFakeByPhoneAndType(String phone, MemberType memberType) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(member)
+                        .where(member.phone.eq(phone), member.type.eq(memberType), member.state.ne(MemberState.FAKE), member.deletedAt.isNull())
+                        .fetchFirst()
+        );
+    }
 }
