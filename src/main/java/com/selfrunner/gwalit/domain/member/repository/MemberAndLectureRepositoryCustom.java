@@ -20,4 +20,6 @@ public interface MemberAndLectureRepositoryCustom {
     Optional<List<GetStudentRes>> findStudentByMemberAndLectureId(Member member, Long lectureId);
 
     void deleteMemberAndLectureByLectureId(Long lectureId);
+
+    void deleteMemberAndLecturesByMember(Member member);
 }
