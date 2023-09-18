@@ -10,6 +10,7 @@ import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -39,6 +40,7 @@ public class AuthService {
     private final RedisClient redisClient;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final MemberAndLectureRepository memberAndLectureRepository;
 
     public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
@@ -180,8 +182,8 @@ public class AuthService {
         }
 
         // Business Logic: Soft Delete
-        System.out.println("삭제 로직 실행" + member.getMemberId().toString());
         memberRepository.delete(member);
+        memberAndLectureRepository.deleteMemberAndLecturesByMember(member);
 
         // Response
         return null;
