@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
+import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
@@ -19,6 +20,7 @@ import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -43,9 +45,9 @@ public class LessonService {
     @Transactional
     public LessonIdRes register(Member member, PostLessonReq postLessonReq) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new LessonException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postLessonReq.getLectureId()).orElseThrow(() -> new MemberException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
         if(memberAndLecture.getIsTeacher().equals(Boolean.FALSE)) {
-            throw new LessonException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
         // Business Logic
@@ -85,7 +87,7 @@ public class LessonService {
     public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new LessonException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         lesson.update(putLessonReq);
@@ -106,7 +108,7 @@ public class LessonService {
     @Transactional
     public Void deleteAll(Member member, Long lectureId, List<PutLessonIdReq> putLessonIdReqList) {
         // Validation
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new LessonException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         List<Long> lessonIdList = putLessonIdReqList.stream()
@@ -123,7 +125,7 @@ public class LessonService {
     public Void delete(Member member, Long lessonId) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new LessonException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
         homeworkRepository.deleteAllByLessonId(lessonId);
@@ -136,7 +138,7 @@ public class LessonService {
     public LessonRes get(Member member, Long lessonId) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException((ErrorCode.NOT_EXIST_LESSON)));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new LessonException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
 
         // Business Logic
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
@@ -150,7 +152,7 @@ public class LessonService {
 
     public List<LessonMetaRes> getAllLessonMeta(Member member, Long lectureId) {
         // Validation
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new LessonException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
 
         // Business Logic
         List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByLectureId(lectureId).orElseThrow(() -> new LessonException((ErrorCode.NOT_EXIST_LESSON)));
@@ -165,7 +167,7 @@ public class LessonService {
         // Validation
 
         // Business Logic
-        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElseThrow(() -> new LessonException((ErrorCode.NOT_FOUND_EXCEPTION)));
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElseThrow(() -> new LectureException((ErrorCode.NOT_FOUND_EXCEPTION)));
         List<LessonMetaRes> lessonMetaRes = lessonRepository.findAllLessonMetaByYearMonth(lectureIdList, year, month).orElse(null);
         // 오름차순 정렬
         Collections.sort(lessonMetaRes);
@@ -176,7 +178,7 @@ public class LessonService {
 
     public List<LessonProgressRes> getAllProgress(Member member, Long lectureId) {
         // Validation
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new LessonException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException((ErrorCode.UNAUTHORIZED_EXCEPTION)));
 
         // Business Logic
         List<LessonProgressRes> lessonProgressRes = lessonRepository.findAllProgressByLectureId(lectureId).orElseThrow(() -> new LessonException(ErrorCode.NOT_FOUND_EXCEPTION));
