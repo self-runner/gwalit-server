@@ -11,4 +11,5 @@ public interface MemberAndLectureRepository extends JpaRepository<MemberAndLectu
 
     // 사용자 클래스 존재 여부 확인
     Optional<MemberAndLecture> findMemberAndLectureByMemberAndLectureLectureId(Member member, Long lectureId);
+
 }
