@@ -13,10 +13,7 @@ import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
-import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
@@ -232,9 +229,14 @@ public class LectureService {
 
 
         // Business Logic: 기존에
-        Member check = memberRepository.findActiveByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
+        Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
-            smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.FALSE);
+            if(check.getState().equals(MemberState.INVITE)) {
+                smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.TRUE);
+            }
+            if(check.getState().equals(MemberState.ACTIVE)) {
+                smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.FALSE);
+            }
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
                     .member(check)
                     .lecture(memberAndLecture.getLecture())
