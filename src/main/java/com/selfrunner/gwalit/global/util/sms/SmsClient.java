@@ -123,7 +123,7 @@ public class SmsClient {
         // API 요청 Header, Body 구성
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
-        smsMessageDtoList.add(new SmsMessageDto(postAuthCodeReq.getPhone(), "[과릿] 임시비밀번호는 " + temporaryPassword + " 입니다. \n 로그인 이후 비밀번호를 변경해주세요."));
+        smsMessageDtoList.add(new SmsMessageDto(postAuthCodeReq.getPhone(), "[과릿] 임시비밀번호: " + "\n" + temporaryPassword + "\n" + "\n" + "로그인 이후 비밀번호를 변경해주세요."));
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonBody = objectMapper.writeValueAsString(new SmsNaverReq("SMS", this.senderPhone, temporaryPassword, smsMessageDtoList));
         HttpHeaders headers = new HttpHeaders();
@@ -149,16 +149,16 @@ public class SmsClient {
         return temporaryPassword;
     }
 
-    public Void sendInvitation(String name, PostInviteReq postInviteReq, Boolean type) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public Void sendInvitation(String name, String lectureName, PostInviteReq postInviteReq, Boolean type) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // API 요청 Header, Body 구성
         Long time = System.currentTimeMillis();
         List<SmsMessageDto> smsMessageDtoList = new ArrayList<>();
 
         if(type.equals(Boolean.TRUE)) {
-            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 및 회원가입을 통해 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
         }
         if(type.equals(Boolean.FALSE)) {
-            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 초대가 도착했습니다." + "\n" + "앱 접속 후 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), "[과릿] " + name + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "아래 링크를 클릭 후 앱 열를 통해 수업에 참여해보세요!" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "\n" + "애플: " + "https://bit.ly/gwarit-apple"));
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
