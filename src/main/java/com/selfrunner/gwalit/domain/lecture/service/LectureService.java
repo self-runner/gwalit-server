@@ -232,10 +232,10 @@ public class LectureService {
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
             if(check.getState().equals(MemberState.INVITE)) {
-                smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.TRUE);
+                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(), postInviteReq, Boolean.TRUE);
             }
             if(check.getState().equals(MemberState.ACTIVE)) {
-                smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.FALSE);
+                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(),postInviteReq, Boolean.FALSE);
             }
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
                     .member(check)
@@ -244,7 +244,7 @@ public class LectureService {
             memberAndLectureRepository.save(studentAndLecture);
         }
         if(check == null) {
-            smsClient.sendInvitation(member.getName(), postInviteReq, Boolean.TRUE);
+            smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(),postInviteReq, Boolean.TRUE);
             Member student = postInviteReq.toEntity();
             memberRepository.save(student);
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
