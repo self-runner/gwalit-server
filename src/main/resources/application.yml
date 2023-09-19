@@ -41,7 +41,7 @@ jasypt:
     iv-generator-classname: org.jasypt.iv.NoIvGenerator
 
 sentry:
-  dsn: ENC(o7fYLq7Pt70FSsLOf0n5iWIEyZk0ce1FCHcVfzhiF1KssDlEWU17F6LUAK8xVBZ/TQiYnMBze9osHkaaRTDjR/dHPG08jPn7hRkDYfVxZpenz6Rrf7MtW2RV8Z+xusgifUzmLvUIRKs=)
+  dsn: ENC(kcWB8bBCxkeKlhoM0lJKkfXx29L8hWgX5N03JGF6IQ47OZMC7Fn8IleH+AdjVqFtniKKzqs4yTYsdm2zo9Y0scnN/E/iydqmjU/iVcMjegvYJn/AXZAlRqpU84cAXHNWd4oFcF3Bauc=)
   traces-sample-rate: 1.0
 
 ---
