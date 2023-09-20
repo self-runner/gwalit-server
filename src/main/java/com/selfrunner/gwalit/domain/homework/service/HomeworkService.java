@@ -51,18 +51,19 @@ public class HomeworkService {
     }
 
     @Transactional
-    public Void update(Member member, Long homeworkId, HomeworkReq homeworkReq) {
+    public HomeworkMainRes update(Member member, Long homeworkId, HomeworkReq homeworkReq) {
         // Validation
-        /*
-        Todo: 학생 수정 권한 부여 여부 필요성 확인
-         */
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(!homework.getMemberId().equals(member.getMemberId())) {
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
 
         // Business Logic
         homework.update(homeworkReq);
+        HomeworkMainRes homeworkMainRes = homeworkRepository.findHomeworkByHomeworkId(homeworkId);
 
         // Response
-        return null;
+        return homeworkMainRes;
     }
 
     @Transactional
@@ -133,6 +134,29 @@ public class HomeworkService {
             lessonIdList.add(lessonId);
         }
         List<HomeworkMainRes> homeworkMainResList = homeworkRepository.findRecentHomeworkByMemberAndLessonIdList(member, lessonIdList).orElse(null);
+
+
+        // Response
+        return homeworkMainResList;
+    }
+
+    public List<HomeworkMainRes> getList(Member member, String type) {
+        // Validation - 학생용 API
+        if(member.getType().equals(MemberType.TEACHER)) {
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
+
+        // Business Logic - all: 전체 리스트 / finished: 완료 리스트 / unfinished: 미완료 리스트
+        List<HomeworkMainRes> homeworkMainResList = new ArrayList<>();
+        if(type.equals("all")) {
+            homeworkMainResList = homeworkRepository.findAllHomeworkByMember(member).orElse(null);
+        }
+        if(type.equals("finished")) {
+            homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.TRUE).orElse(null);
+        }
+        if(type.equals("unfinished")) {
+            homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.FALSE).orElse(null);
+        }
 
 
         // Response
