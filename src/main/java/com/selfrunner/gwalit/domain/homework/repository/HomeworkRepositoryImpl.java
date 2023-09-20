@@ -77,4 +77,15 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
                         .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
+
+    @Override
+    public HomeworkMainRes findHomeworkByHomeworkId(Long homeworkId) {
+        return queryFactory.select(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish))
+                .from(homework)
+                .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                .where(homework.homeworkId.eq(homeworkId), homework.deletedAt.isNull())
+                .fetchOne();
+
+    }
 }

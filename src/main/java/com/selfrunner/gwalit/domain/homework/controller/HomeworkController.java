@@ -33,9 +33,8 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 정보 수정")
     @PutMapping("/{homework_id}")
-    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody HomeworkReq homeworkReq) {
-        homeworkService.update(member, homeworkId, homeworkReq);
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    public ApplicationResponse<HomeworkMainRes> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody HomeworkReq homeworkReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.update(member, homeworkId, homeworkReq));
     }
 
     @Operation(summary = "숙제 삭제")

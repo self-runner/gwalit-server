@@ -51,18 +51,19 @@ public class HomeworkService {
     }
 
     @Transactional
-    public Void update(Member member, Long homeworkId, HomeworkReq homeworkReq) {
+    public HomeworkMainRes update(Member member, Long homeworkId, HomeworkReq homeworkReq) {
         // Validation
-        /*
-        Todo: 학생 수정 권한 부여 여부 필요성 확인
-         */
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(!homework.getMemberId().equals(member.getMemberId())) {
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
 
         // Business Logic
         homework.update(homeworkReq);
+        HomeworkMainRes homeworkMainRes = homeworkRepository.findHomeworkByHomeworkId(homeworkId);
 
         // Response
-        return null;
+        return homeworkMainRes;
     }
 
     @Transactional
