@@ -38,6 +38,13 @@ public class Lecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
+    @Column(name = "subject")
+    @Enumerated(EnumType.STRING)
+    private Subject subject;
+
+    @Column(name = "subject_detail")
+    private String subjectDetail;
+
     @Column(name = "startDate")
     private LocalDate startDate;
 
