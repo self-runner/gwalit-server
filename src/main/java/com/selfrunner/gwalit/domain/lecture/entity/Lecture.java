@@ -62,6 +62,8 @@ public class Lecture extends BaseTimeEntity {
     public void update(PutLectureReq putLectureReq) {
         this.name = putLectureReq.getName();
         this.color = putLectureReq.getColor();
+        this.subject = Subject.valueOf(putLectureReq.getSubject());
+        this.subjectDetail = putLectureReq.getSubjectDetail();;
         this.startDate = putLectureReq.getStartDate();
         this.endDate = putLectureReq.getEndDate();
         this.rules = putLectureReq.getRules();
@@ -69,9 +71,11 @@ public class Lecture extends BaseTimeEntity {
     }
 
     @Builder
-    public Lecture(String name, String color, LocalDate startDate, LocalDate endDate, List<Rule> rules, List<Schedule> schedules) {
+    public Lecture(String name, String color, String subject, String subjectDetail, LocalDate startDate, LocalDate endDate, List<Rule> rules, List<Schedule> schedules) {
         this.name = name;
         this.color = color;
+        this.subject = Subject.valueOf(subject);
+        this.subjectDetail = subjectDetail;
         this.startDate = startDate;
         this.endDate = endDate;
         this.rules = rules;

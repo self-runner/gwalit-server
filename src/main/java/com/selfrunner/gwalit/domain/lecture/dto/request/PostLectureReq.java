@@ -39,6 +39,8 @@ public class PostLectureReq {
         Lecture lecture = Lecture.builder()
                 .name(this.name)
                 .color(this.color)
+                .subject(subject)
+                .subjectDetail(subjectDetail)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
                 .rules(this.rules)
