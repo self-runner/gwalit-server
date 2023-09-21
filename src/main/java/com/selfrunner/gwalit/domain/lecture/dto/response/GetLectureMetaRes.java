@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
+import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -18,6 +19,10 @@ public class GetLectureMetaRes {
     private final String name;
 
     private final String color;
+
+    private final Subject subject;
+
+    private final String subjectDetail;
 
     private final LocalDate startDate;
 

@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.dto.response;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Rule;
+import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -21,6 +22,10 @@ public class GetLectureRes {
 
     private final String color;
 
+    private final Subject subject;
+
+    private final String subjectDetail;
+
     private final LocalDate startDate;
 
     private final LocalDate endDate;
@@ -37,6 +42,8 @@ public class GetLectureRes {
         this.lectureId = lecture.getLectureId();
         this.name = lecture.getName();
         this.color = lecture.getColor();
+        this.subject = lecture.getSubject();
+        this.subjectDetail = lecture.getSubjectDetail();
         this.startDate = lecture.getStartDate();
         this.endDate = lecture.getEndDate();
         this.rules = lecture.getRules();
