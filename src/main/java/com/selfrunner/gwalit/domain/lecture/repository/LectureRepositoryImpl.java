@@ -43,7 +43,7 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
                 .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
                 .transform(groupBy(lecture.lectureId)
-                        .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color,
+                        .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.subject,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
 
     }
