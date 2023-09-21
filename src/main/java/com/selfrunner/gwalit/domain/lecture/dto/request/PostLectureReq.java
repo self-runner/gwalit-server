@@ -21,6 +21,11 @@ public class PostLectureReq {
     @NotEmpty(message = "Class 색상이 미정입니다.")
     private String color;
 
+    @NotEmpty(message = "과목이 선택되지 않았습니다.")
+    private String subject;
+
+    private String subjectDetail;
+
     @NotNull(message = "시작일자가 설정되지 않았습니다.")
     private LocalDate startDate;
 
