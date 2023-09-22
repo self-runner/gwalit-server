@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.member.repository;
 
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 
@@ -22,4 +23,6 @@ public interface MemberAndLectureRepositoryCustom {
     void deleteMemberAndLectureByLectureId(Long lectureId);
 
     void deleteMemberAndLecturesByMember(Member member);
+
+    Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId);
 }

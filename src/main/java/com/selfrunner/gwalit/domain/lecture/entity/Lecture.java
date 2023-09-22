@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.entity;
 
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchColorReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchNameReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -14,7 +16,6 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -38,6 +39,13 @@ public class Lecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
+    @Column(name = "subject")
+    @Enumerated(EnumType.STRING)
+    private Subject subject;
+
+    @Column(name = "subject_detail")
+    private String subjectDetail;
+
     @Column(name = "startDate")
     private LocalDate startDate;
 
@@ -55,16 +63,28 @@ public class Lecture extends BaseTimeEntity {
     public void update(PutLectureReq putLectureReq) {
         this.name = putLectureReq.getName();
         this.color = putLectureReq.getColor();
+        this.subject = Subject.valueOf(putLectureReq.getSubject());
+        this.subjectDetail = putLectureReq.getSubjectDetail();;
         this.startDate = putLectureReq.getStartDate();
         this.endDate = putLectureReq.getEndDate();
         this.rules = putLectureReq.getRules();
         this.schedules = putLectureReq.getSchedules();
     }
 
+    public void updateColor(PatchColorReq patchColorReq) {
+        this.color = patchColorReq.getColor();
+    }
+
+    public void updateName(PatchNameReq patchNameReq) {
+        this.name = patchNameReq.getName();
+    }
+
     @Builder
-    public Lecture(String name, String color, LocalDate startDate, LocalDate endDate, List<Rule> rules, List<Schedule> schedules) {
+    public Lecture(String name, String color, String subject, String subjectDetail, LocalDate startDate, LocalDate endDate, List<Rule> rules, List<Schedule> schedules) {
         this.name = name;
         this.color = color;
+        this.subject = Subject.valueOf(subject);
+        this.subjectDetail = subjectDetail;
         this.startDate = startDate;
         this.endDate = endDate;
         this.rules = rules;

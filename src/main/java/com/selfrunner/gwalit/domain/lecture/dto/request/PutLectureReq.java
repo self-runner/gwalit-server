@@ -23,6 +23,11 @@ public class PutLectureReq {
     @NotNull(message = "시작일자가 설정되지 않았습니다.")
     private LocalDate startDate;
 
+    @NotEmpty(message = "과목이 선택되지 않았습니다.")
+    private String subject;
+
+    private String subjectDetail;
+
     private LocalDate endDate;
 
     private List<Rule> rules;
