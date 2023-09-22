@@ -58,6 +58,12 @@ public class LectureController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.update(member, lectureId, putLectureReq));
     }
 
+    @Operation(summary = "색상 수정")
+    @PatchMapping("/{lecture_id}")
+    public ApplicationResponse<GetLectureMainRes> updateColor(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PatchColorReq patchColorReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.updateColor(member, lectureId, patchColorReq));
+    }
+
     @Operation(summary = "메인 페이지용 사용자별 Class 메타 데이터 모두 반환")
     @GetMapping("/main")
     public ApplicationResponse<List<GetLectureMainRes>> getAllMain(@Auth Member member) {
@@ -75,6 +81,7 @@ public class LectureController {
     public ApplicationResponse<GetLectureRes> getLectureAndLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.getLectureAndLesson(member, lectureId));
     }
+
 
     @Operation(summary = "학생 초대하기")
     @PostMapping("/student/invite/{lecture_id}")

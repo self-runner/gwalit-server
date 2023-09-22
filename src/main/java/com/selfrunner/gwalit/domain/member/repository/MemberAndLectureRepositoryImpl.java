@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.member.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
@@ -86,5 +87,15 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                 .set(memberAndLecture.deletedAt, LocalDateTime.now())
                 .where(memberAndLecture.member.memberId.eq(member.getMemberId()))
                 .execute();
+    }
+
+    @Override
+    public Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(lecture)
+                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+                    .where(memberAndLecture.member.memberId.eq(memberId), lecture.lectureId.eq(lectureId))
+                    .fetchOne()
+        );
     }
 }

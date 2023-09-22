@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.entity;
 
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchColorReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -67,6 +68,10 @@ public class Lecture extends BaseTimeEntity {
         this.endDate = putLectureReq.getEndDate();
         this.rules = putLectureReq.getRules();
         this.schedules = putLectureReq.getSchedules();
+    }
+
+    public void updateColor(PatchColorReq patchColorReq) {
+        this.color = patchColorReq.getColor();
     }
 
     @Builder

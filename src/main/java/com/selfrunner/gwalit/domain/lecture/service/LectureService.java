@@ -182,6 +182,20 @@ public class LectureService {
         return null;
     }
 
+    @Transactional
+    public GetLectureMainRes updateColor(Member member, Long lectureId, PatchColorReq patchColorReq) {
+        // Validation
+        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+
+        // Business Logic
+        lecture.updateColor(patchColorReq);
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
+        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
+
+        // Response
+        return getLectureMainRes;
+    }
+
     public List<GetLectureMainRes> getAllMain(Member member) {
         // Validation
 
