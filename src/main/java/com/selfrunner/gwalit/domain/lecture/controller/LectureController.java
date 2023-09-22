@@ -59,9 +59,15 @@ public class LectureController {
     }
 
     @Operation(summary = "색상 수정")
-    @PatchMapping("/{lecture_id}")
+    @PatchMapping("/{lecture_id}/color")
     public ApplicationResponse<GetLectureMainRes> updateColor(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PatchColorReq patchColorReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.updateColor(member, lectureId, patchColorReq));
+    }
+
+    @Operation(summary = "이름 수정")
+    @PatchMapping("/{lecture_id}/name")
+    public ApplicationResponse<GetLectureMainRes> updateName(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PatchNameReq patchNameReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.updateName(member, lectureId, patchNameReq));
     }
 
     @Operation(summary = "메인 페이지용 사용자별 Class 메타 데이터 모두 반환")
