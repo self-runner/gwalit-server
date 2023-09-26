@@ -140,7 +140,7 @@ public class HomeworkService {
         return homeworkMainResList;
     }
 
-    public List<HomeworkMainRes> getList(Member member, String type) {
+    public List<HomeworkMainRes> getList(Member member, Long lectureId, String type) {
         // Validation - 학생용 API
         if(member.getType().equals(MemberType.TEACHER)) {
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
@@ -148,14 +148,27 @@ public class HomeworkService {
 
         // Business Logic - all: 전체 리스트 / finished: 완료 리스트 / unfinished: 미완료 리스트
         List<HomeworkMainRes> homeworkMainResList = new ArrayList<>();
-        if(type.equals("all")) {
-            homeworkMainResList = homeworkRepository.findAllHomeworkByMember(member).orElse(null);
+        if(lectureId == null) {
+            if(type.equals("all")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMember(member).orElse(null);
+            }
+            if(type.equals("finished")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.TRUE).orElse(null);
+            }
+            if(type.equals("unfinished")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.FALSE).orElse(null);
+            }
         }
-        if(type.equals("finished")) {
-            homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.TRUE).orElse(null);
-        }
-        if(type.equals("unfinished")) {
-            homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndType(member, Boolean.FALSE).orElse(null);
+        if(lectureId != null) {
+            if(type.equals("all")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndLectureId(member, lectureId).orElse(null);
+            }
+            if(type.equals("finished")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndLectureIdAndType(member, lectureId, Boolean.TRUE).orElse(null);
+            }
+            if(type.equals("unfinished")) {
+                homeworkMainResList = homeworkRepository.findAllHomeworkByMemberAndLectureIdAndType(member, lectureId, Boolean.FALSE).orElse(null);
+            }
         }
 
 
