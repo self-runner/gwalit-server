@@ -70,7 +70,7 @@ public class HomeworkController {
 
     @Operation(summary = "학생이 가지고 있는 모든 숙제 리스트 반환")
     @GetMapping("/list")
-    public ApplicationResponse<List<HomeworkMainRes>> getList(@Auth Member member, @RequestParam("type") String type) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getList(member, type));
+    public ApplicationResponse<List<HomeworkMainRes>> getList(@Auth Member member, @RequestParam(value = "lectureId", required = false) Long lectureId, @RequestParam("type") String type) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getList(member, lectureId, type));
     }
 }

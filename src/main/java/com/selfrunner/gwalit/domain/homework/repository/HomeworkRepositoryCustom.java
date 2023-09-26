@@ -22,4 +22,10 @@ public interface HomeworkRepositoryCustom {
     Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndType(Member member, Boolean type);
 
     HomeworkMainRes findHomeworkByHomeworkId(Long homeworkId);
+
+    Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureId(Member member, Long lectureId);
+
+    Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureIdAndType(Member member, Long lectureId, Boolean type);
+
+
 }
