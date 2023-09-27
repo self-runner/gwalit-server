@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.workbook.dto.request;
 
+import com.selfrunner.gwalit.domain.workbook.entity.Problem;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
@@ -17,7 +18,7 @@ public class PostProblemReq {
     @Pattern(regexp = "")
     private String type;
 
-    private String body;
+    private String problemBody;
 
     @NotNull
     private Integer answer;
@@ -29,4 +30,19 @@ public class PostProblemReq {
 
     @Pattern(regexp = "")
     private String difficulty;
+
+    public Problem toEntity(String problemUrl, String solveUrl) {
+        return Problem.builder()
+                .subject(this.subject)
+                .subjectDetail(this.subjectDetail)
+                .type(this.type)
+                .problemUrl(problemUrl)
+                .problemBody(this.problemBody)
+                .answer(this.answer)
+                .solveUrl(solveUrl)
+                .solveBody(this.solveBody)
+                .source(this.source)
+                .difficulty(this.difficulty)
+                .build();
+    }
 }

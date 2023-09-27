@@ -1,6 +1,9 @@
 package com.selfrunner.gwalit.domain.workbook.entity;
 
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
@@ -11,6 +14,7 @@ import javax.persistence.*;
 @Table(name = "Problem")
 @SQLDelete(sql = "UPDATE problem set deleted_at = NOW() where problem_id = ?")
 @Where(clause = "deleted_at IS NULL")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Problem {
 
     @Id
@@ -29,11 +33,11 @@ public class Problem {
     @Column(name = "type")
     private ProblemType type;
 
-    @Column(name = "image_url",  columnDefinition = "text")
-    private String imageUrl;
+    @Column(name = "problem_url",  columnDefinition = "text")
+    private String problemUrl;
 
-    @Column(name = "body", columnDefinition = "varchar(255)")
-    private String body;
+    @Column(name = "problem_body", columnDefinition = "varchar(255)")
+    private String problemBody;
 
     @Column(name = "answer", nullable = false, columnDefinition = "int")
     private Integer answer;
@@ -48,5 +52,20 @@ public class Problem {
     private String source;
 
     @Column(name = "difficulty", columnDefinition = "varchar(255)")
-    private String difficulty;
+    @Enumerated(EnumType.STRING)
+    private Difficulty difficulty;
+
+    @Builder
+    public Problem(String subject, String subjectDetail, String type, String problemUrl, String problemBody, Integer answer, String solveUrl, String solveBody, String source, String difficulty) {
+        this.subject = Subject.valueOf(subject);
+        this.subjectDetail = SubjectDetail.valueOf(subjectDetail);
+        this.type = ProblemType.valueOf(type);
+        this.problemUrl = problemUrl;
+        this.problemBody = problemBody;
+        this.answer = answer;
+        this.solveUrl = solveUrl;
+        this.solveBody = solveBody;
+        this.source = source;
+        this.difficulty = Difficulty.valueOf(difficulty);
+    }
 }
