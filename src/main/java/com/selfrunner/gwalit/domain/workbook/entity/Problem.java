@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.workbook.entity;
 
+import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,6 +55,19 @@ public class Problem {
     @Column(name = "difficulty", columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty;
+
+    public void update(PutProblemReq putProblemReq) {
+        this.subject = Subject.valueOf(putProblemReq.getSubject());
+        this.subjectDetail = SubjectDetail.valueOf(putProblemReq.getSubjectDetail());
+        this.type = ProblemType.valueOf(putProblemReq.getType());
+        this.problemUrl = problemUrl;
+        this.problemBody = putProblemReq.getProblemBody();
+        this.answer = putProblemReq.getAnswer();
+        this.solveUrl = solveUrl;
+        this.solveBody = putProblemReq.getSolveBody();
+        this.source = putProblemReq.getSource();
+        this.difficulty = Difficulty.valueOf(putProblemReq.getDifficulty());
+    }
 
     @Builder
     public Problem(String subject, String subjectDetail, String type, String problemUrl, String problemBody, Integer answer, String solveUrl, String solveBody, String source, String difficulty) {
