@@ -64,7 +64,7 @@ public class BannerService {
             }
         }
 
-        banner.updateLink(bannerReq.getLinkUrl());
+        banner.update(bannerReq);
 
         // Response
         BannerRes bannerRes = new BannerRes(banner);
