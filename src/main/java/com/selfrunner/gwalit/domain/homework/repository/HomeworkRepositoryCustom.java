@@ -27,5 +27,6 @@ public interface HomeworkRepositoryCustom {
 
     Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureIdAndType(Member member, Long lectureId, Boolean type);
 
+    void deleteAllByLessonIdAndMemberIdList(Long lessonId, List<Long> deleteIdList);
 
 }

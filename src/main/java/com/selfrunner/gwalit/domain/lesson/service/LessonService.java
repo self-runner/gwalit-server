@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PatchLessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
@@ -22,12 +23,14 @@ import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -103,6 +106,54 @@ public class LessonService {
 
         // Response
         return null;
+    }
+
+    @Transactional
+    public LessonMetaRes updateMeta(Member member, Long lessonId, PatchLessonMetaRes patchLessonMetaRes) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic
+        // 수업 여부에 따라서 homework에 Participant 업데이트 진행 필요
+        List<Long> deleteIdList = lesson.getParticipants().stream()
+                .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> participant.getMemberId() == patchParticipant.getMemberId()))
+                .map(Participant::getMemberId)
+                .collect(Collectors.toList());
+        homeworkRepository.deleteAllByLessonIdAndMemberIdList(lessonId, deleteIdList);
+        List<HomeworkRes> homeworkResList = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
+        List<Homework> homeworkList = new ArrayList<>();
+        for (Participant participant : patchLessonMetaRes.getParticipants()) {
+            if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> lessonParticipant.getMemberId() == participant.getMemberId())) {
+                System.out.println("t" + participant.getMemberId());
+                List<Homework> tempHomeworkList = homeworkResList.stream()
+                        .map(homeworkRes -> {
+                            // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
+                            String body = homeworkRes.getBody();
+                            LocalDate deadLine = homeworkRes.getDeadline();
+                            // homeworkRes 내의 값을 사용하여 Homework 객체 생성
+                            Homework homework = Homework.builder()
+                                    .lessonId(lessonId)
+                                    .memberId(participant.getMemberId())
+                                    .body(body)
+                                    .deadline(deadLine)
+                                    .isFinish(Boolean.FALSE)
+                                    .build();
+
+                            return homework;
+                        })
+                        .collect(Collectors.toList());
+                homeworkList.addAll(tempHomeworkList);
+            }
+
+        }
+        lesson.updateMeta(patchLessonMetaRes);
+        System.out.println("size: " + homeworkList.size());
+        homeworkRepository.saveAll(homeworkList);
+
+
+        // Response
+        return new LessonMetaRes(lesson.getLessonId(), lesson.getLecture().getLectureId(), lesson.getType(), lesson.getDate(), new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime()), lesson.getParticipants());
     }
 
     @Transactional

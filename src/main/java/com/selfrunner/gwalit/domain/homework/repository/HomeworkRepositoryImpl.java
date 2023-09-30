@@ -110,4 +110,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
                         .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
+
+    @Override
+    public void deleteAllByLessonIdAndMemberIdList(Long lessonId, List<Long> deleteIdList) {
+        queryFactory.update(homework)
+                .set(homework.deletedAt, LocalDateTime.now())
+                .where(homework.lessonId.eq(lessonId), homework.memberId.in(deleteIdList))
+                .execute();
+    }
 }

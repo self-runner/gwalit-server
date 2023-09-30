@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lesson.entity;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PatchLessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
 import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -76,7 +77,14 @@ public class Lesson extends BaseTimeEntity {
         this.weekday = putLessonReq.getTime().getWeekday();
         this.startTime = LocalTime.parse(putLessonReq.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(putLessonReq.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
+    }
 
+    public void updateMeta(PatchLessonMetaRes patchLessonMetaRes) {
+        this.participants = patchLessonMetaRes.getParticipants();
+        this.date = patchLessonMetaRes.getDate();
+        this.weekday = patchLessonMetaRes.getTime().getWeekday();
+        this.startTime = LocalTime.parse(patchLessonMetaRes.getTime().getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
+        this.endTime = LocalTime.parse(patchLessonMetaRes.getTime().getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
     }
 
     @Builder
