@@ -16,10 +16,13 @@ public class BannerReq {
     @Pattern(regexp = "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
     private String linkUrl;
 
+    private String information;
+
     public Banner toEntity(String imageUrl) {
         Banner banner = Banner.builder()
                 .imageUrl(imageUrl)
                 .linkUrl(this.linkUrl)
+                .information(this.information)
                 .build();
 
         return banner;
