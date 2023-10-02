@@ -43,6 +43,7 @@ public enum ErrorCode {
     NOT_EXIST_DEADLINE(HttpStatus.BAD_REQUEST, 5004, "숙제의 기한이 설정되지 않았습니다."),
     FAILED_MAKE_CLASS(HttpStatus.BAD_REQUEST, 5005, "생성할 수 있는 수를 초과했습니다"),
     TOO_MANY_SCHEDULE(HttpStatus.BAD_REQUEST, 5006, "선택된 일정의 수가 너무 많습니다."),
+    ALREADY_INVITE_STUDENT(HttpStatus.BAD_REQUEST, 5007, "이미 초대한 학생입니다."),
 
     // Banner
     NO_BANNER_IMAGE(HttpStatus.BAD_REQUEST, 6000, "배너 이미지 파일이 존재하지 않습니다."),

@@ -34,6 +34,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -92,17 +93,67 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Business Logic
-        lesson.update(putLessonReq);
-        homeworkRepository.deleteHomeworkByLessonId(lessonId);
-        List<Homework> homeworkList = new ArrayList<>();
-        for (Participant participant : putLessonReq.getParticipants()) {
-            List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
-                    .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
-                    .collect(Collectors.toList());
-            homeworkList.addAll(tempHomeworkList);
+        // Business Logic: Homework 변경 여부 확인 진행
+        // 참여자 비교
+        Boolean needUpdate = Boolean.FALSE;
+        if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
+            needUpdate = Boolean.TRUE;
         }
-        homeworkRepository.saveAll(homeworkList);
+        if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
+            for(Participant lessonParticipant : lesson.getParticipants()) {
+                Boolean temp = Boolean.FALSE;
+                for(Participant dtoParticipant : putLessonReq.getParticipants()) {
+                    if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
+                        temp = Boolean.TRUE;
+                    }
+                }
+                if(!temp) {
+                    needUpdate = Boolean.TRUE;
+                    break;
+                }
+            }
+        }
+        // 숙제 비교
+        List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
+        if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList == null && putLessonReq.getHomeworks() != null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList != null && putLessonReq.getHomeworks() != null) {
+            if(homeworkRowList.size() == putLessonReq.getHomeworks().size()) {
+                for(Homework homework : homeworkRowList) {
+                    for(HomeworkReq homeworkReq : putLessonReq.getHomeworks()) {
+                        if(!homework.isSameHomework(homeworkReq)) {
+                            needUpdate = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if(needUpdate) {
+                        break;
+                    }
+                }
+            }
+            if(homeworkRowList.size() != putLessonReq.getHomeworks().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+        }
+
+        // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
+        lesson.update(putLessonReq);
+
+        if(needUpdate) {
+            homeworkRepository.deleteHomeworkByLessonId(lessonId);
+            List<Homework> homeworkInsertList = new ArrayList<>();
+            for (Participant participant : putLessonReq.getParticipants()) {
+                List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
+                        .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
+                        .collect(Collectors.toList());
+                homeworkInsertList.addAll(tempHomeworkList);
+            }
+            homeworkRepository.saveAll(homeworkInsertList);
+        }
 
         // Response
         return null;
@@ -148,7 +199,6 @@ public class LessonService {
 
         }
         lesson.updateMeta(patchLessonMetaRes);
-        System.out.println("size: " + homeworkList.size());
         homeworkRepository.saveAll(homeworkList);
 
 
