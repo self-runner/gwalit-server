@@ -94,8 +94,13 @@ public class LessonService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic: Homework 변경 여부 확인 진행
-        lesson.update(putLessonReq);
         // 참여자 비교
+        for (Participant p : lesson.getParticipants()) {
+            System.out.println(p.getMemberId());
+        }
+        for(Participant p : putLessonReq.getParticipants()) {
+            System.out.println(p.getMemberId());
+        }
         Boolean needUpdate = Boolean.FALSE;
         if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
             needUpdate = Boolean.TRUE;
@@ -109,25 +114,43 @@ public class LessonService {
                     }
                 }
                 if(!temp) {
-                    needUpdate = Boolean.FALSE;
+                    needUpdate = Boolean.TRUE;
                     break;
                 }
             }
         }
-
+        System.out.println("참여자 체크 : " + needUpdate);
         // 숙제 비교
         List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
+        if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList == null && putLessonReq.getHomeworks() != null ) {
+            needUpdate = Boolean.TRUE;
+        }
         if(homeworkRowList != null && putLessonReq.getHomeworks() != null) {
             if(homeworkRowList.size() == putLessonReq.getHomeworks().size()) {
-
+                for(Homework homework : homeworkRowList) {
+                    for(HomeworkReq homeworkReq : putLessonReq.getHomeworks()) {
+                        if(!homework.isSameHomework(homeworkReq)) {
+                            needUpdate = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if(needUpdate) {
+                        break;
+                    }
+                }
             }
             if(homeworkRowList.size() != putLessonReq.getHomeworks().size()) {
                 needUpdate = Boolean.TRUE;
             }
         }
+        System.out.println("숙제 체크 : " + needUpdate);
 
+        // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
+        lesson.update(putLessonReq);
 
-        // 변경사항이 발생하면 숙제 업데이트 진행
         if(needUpdate) {
             homeworkRepository.deleteHomeworkByLessonId(lessonId);
             List<Homework> homeworkInsertList = new ArrayList<>();
