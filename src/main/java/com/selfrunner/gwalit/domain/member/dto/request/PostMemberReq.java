@@ -21,7 +21,8 @@ public class PostMemberReq {
     private String type;
 
     @NotNull(message = "전화번호가 Null입니다.")
-    @Size(min = 10, max = 11, message = "유효한 전화번호 길이가 아닙니다.")
+    @Size(min = 9, max = 12, message = "유효한 전화번호 길이가 아닙니다.")
+    @Pattern(regexp = "[0-9]+", message = "숫자만 입력되어야 합니다.")
     private String phone;
 
     @NotNull(message = "비밀번호가 Null입니다.")
