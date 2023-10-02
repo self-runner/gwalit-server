@@ -260,6 +260,9 @@ public class LectureService {
         // Business Logic: 기존에
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
+            if(memberAndLectureRepository.existsMemberAndLectureByMemberMemberIdAndLectureLectureIdAndDeletedAtIsNull(member.getMemberId(), lectureId)) {
+                throw new LectureException(ErrorCode.ALREADY_INVITE_STUDENT);
+            }
             if(check.getState().equals(MemberState.INVITE)) {
                 smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(), postInviteReq, Boolean.TRUE);
             }
