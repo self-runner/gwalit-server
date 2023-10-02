@@ -95,12 +95,6 @@ public class LessonService {
 
         // Business Logic: Homework 변경 여부 확인 진행
         // 참여자 비교
-        for (Participant p : lesson.getParticipants()) {
-            System.out.println(p.getMemberId());
-        }
-        for(Participant p : putLessonReq.getParticipants()) {
-            System.out.println(p.getMemberId());
-        }
         Boolean needUpdate = Boolean.FALSE;
         if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
             needUpdate = Boolean.TRUE;
@@ -119,7 +113,6 @@ public class LessonService {
                 }
             }
         }
-        System.out.println("참여자 체크 : " + needUpdate);
         // 숙제 비교
         List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
         if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
@@ -146,7 +139,6 @@ public class LessonService {
                 needUpdate = Boolean.TRUE;
             }
         }
-        System.out.println("숙제 체크 : " + needUpdate);
 
         // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
         lesson.update(putLessonReq);
@@ -207,7 +199,6 @@ public class LessonService {
 
         }
         lesson.updateMeta(patchLessonMetaRes);
-        System.out.println("size: " + homeworkList.size());
         homeworkRepository.saveAll(homeworkList);
 
 
