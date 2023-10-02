@@ -16,7 +16,7 @@ public interface MemberAndLectureRepositoryCustom {
 
     Long findCountByMember(Member member);
 
-    void deleteMemberAndLectureByMemberIdList(List<Long> memberIdList);
+    void deleteMemberAndLectureByMemberIdList(Long lectureId, List<Long> memberIdList);
 
     Optional<List<GetStudentRes>> findStudentByMemberAndLectureId(Member member, Long lectureId);
 

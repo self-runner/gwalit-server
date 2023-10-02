@@ -314,7 +314,7 @@ public class LectureService {
         List<Long> memberIdList = postStudentIdReqList.stream()
                 .map(postStudentIdReq -> postStudentIdReq.getMemberId())
                 .collect(Collectors.toList());
-        memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(memberIdList);
+        memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(lectureId, memberIdList);
         memberRepository.deleteMemberByMemberIdList(memberIdList);
 
         // Response

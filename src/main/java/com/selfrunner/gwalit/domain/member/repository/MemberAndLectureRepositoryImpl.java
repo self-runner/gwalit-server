@@ -56,10 +56,10 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
     }
 
     @Override
-    public void deleteMemberAndLectureByMemberIdList(List<Long> memberIdList) {
+    public void deleteMemberAndLectureByMemberIdList(Long lectureId, List<Long> memberIdList) {
         queryFactory.update(memberAndLecture)
                 .set(memberAndLecture.deletedAt, LocalDateTime.now())
-                .where(memberAndLecture.member.memberId.in(memberIdList))
+                .where(memberAndLecture.lecture.lectureId.eq(lectureId), memberAndLecture.member.memberId.in(memberIdList))
                 .execute();
     }
 
