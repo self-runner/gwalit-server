@@ -255,14 +255,16 @@ public class LectureService {
         if(!member.getType().equals(MemberType.TEACHER)) {
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
+        // 기존에 초대되었던 학생인지 확인
+        if(memberAndLectureRepository.findMemberAndLectureIdByMemberPhoneAndLectureId(postInviteReq.getPhone(), lectureId).orElse(null) != null) {
+            throw new LectureException(ErrorCode.ALREADY_INVITE_STUDENT);
+        }
 
 
-        // Business Logic: 기존에
+
+        // Business Logic
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
-            if(memberAndLectureRepository.existsMemberAndLectureByMemberMemberIdAndLectureLectureIdAndDeletedAtIsNull(member.getMemberId(), lectureId)) {
-                throw new LectureException(ErrorCode.ALREADY_INVITE_STUDENT);
-            }
             if(check.getState().equals(MemberState.INVITE)) {
                 smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(), postInviteReq, Boolean.TRUE);
             }
