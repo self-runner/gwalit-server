@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.banner.entity.Banner;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
+import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PostProblemRes;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PutProblemRes;
@@ -12,6 +13,7 @@ import com.selfrunner.gwalit.domain.workbook.exception.WorkbookException;
 import com.selfrunner.gwalit.domain.workbook.repository.ProblemRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookAndProblemRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookRepository;
+import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
@@ -70,5 +72,19 @@ public class WorkbookService {
         } catch (Exception e) {
             throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
         }
+    }
+
+    @Transactional
+    public Void registerWorkbook(Member member, PostWorkbookReq postWorkbookReq, MultipartFile workbookFile, MultipartFile thumbnailImage) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+
+
+        // Response
+        return null;
     }
 }

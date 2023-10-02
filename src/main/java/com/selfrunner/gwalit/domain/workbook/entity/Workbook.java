@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.workbook.entity;
 
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -32,6 +33,18 @@ public class Workbook {
     @Column(name = "thumbnail_link", columnDefinition = "text")
     private String thumbnailLink;
 
+    @Column(name = "file_link", columnDefinition = "text")
+    private String fileLink;
+
     @Column(name = "explain", columnDefinition = "text")
     private String explain;
+
+    @Builder
+    public Workbook(String title, String type, String thumbnailLink, String fileLink, String explain) {
+        this.title = title;
+        this.type = WorkbookType.valueOf(type);
+        this.thumbnailLink = thumbnailLink;
+        this.fileLink = fileLink;
+        this.explain = explain;
+    }
 }

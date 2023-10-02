@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.workbook.controller;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
+import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PostProblemRes;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PutProblemRes;
@@ -32,5 +33,10 @@ public class WorkbookController {
     @PutMapping("/problem/{problem_id}")
     public ApplicationResponse<PutProblemRes> updateProblem(@Auth Member member, @PathVariable("problem_id") Long problemId, @Valid @RequestPart(value = "data") PutProblemReq putProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateProblem(member, problemId, putProblemReq, problemFile, solveFile));
+    }
+
+    @PostMapping("")
+    public ApplicationResponse<Void> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") PostWorkbookReq postWorkbookReq, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerWorkbook(member, postWorkbookReq, workbookFile, thumbnailImage));
     }
 }
