@@ -10,6 +10,7 @@ import com.selfrunner.gwalit.domain.workbook.service.WorkbookService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.jwt.Auth;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -35,8 +36,13 @@ public class WorkbookController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateProblem(member, problemId, putProblemReq, problemFile, solveFile));
     }
 
+    @Operation(summary = "문제집 등록")
     @PostMapping("")
     public ApplicationResponse<Void> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") PostWorkbookReq postWorkbookReq, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerWorkbook(member, postWorkbookReq, workbookFile, thumbnailImage));
     }
+
+    @Operation(summary = "문제집 수정")
+    @PutMapping("/{workbook_id}")
+    public ApplicationResponse<Void> updateWorkbook(@Auth Member member, @PathVariable())
 }
