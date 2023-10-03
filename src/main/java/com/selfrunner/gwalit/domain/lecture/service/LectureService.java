@@ -21,7 +21,6 @@ import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
-import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
@@ -116,7 +115,7 @@ public class LectureService {
          */
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_EXIST_CLASS));
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
+        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), lecture.getSubjectDetail(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
 
         // Response
         return getLectureMetaRes;
@@ -183,6 +182,34 @@ public class LectureService {
         return null;
     }
 
+    @Transactional
+    public GetLectureMainRes updateColor(Member member, Long lectureId, PatchColorReq patchColorReq) {
+        // Validation
+        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+
+        // Business Logic
+        lecture.updateColor(patchColorReq);
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
+        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
+
+        // Response
+        return getLectureMainRes;
+    }
+
+    @Transactional
+    public GetLectureMainRes updateName(Member member, Long lectureId, PatchNameReq patchNameReq) {
+        // Validation
+        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+
+        // Business Logic
+        lecture.updateName(patchNameReq);
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
+        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
+
+        // Response
+        return getLectureMainRes;
+    }
+
     public List<GetLectureMainRes> getAllMain(Member member) {
         // Validation
 
@@ -228,9 +255,14 @@ public class LectureService {
         if(!member.getType().equals(MemberType.TEACHER)) {
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
+        // 기존에 초대되었던 학생인지 확인
+        if(memberAndLectureRepository.findMemberAndLectureIdByMemberPhoneAndLectureId(postInviteReq.getPhone(), lectureId).orElse(null) != null) {
+            throw new LectureException(ErrorCode.ALREADY_INVITE_STUDENT);
+        }
 
 
-        // Business Logic: 기존에
+
+        // Business Logic
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
             if(check.getState().equals(MemberState.INVITE)) {
@@ -287,7 +319,7 @@ public class LectureService {
         List<Long> memberIdList = postStudentIdReqList.stream()
                 .map(postStudentIdReq -> postStudentIdReq.getMemberId())
                 .collect(Collectors.toList());
-        memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(memberIdList);
+        memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(lectureId, memberIdList);
         memberRepository.deleteMemberByMemberIdList(memberIdList);
 
         // Response

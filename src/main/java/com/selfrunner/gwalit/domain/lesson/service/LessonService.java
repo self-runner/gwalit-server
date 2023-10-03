@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
+import com.selfrunner.gwalit.domain.lesson.dto.request.PatchLessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
@@ -22,15 +23,18 @@ import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,20 +93,151 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Business Logic
-        lesson.update(putLessonReq);
-        homeworkRepository.deleteHomeworkByLessonId(lessonId);
-        List<Homework> homeworkList = new ArrayList<>();
-        for (Participant participant : putLessonReq.getParticipants()) {
-            List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
-                    .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
-                    .collect(Collectors.toList());
-            homeworkList.addAll(tempHomeworkList);
+        // Business Logic: Homework 변경 여부 확인 진행
+        // 참여자 비교
+        Boolean needUpdate = Boolean.FALSE;
+        if(lesson.getParticipants() == null) {
+            needUpdate = Boolean.TRUE;
         }
-        homeworkRepository.saveAll(homeworkList);
+        if(lesson.getParticipants() != null) {
+            if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+            if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
+                for(Participant lessonParticipant : lesson.getParticipants()) {
+                    Boolean temp = Boolean.FALSE;
+                    for(Participant dtoParticipant : putLessonReq.getParticipants()) {
+                        if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
+                            temp = Boolean.TRUE;
+                        }
+                    }
+                    if(!temp) {
+                        needUpdate = Boolean.TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 숙제 비교
+        List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
+        if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList == null && putLessonReq.getHomeworks() != null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList != null && putLessonReq.getHomeworks() != null) {
+            if(homeworkRowList.size() == putLessonReq.getHomeworks().size()) {
+                for(Homework homework : homeworkRowList) {
+                    for(HomeworkReq homeworkReq : putLessonReq.getHomeworks()) {
+                        if(!homework.isSameHomework(homeworkReq)) {
+                            needUpdate = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if(needUpdate) {
+                        break;
+                    }
+                }
+            }
+            if(homeworkRowList.size() != putLessonReq.getHomeworks().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+        }
+
+        // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
+        lesson.update(putLessonReq);
+        if(needUpdate && putLessonReq.getHomeworks() != null) {
+            homeworkRepository.deleteHomeworkByLessonId(lessonId);
+            List<Homework> homeworkInsertList = new ArrayList<>();
+            for (Participant participant : putLessonReq.getParticipants()) {
+                List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
+                        .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
+                        .collect(Collectors.toList());
+                homeworkInsertList.addAll(tempHomeworkList);
+            }
+            homeworkRepository.saveAll(homeworkInsertList);
+        }
 
         // Response
         return null;
+    }
+
+    @Transactional
+    public LessonMetaRes updateMeta(Member member, Long lessonId, PatchLessonMetaRes patchLessonMetaRes) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic: 수업 정보 / 숙제 정보 업데이트
+        // 수업 여부에 따라서 homework에 Participant 업데이트 진행 필요
+        List<HomeworkRes> homeworkResList = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
+        if(!homeworkResList.isEmpty()) {
+            List<Homework> homeworkList = new ArrayList<>();
+
+            if(lesson.getParticipants() != null) {
+                List<Long> deleteIdList = lesson.getParticipants().stream()
+                        .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> participant.getMemberId() == patchParticipant.getMemberId()))
+                        .map(Participant::getMemberId)
+                        .collect(Collectors.toList());
+                homeworkRepository.deleteAllByLessonIdAndMemberIdList(lessonId, deleteIdList);
+
+                for (Participant participant : patchLessonMetaRes.getParticipants()) {
+                    if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> lessonParticipant.getMemberId() == participant.getMemberId())) {
+                        List<Homework> tempHomeworkList = homeworkResList.stream()
+                                .map(homeworkRes -> {
+                                    // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
+                                    String body = homeworkRes.getBody();
+                                    LocalDate deadLine = homeworkRes.getDeadline();
+                                    // homeworkRes 내의 값을 사용하여 Homework 객체 생성
+                                    Homework homework = Homework.builder()
+                                            .lessonId(lessonId)
+                                            .memberId(participant.getMemberId())
+                                            .body(body)
+                                            .deadline(deadLine)
+                                            .isFinish(Boolean.FALSE)
+                                            .build();
+
+                                    return homework;
+                                })
+                                .collect(Collectors.toList());
+                        homeworkList.addAll(tempHomeworkList);
+                    }
+                }
+            }
+
+            if(lesson.getParticipants() == null) {
+                for (Participant participant : patchLessonMetaRes.getParticipants()) {
+                    List<Homework> tempHomeworkList = homeworkResList.stream()
+                            .map(homeworkRes -> {
+                                // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
+                                String body = homeworkRes.getBody();
+                                LocalDate deadLine = homeworkRes.getDeadline();
+                                // homeworkRes 내의 값을 사용하여 Homework 객체 생성
+                                Homework homework = Homework.builder()
+                                        .lessonId(lessonId)
+                                        .memberId(participant.getMemberId())
+                                        .body(body)
+                                        .deadline(deadLine)
+                                        .isFinish(Boolean.FALSE)
+                                        .build();
+
+                                return homework;
+                            })
+                            .collect(Collectors.toList());
+                    homeworkList.addAll(tempHomeworkList);
+                }
+            }
+
+            homeworkRepository.saveAll(homeworkList);
+        }
+
+        // 수업 정보는 무조건 업데이트 진행되므로 조건 필요 X
+        lesson.updateMeta(patchLessonMetaRes);
+
+        // Response
+        return new LessonMetaRes(lesson.getLessonId(), lesson.getLecture().getLectureId(), lesson.getType(), lesson.getDate(), new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime()), lesson.getParticipants());
     }
 
     @Transactional

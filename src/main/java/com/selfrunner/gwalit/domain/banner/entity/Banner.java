@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.banner.entity;
 
+import com.selfrunner.gwalit.domain.banner.dto.request.BannerReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,17 +30,22 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "linkUrl", columnDefinition = "text")
     private String linkUrl;
 
+    @Column(name = "information", columnDefinition = "varchar(255)")
+    private String information;
+
     public void updateImage(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
-    public void updateLink(String linkUrl) {
-        this.linkUrl = linkUrl;
+    public void update(BannerReq bannerReq) {
+        this.linkUrl = bannerReq.getLinkUrl();
+        this.information = bannerReq.getInformation();
     }
 
     @Builder
-    public Banner(String imageUrl, String linkUrl) {
+    public Banner(String imageUrl, String linkUrl, String information) {
         this.imageUrl = imageUrl;
         this.linkUrl = linkUrl;
+        this.information = information;
     }
 }

@@ -1,6 +1,9 @@
 package com.selfrunner.gwalit.domain.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
+import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
@@ -13,6 +16,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.SHA256;
@@ -42,6 +46,10 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final LectureRepository lectureRepository;
+    private final LessonRepository lessonRepository;
+    private final HomeworkRepository homeworkRepository;
+    private final TaskRepository taskRepository;
 
     public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
@@ -184,8 +192,16 @@ public class AuthService {
 
         // Business Logic: Soft Delete
         memberRepository.delete(member);
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
         memberAndLectureRepository.deleteMemberAndLecturesByMember(member);
-
+        if(lectureIdList != null && member.getType().equals(MemberType.TEACHER)) {
+            taskRepository.deleteAllByLectureIdList(lectureIdList);
+            List<Long> lessonIdList = lessonRepository.findAllLessonIdByLectureIdList(lectureIdList);
+            homeworkRepository.deleteAllByLessonIdList(lessonIdList);
+            lessonRepository.deleteAllByLectureLectureIdList(lectureIdList);
+            lectureRepository.deleteAllByLectureIdList(lectureIdList);
+        }
+      
         // Response
         return null;
     }
