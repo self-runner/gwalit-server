@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class PutLessonReq {
 
     private List<Participant> participants;
 
+    @Size(max = 500, message = "피드백은 최대 500자까지만 작성할 수 있습니다.")
     private String feedback;
 
     private List<Progress> progresses;

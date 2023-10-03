@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 public class PutLectureReq {
 
     @NotEmpty(message = "Class 이름이 공란입니다.")
+    @Size(min = 2, max = 16, message = "클래스명은 2자 ~ 16자 사이여야 합니다.")
     private String name;
 
     @NotEmpty(message = "Class 색상이 미정입니다.")
