@@ -133,4 +133,20 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                     .transform(groupBy(lesson.lecture.lectureId).list(lesson.lessonId))
         );
     }
+
+    @Override
+    public List<Long> findAllLessonIdByLectureIdList(List<Long> lectureIdList) {
+        return queryFactory.select(lesson.lessonId)
+                        .from(lesson)
+                        .where(lesson.lecture.lectureId.in(lectureIdList))
+                        .fetch();
+    }
+
+    @Override
+    public void deleteAllByLectureLectureIdList(List<Long> lectureIdList) {
+        queryFactory.update(lesson)
+                .set(lesson.deletedAt, LocalDateTime.now())
+                .where(lesson.lecture.lectureId.in(lectureIdList))
+                .execute();
+    }
 }

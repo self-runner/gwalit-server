@@ -9,6 +9,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,5 +55,13 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, lecture.name, lecture.color, lecture.subject, lecture.subjectDetail, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
+    }
+
+    @Override
+    public void deleteAllByLectureIdList(List<Long> lectureIdList) {
+        queryFactory.update(lecture)
+                .set(lecture.deletedAt, LocalDateTime.now())
+                .where(lecture.lectureId.in(lectureIdList))
+                .execute();
     }
 }
