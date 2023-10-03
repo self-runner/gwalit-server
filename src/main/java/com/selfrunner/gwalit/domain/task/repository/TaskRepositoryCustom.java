@@ -11,4 +11,6 @@ public interface TaskRepositoryCustom {
     Optional<List<TaskRes>> findAllByMemberId(Member member);
 
     Optional<List<TaskRes>> findTasksByLectureLectureIdOrderByDeadlineDesc(Long lectureId);
+
+    void deleteAllByLectureIdList(List<Long> lectureIdList);
 }
