@@ -3,10 +3,8 @@ package com.selfrunner.gwalit.domain.member.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
-import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
-import com.selfrunner.gwalit.domain.member.entity.QMember;
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.member.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -55,10 +53,10 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
     }
 
     @Override
-    public void deleteMemberAndLectureByMemberIdList(List<Long> memberIdList) {
+    public void deleteMemberAndLectureByMemberIdList(Long lectureId, List<Long> memberIdList) {
         queryFactory.update(memberAndLecture)
                 .set(memberAndLecture.deletedAt, LocalDateTime.now())
-                .where(memberAndLecture.member.memberId.in(memberIdList))
+                .where(memberAndLecture.lecture.lectureId.eq(lectureId), memberAndLecture.member.memberId.in(memberIdList))
                 .execute();
     }
 
@@ -86,5 +84,26 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                 .set(memberAndLecture.deletedAt, LocalDateTime.now())
                 .where(memberAndLecture.member.memberId.eq(member.getMemberId()))
                 .execute();
+    }
+
+    @Override
+    public Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(lecture)
+                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+                    .where(memberAndLecture.member.memberId.eq(memberId), lecture.lectureId.eq(lectureId))
+                    .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<Member> findMemberAndLectureIdByMemberPhoneAndLectureId(String phone, Long lectureId) {
+        return Optional.ofNullable(
+            queryFactory.select(member)
+                    .from(memberAndLecture)
+                    .leftJoin(member).on(memberAndLecture.member.memberId.eq(member.memberId))
+                    .where(member.phone.eq(phone), member.type.eq(MemberType.STUDENT), member.state.ne(MemberState.FAKE), memberAndLecture.lecture.lectureId.eq(lectureId), member.deletedAt.isNull(), memberAndLecture.deletedAt.isNull())
+                    .fetchOne()
+        );
     }
 }

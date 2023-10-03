@@ -43,6 +43,7 @@ public enum ErrorCode {
     NOT_EXIST_DEADLINE(HttpStatus.BAD_REQUEST, 5004, "숙제의 기한이 설정되지 않았습니다."),
     FAILED_MAKE_CLASS(HttpStatus.BAD_REQUEST, 5005, "생성할 수 있는 수를 초과했습니다"),
     TOO_MANY_SCHEDULE(HttpStatus.BAD_REQUEST, 5006, "선택된 일정의 수가 너무 많습니다."),
+    ALREADY_INVITE_STUDENT(HttpStatus.BAD_REQUEST, 5007, "이미 초대한 학생입니다."),
 
     // Banner
     NO_BANNER_IMAGE(HttpStatus.BAD_REQUEST, 6000, "배너 이미지 파일이 존재하지 않습니다."),
@@ -50,7 +51,10 @@ public enum ErrorCode {
 
     // Content
     ALREADY_EXIST_CONTENT(HttpStatus.BAD_REQUEST, 7000, "이미 존재하는 콘텐츠입니다."),
-    NO_CONTENT_LINK(HttpStatus.BAD_REQUEST, 7001, "콘텐츠 링크가 존재하지 않습니다.");
+    NO_CONTENT_LINK(HttpStatus.BAD_REQUEST, 7001, "콘텐츠 링크가 존재하지 않습니다."),
+
+    // Task
+    TOO_MANY_TASK(HttpStatus.BAD_REQUEST, 8000, "등록한 할 일의 수가 너무 많습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;

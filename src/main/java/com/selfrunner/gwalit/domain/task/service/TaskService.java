@@ -30,6 +30,9 @@ public class TaskService {
     public Void register(Member member, PostTaskReq postTaskReq) {
         // Validation: 사용자 접근 권한 확인
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postTaskReq.getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        if(postTaskReq.getSubtasks().size() > 20) {
+            throw new TaskException(ErrorCode.TOO_MANY_TASK);
+        }
 
         // Business Logic
         Task task = postTaskReq.toEntity(memberAndLecture.getLecture());
@@ -44,6 +47,9 @@ public class TaskService {
         // Validation
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskException(ErrorCode.NOT_FOUND_EXCEPTION));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        if(putTaskReq.getSubtasks().size() > 20) {
+            throw new TaskException(ErrorCode.TOO_MANY_TASK);
+        }
 
         // Business Logic
         task.update(putTaskReq);

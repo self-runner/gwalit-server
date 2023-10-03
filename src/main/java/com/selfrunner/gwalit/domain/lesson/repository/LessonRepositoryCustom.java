@@ -28,4 +28,8 @@ public interface LessonRepositoryCustom {
     Optional<Long> findRecentLessonIdByLectureId(Long lectureId);
 
     Optional<List<Long>> findRecentLessonIdByLectureIdList(List<Long> lectureId);
+
+    List<Long> findAllLessonIdByLectureIdList(List<Long> lectureIdList);
+
+    void deleteAllByLectureLectureIdList(List<Long> lectureIdList);
 }

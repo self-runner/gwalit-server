@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.controller;
 
+import com.selfrunner.gwalit.domain.lesson.dto.request.PatchLessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonIdReq;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PutLessonReq;
@@ -47,6 +48,12 @@ public class LessonController {
     public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
         lessonService.update(member, lessonId, putLessonReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "수업 리포트 일부 정보 수정")
+    @PatchMapping("/{lesson_id}")
+    public ApplicationResponse<LessonMetaRes> updateMeta(@Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PatchLessonMetaRes patchLessonMetaRes) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.updateMeta(member, lessonId, patchLessonMetaRes));
     }
 
     @Operation(summary = "기존 수업 리포트들 모두 삭제")

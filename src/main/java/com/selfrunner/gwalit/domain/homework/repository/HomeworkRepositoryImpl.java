@@ -55,4 +55,67 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
                     .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
+
+    @Override
+    public Optional<List<HomeworkMainRes>> findAllHomeworkByMember(Member member) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(homework)
+                    .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                    .where(homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull())
+                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+        );
+    }
+
+    @Override
+    public Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndType(Member member, Boolean type) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(homework)
+                        .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .where(homework.memberId.eq(member.getMemberId()), homework.isFinish.eq(type), homework.deletedAt.isNull())
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+        );
+    }
+
+    @Override
+    public HomeworkMainRes findHomeworkByHomeworkId(Long homeworkId) {
+        return queryFactory.select(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish))
+                .from(homework)
+                .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                .where(homework.homeworkId.eq(homeworkId), homework.deletedAt.isNull())
+                .fetchOne();
+
+    }
+
+    @Override
+    public Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureId(Member member, Long lectureId) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(homework)
+                        .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .where(homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull(), lecture.lectureId.eq(lectureId))
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+        );
+    }
+
+    @Override
+    public Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureIdAndType(Member member, Long lectureId, Boolean type) {
+        return Optional.ofNullable(
+                queryFactory.selectFrom(homework)
+                        .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
+                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .where(homework.memberId.eq(member.getMemberId()), homework.isFinish.eq(type), homework.deletedAt.isNull(), lecture.lectureId.eq(lectureId))
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+        );
+    }
+
+    @Override
+    public void deleteAllByLessonIdAndMemberIdList(Long lessonId, List<Long> deleteIdList) {
+        queryFactory.update(homework)
+                .set(homework.deletedAt, LocalDateTime.now())
+                .where(homework.lessonId.eq(lessonId), homework.memberId.in(deleteIdList))
+                .execute();
+    }
 }

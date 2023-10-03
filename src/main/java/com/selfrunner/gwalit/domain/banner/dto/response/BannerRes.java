@@ -15,9 +15,12 @@ public class BannerRes {
 
     private String linkUrl;
 
+    private String information;
+
     public BannerRes(Banner banner) {
         this.bannerId = banner.getBannerId();
         this.imageUrl = banner.getImageUrl();
         this.linkUrl = banner.getLinkUrl();
+        this.information = banner.getInformation();
     }
 }
