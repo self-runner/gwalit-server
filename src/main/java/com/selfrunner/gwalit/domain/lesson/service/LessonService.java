@@ -96,23 +96,29 @@ public class LessonService {
         // Business Logic: Homework 변경 여부 확인 진행
         // 참여자 비교
         Boolean needUpdate = Boolean.FALSE;
-        if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
+        if(lesson.getParticipants() == null) {
             needUpdate = Boolean.TRUE;
         }
-        if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
-            for(Participant lessonParticipant : lesson.getParticipants()) {
-                Boolean temp = Boolean.FALSE;
-                for(Participant dtoParticipant : putLessonReq.getParticipants()) {
-                    if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
-                        temp = Boolean.TRUE;
+        if(lesson.getParticipants() != null) {
+            if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+            if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
+                for(Participant lessonParticipant : lesson.getParticipants()) {
+                    Boolean temp = Boolean.FALSE;
+                    for(Participant dtoParticipant : putLessonReq.getParticipants()) {
+                        if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
+                            temp = Boolean.TRUE;
+                        }
                     }
-                }
-                if(!temp) {
-                    needUpdate = Boolean.TRUE;
-                    break;
+                    if(!temp) {
+                        needUpdate = Boolean.TRUE;
+                        break;
+                    }
                 }
             }
         }
+
         // 숙제 비교
         List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
         if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
@@ -142,8 +148,7 @@ public class LessonService {
 
         // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
         lesson.update(putLessonReq);
-
-        if(needUpdate) {
+        if(needUpdate && putLessonReq.getHomeworks() != null) {
             homeworkRepository.deleteHomeworkByLessonId(lessonId);
             List<Homework> homeworkInsertList = new ArrayList<>();
             for (Participant participant : putLessonReq.getParticipants()) {
@@ -165,42 +170,71 @@ public class LessonService {
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Business Logic
+        // Business Logic: 수업 정보 / 숙제 정보 업데이트
         // 수업 여부에 따라서 homework에 Participant 업데이트 진행 필요
-        List<Long> deleteIdList = lesson.getParticipants().stream()
-                .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> participant.getMemberId() == patchParticipant.getMemberId()))
-                .map(Participant::getMemberId)
-                .collect(Collectors.toList());
-        homeworkRepository.deleteAllByLessonIdAndMemberIdList(lessonId, deleteIdList);
         List<HomeworkRes> homeworkResList = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
-        List<Homework> homeworkList = new ArrayList<>();
-        for (Participant participant : patchLessonMetaRes.getParticipants()) {
-            if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> lessonParticipant.getMemberId() == participant.getMemberId())) {
-                System.out.println("t" + participant.getMemberId());
-                List<Homework> tempHomeworkList = homeworkResList.stream()
-                        .map(homeworkRes -> {
-                            // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
-                            String body = homeworkRes.getBody();
-                            LocalDate deadLine = homeworkRes.getDeadline();
-                            // homeworkRes 내의 값을 사용하여 Homework 객체 생성
-                            Homework homework = Homework.builder()
-                                    .lessonId(lessonId)
-                                    .memberId(participant.getMemberId())
-                                    .body(body)
-                                    .deadline(deadLine)
-                                    .isFinish(Boolean.FALSE)
-                                    .build();
+        if(!homeworkResList.isEmpty()) {
+            List<Homework> homeworkList = new ArrayList<>();
 
-                            return homework;
-                        })
+            if(lesson.getParticipants() != null) {
+                List<Long> deleteIdList = lesson.getParticipants().stream()
+                        .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> participant.getMemberId() == patchParticipant.getMemberId()))
+                        .map(Participant::getMemberId)
                         .collect(Collectors.toList());
-                homeworkList.addAll(tempHomeworkList);
+                homeworkRepository.deleteAllByLessonIdAndMemberIdList(lessonId, deleteIdList);
+
+                for (Participant participant : patchLessonMetaRes.getParticipants()) {
+                    if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> lessonParticipant.getMemberId() == participant.getMemberId())) {
+                        List<Homework> tempHomeworkList = homeworkResList.stream()
+                                .map(homeworkRes -> {
+                                    // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
+                                    String body = homeworkRes.getBody();
+                                    LocalDate deadLine = homeworkRes.getDeadline();
+                                    // homeworkRes 내의 값을 사용하여 Homework 객체 생성
+                                    Homework homework = Homework.builder()
+                                            .lessonId(lessonId)
+                                            .memberId(participant.getMemberId())
+                                            .body(body)
+                                            .deadline(deadLine)
+                                            .isFinish(Boolean.FALSE)
+                                            .build();
+
+                                    return homework;
+                                })
+                                .collect(Collectors.toList());
+                        homeworkList.addAll(tempHomeworkList);
+                    }
+                }
             }
 
-        }
-        lesson.updateMeta(patchLessonMetaRes);
-        homeworkRepository.saveAll(homeworkList);
+            if(lesson.getParticipants() == null) {
+                for (Participant participant : patchLessonMetaRes.getParticipants()) {
+                    List<Homework> tempHomeworkList = homeworkResList.stream()
+                            .map(homeworkRes -> {
+                                // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
+                                String body = homeworkRes.getBody();
+                                LocalDate deadLine = homeworkRes.getDeadline();
+                                // homeworkRes 내의 값을 사용하여 Homework 객체 생성
+                                Homework homework = Homework.builder()
+                                        .lessonId(lessonId)
+                                        .memberId(participant.getMemberId())
+                                        .body(body)
+                                        .deadline(deadLine)
+                                        .isFinish(Boolean.FALSE)
+                                        .build();
 
+                                return homework;
+                            })
+                            .collect(Collectors.toList());
+                    homeworkList.addAll(tempHomeworkList);
+                }
+            }
+
+            homeworkRepository.saveAll(homeworkList);
+        }
+
+        // 수업 정보는 무조건 업데이트 진행되므로 조건 필요 X
+        lesson.updateMeta(patchLessonMetaRes);
 
         // Response
         return new LessonMetaRes(lesson.getLessonId(), lesson.getLecture().getLectureId(), lesson.getType(), lesson.getDate(), new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime()), lesson.getParticipants());
