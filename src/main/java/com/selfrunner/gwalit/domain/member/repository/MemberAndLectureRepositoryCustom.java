@@ -23,7 +23,7 @@ public interface MemberAndLectureRepositoryCustom {
     void deleteMemberAndLectureByLectureId(Long lectureId);
 
     void deleteMemberAndLecturesByMember(Member member);
-
+  
     Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId);
 
     Optional<Member> findMemberAndLectureIdByMemberPhoneAndLectureId(String phone, Long lectureId);
