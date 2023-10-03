@@ -4,8 +4,11 @@ import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
+import com.selfrunner.gwalit.domain.workbook.dto.request.PutWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PostProblemRes;
+import com.selfrunner.gwalit.domain.workbook.dto.response.PostWorkbookRes;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PutProblemRes;
+import com.selfrunner.gwalit.domain.workbook.dto.response.PutWorkbookRes;
 import com.selfrunner.gwalit.domain.workbook.service.WorkbookService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -38,11 +41,13 @@ public class WorkbookController {
 
     @Operation(summary = "문제집 등록")
     @PostMapping("")
-    public ApplicationResponse<Void> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") PostWorkbookReq postWorkbookReq, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
+    public ApplicationResponse<PostWorkbookRes> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") PostWorkbookReq postWorkbookReq, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerWorkbook(member, postWorkbookReq, workbookFile, thumbnailImage));
     }
 
     @Operation(summary = "문제집 수정")
     @PutMapping("/{workbook_id}")
-    public ApplicationResponse<Void> updateWorkbook(@Auth Member member, @PathVariable())
+    public ApplicationResponse<PutWorkbookRes> updateWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data")PutWorkbookReq putWorkbookReq, @Valid @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateWorkbook(member, workbookId, putWorkbookReq, workbookFile, thumbnailImage));
+    }
 }

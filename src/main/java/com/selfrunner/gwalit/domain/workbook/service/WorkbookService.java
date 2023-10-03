@@ -6,8 +6,11 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
+import com.selfrunner.gwalit.domain.workbook.dto.request.PutWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PostProblemRes;
+import com.selfrunner.gwalit.domain.workbook.dto.response.PostWorkbookRes;
 import com.selfrunner.gwalit.domain.workbook.dto.response.PutProblemRes;
+import com.selfrunner.gwalit.domain.workbook.dto.response.PutWorkbookRes;
 import com.selfrunner.gwalit.domain.workbook.entity.Problem;
 import com.selfrunner.gwalit.domain.workbook.exception.WorkbookException;
 import com.selfrunner.gwalit.domain.workbook.repository.ProblemRepository;
@@ -75,7 +78,21 @@ public class WorkbookService {
     }
 
     @Transactional
-    public Void registerWorkbook(Member member, PostWorkbookReq postWorkbookReq, MultipartFile workbookFile, MultipartFile thumbnailImage) {
+    public PostWorkbookRes registerWorkbook(Member member, PostWorkbookReq postWorkbookReq, MultipartFile workbookFile, MultipartFile thumbnailImage) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public PutWorkbookRes updateWorkbook(Member member, Long workbookId, PutWorkbookReq putWorkbookReq, MultipartFile workbookFile, MultipartFile thumbnailImage) {
         // Validation
         /*
         TODO: 관리자 권한 확인 코드 반영 필요
