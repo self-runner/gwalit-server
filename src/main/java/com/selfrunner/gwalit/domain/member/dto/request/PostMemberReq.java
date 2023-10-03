@@ -35,6 +35,7 @@ public class PostMemberReq {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!])[a-zA-Z\\d~@#$%^&*()_\\-\\+=\\[\\]|\\\\;:\\'\",<>\\.?/!]*$")
     private String passwordCheck;
 
+    @Size(min = 2, max = 12)
     private String school;
 
     private String grade;
