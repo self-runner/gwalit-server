@@ -1,8 +1,6 @@
 package com.selfrunner.gwalit.domain.workbook.service;
 
-import com.selfrunner.gwalit.domain.banner.entity.Banner;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
@@ -16,7 +14,6 @@ import com.selfrunner.gwalit.domain.workbook.exception.WorkbookException;
 import com.selfrunner.gwalit.domain.workbook.repository.ProblemRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookAndProblemRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookRepository;
-import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
@@ -93,6 +90,46 @@ public class WorkbookService {
 
     @Transactional
     public PutWorkbookRes updateWorkbook(Member member, Long workbookId, PutWorkbookReq putWorkbookReq, MultipartFile workbookFile, MultipartFile thumbnailImage) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+
+
+        // Response
+        return null;
+    }
+
+    @Transactional
+    public Void deleteWorkbook(Member member, Long workbookId) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+
+
+        // Response
+        return null;
+    }
+
+    public Void getOneWorkbook(Long workbookId) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+
+
+        // Response
+        return null;
+    }
+
+    public Void getWorkbookList(Long cursorId, Long limit) {
         // Validation
         /*
         TODO: 관리자 권한 확인 코드 반영 필요

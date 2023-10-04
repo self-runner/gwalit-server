@@ -50,4 +50,23 @@ public class WorkbookController {
     public ApplicationResponse<PutWorkbookRes> updateWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data")PutWorkbookReq putWorkbookReq, @Valid @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateWorkbook(member, workbookId, putWorkbookReq, workbookFile, thumbnailImage));
     }
+
+    @Operation(summary = "문제집 삭제")
+    @DeleteMapping("/{workbook_id}")
+    public ApplicationResponse<Void> deleteWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId) {
+        workbookService.deleteWorkbook(member, workbookId);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    }
+
+    @Operation(summary = "특정 문제집 반환")
+    @GetMapping("/{workbook_id}")
+    public ApplicationResponse<Void> getOneWorkbook(@PathVariable("workbook_id") Long workbookId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getOneWorkbook(workbookId));
+    }
+
+    @Operation(summary = "문제집 리스트 반환")
+    @GetMapping("")
+    public ApplicationResponse<Void> getWorkbookList(@RequestParam(name = "cursor") Long cursorId, @RequestParam(name = "limit") Long limit) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getWorkbookList(cursorId, limit));
+    }
 }
