@@ -33,45 +33,23 @@ public class WorkbookService {
     private final S3Client s3Client;
 
     @Transactional
-    public PostProblemRes registerProblem(Member member, PostProblemReq postProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
+    public Void getSubjectList() {
         // Validation
-        /*
-        TODO: 관리자 권한 확인 코드 반영 필요
-         */
 
         // Business Logic
-        try {
-            String problemUrl = s3Client.upload(problemFile, "problem/problem");
-            String solveUrl = s3Client.upload(solveFile, "problem/solve");
-            Problem problem = postProblemReq.toEntity(problemUrl, solveUrl);
-            problemRepository.save(problem);
 
-            // Response
-            return PostProblemRes.toDto(problem);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
+        // Response
+        return null;
     }
 
     @Transactional
-    public PutProblemRes updateProblem(Member member, Long problemId, PutProblemReq putProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
+    public Void getSubjectDetailList() {
         // Validation
-        /*
-        TODO: 관리자 권한 확인 코드 반영 필요
-         */
-        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new WorkbookException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Business Logic
-        try {
-            if(problemFile != null) {
 
-            }
-
-            // Response
-            return PutProblemRes.toDto(problem);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
+        // Response
+        return null;
     }
 
     @Transactional
@@ -140,5 +118,47 @@ public class WorkbookService {
 
         // Response
         return null;
+    }
+
+    @Transactional
+    public PostProblemRes registerProblem(Member member, PostProblemReq postProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+
+        // Business Logic
+        try {
+            String problemUrl = s3Client.upload(problemFile, "problem/problem");
+            String solveUrl = s3Client.upload(solveFile, "problem/solve");
+            Problem problem = postProblemReq.toEntity(problemUrl, solveUrl);
+            problemRepository.save(problem);
+
+            // Response
+            return PostProblemRes.toDto(problem);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
+    }
+
+    @Transactional
+    public PutProblemRes updateProblem(Member member, Long problemId, PutProblemReq putProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
+        // Validation
+        /*
+        TODO: 관리자 권한 확인 코드 반영 필요
+         */
+        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new WorkbookException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        try {
+            if(problemFile != null) {
+
+            }
+
+            // Response
+            return PutProblemRes.toDto(problem);
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+        }
     }
 }

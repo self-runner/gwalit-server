@@ -29,14 +29,16 @@ public class WorkbookController {
 
     private final WorkbookService workbookService;
 
-    @PostMapping("/problem")
-    public ApplicationResponse<PostProblemRes> registerProblem(@Auth Member member, @Valid @RequestPart(value = "data") PostProblemReq postProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerProblem(member, postProblemReq, problemFile, solveFile));
+    @Operation(summary = "콘텐츠 페이지 과목 정보 반환")
+    @GetMapping("/subject/list")
+    public ApplicationResponse<Void> getSubjectList() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectList());
     }
 
-    @PutMapping("/problem/{problem_id}")
-    public ApplicationResponse<PutProblemRes> updateProblem(@Auth Member member, @PathVariable("problem_id") Long problemId, @Valid @RequestPart(value = "data") PutProblemReq putProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateProblem(member, problemId, putProblemReq, problemFile, solveFile));
+    @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
+    @GetMapping("/subject/")
+    public ApplicationResponse<Void> getSubjectDetailList() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectDetailList());
     }
 
     @Operation(summary = "문제집 등록")
@@ -68,5 +70,15 @@ public class WorkbookController {
     @GetMapping("")
     public ApplicationResponse<Void> getWorkbookList(@RequestParam(name = "cursor") Long cursorId, @RequestParam(name = "limit") Long limit) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getWorkbookList(cursorId, limit));
+    }
+
+    @PostMapping("/problem")
+    public ApplicationResponse<PostProblemRes> registerProblem(@Auth Member member, @Valid @RequestPart(value = "data") PostProblemReq postProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerProblem(member, postProblemReq, problemFile, solveFile));
+    }
+
+    @PutMapping("/problem/{problem_id}")
+    public ApplicationResponse<PutProblemRes> updateProblem(@Auth Member member, @PathVariable("problem_id") Long problemId, @Valid @RequestPart(value = "data") PutProblemReq putProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateProblem(member, problemId, putProblemReq, problemFile, solveFile));
     }
 }
