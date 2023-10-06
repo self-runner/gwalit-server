@@ -59,7 +59,7 @@ public class LectureService {
         if(memberAndLectureRepository.findCountByMember(member) > 3) {
             throw new LectureException(ErrorCode.FAILED_MAKE_CLASS);
         }
-        if(ChronoUnit.DAYS.between(postLectureReq.getStartDate(), postLectureReq.getEndDate()) > 365) {
+        if(postLectureReq.getEndDate().isAfter(postLectureReq.getStartDate().plusYears(1).minusDays(1))) {
             throw new LectureException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
         if(postLectureReq.getSchedules().size() > 20) {

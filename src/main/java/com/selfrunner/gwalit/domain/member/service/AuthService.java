@@ -201,7 +201,7 @@ public class AuthService {
             lessonRepository.deleteAllByLectureLectureIdList(lectureIdList);
             lectureRepository.deleteAllByLectureIdList(lectureIdList);
         }
-      
+
         // Response
         return null;
     }
