@@ -33,18 +33,24 @@ public class Workbook {
     @Column(name = "thumbnail_link", columnDefinition = "text")
     private String thumbnailLink;
 
-    @Column(name = "file_link", columnDefinition = "text")
-    private String fileLink;
+    @Column(name = "workbook_file_link", columnDefinition = "text")
+    private String workbookFileLink;
+
+    @Column(name = "answer_file_link", columnDefinition = "text")
+    private String answerFileLink;
+
+    @Column(name = "time", columnDefinition = "int")
+    private Integer time;
 
     @Column(name = "explain", columnDefinition = "text")
     private String explain;
 
     @Builder
-    public Workbook(String title, String type, String thumbnailLink, String fileLink, String explain) {
+    public Workbook(String title, String type, String thumbnailLink, String workbookFileLink, String explain) {
         this.title = title;
         this.type = WorkbookType.valueOf(type);
         this.thumbnailLink = thumbnailLink;
-        this.fileLink = fileLink;
+        this.workbookFileLink = workbookFileLink;
         this.explain = explain;
     }
 }
