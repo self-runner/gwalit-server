@@ -24,4 +24,3 @@ public enum WorkbookType {
         this.englishName = englishName;
     }
 }
-ㅌ
