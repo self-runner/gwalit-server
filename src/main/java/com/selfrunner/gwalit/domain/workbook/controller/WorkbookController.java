@@ -5,10 +5,7 @@ import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutWorkbookReq;
-import com.selfrunner.gwalit.domain.workbook.dto.response.PostProblemRes;
-import com.selfrunner.gwalit.domain.workbook.dto.response.PostWorkbookRes;
-import com.selfrunner.gwalit.domain.workbook.dto.response.PutProblemRes;
-import com.selfrunner.gwalit.domain.workbook.dto.response.PutWorkbookRes;
+import com.selfrunner.gwalit.domain.workbook.dto.response.*;
 import com.selfrunner.gwalit.domain.workbook.service.WorkbookService;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -31,14 +29,14 @@ public class WorkbookController {
 
     @Operation(summary = "콘텐츠 페이지 과목 정보 반환")
     @GetMapping("/subject/list")
-    public ApplicationResponse<Void> getSubjectList() {
+    public ApplicationResponse<List<GetSubjectRes>> getSubjectList() {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectList());
     }
 
     @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
-    @GetMapping("/subject/")
-    public ApplicationResponse<Void> getSubjectDetailList() {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectDetailList());
+    @GetMapping("/subject/list")
+    public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@RequestParam("subject") String subject) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectMaterialList(subject));
     }
 
     @Operation(summary = "문제집 등록")
