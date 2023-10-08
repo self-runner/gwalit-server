@@ -1,16 +1,29 @@
 package com.selfrunner.gwalit.domain.workbook.entity;
 
+import lombok.Getter;
+import lombok.ToString;
+
+@Getter
+@ToString
 public enum Subject {
     // 국어
-    korean,
+    KOREAN("국어", "korean"),
     // 영어
-    english,
+    ENGLISH("영어", "english"),
     // 수학
-    math,
+    MATH("수학", "math"),
     // 사회
-    society,
+    SOCIETY("사회", "society"),
     // 과학
-    science,
+    SCIENCE("과학", "science"),
     // 기타
-    etc
+    ETC("기타", "etc");
+
+    private final String koreanName;
+    private final String englishName;
+
+    Subject(String koreanName, String englishName) {
+        this.koreanName = koreanName;
+        this.englishName = englishName;
+    }
 }
