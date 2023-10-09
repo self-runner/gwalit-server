@@ -25,18 +25,6 @@ public class WorkbookController {
 
     private final WorkbookService workbookService;
 
-    @Operation(summary = "콘텐츠 페이지 과목 정보 반환")
-    @GetMapping("/subject")
-    public ApplicationResponse<List<GetSubjectRes>> getSubjectList() {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectList());
-    }
-
-    @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
-    @GetMapping("/subject/material")
-    public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@RequestParam("subject") String subject) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectMaterialList(subject));
-    }
-
     @Operation(summary = "문제집 등록")
     @PostMapping("")
     public ApplicationResponse<PostWorkbookRes> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") PostWorkbookReq postWorkbookReq, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage) {

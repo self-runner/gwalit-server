@@ -17,12 +17,12 @@ public class GetSubjectMaterialRes {
     private Boolean isUse;
 
     @JsonProperty
-    private List<WorkbookTypeRes> workbookTypeResList;
+    private List<WorkbookTypeRes> workbooks;
 
     public GetSubjectMaterialRes(SubjectDetail subjectDetail, Boolean isUse, List<WorkbookTypeRes> workbookTypeResList) {
         this.koreanName = subjectDetail.getKoreanName();
         this.englishName = subjectDetail.getEnglishName();
         this.isUse = isUse;
-        this.workbookTypeResList = workbookTypeResList;
+        this.workbooks = workbookTypeResList;
     }
 }
