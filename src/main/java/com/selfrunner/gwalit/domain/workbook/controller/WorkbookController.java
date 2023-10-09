@@ -1,9 +1,7 @@
 package com.selfrunner.gwalit.domain.workbook.controller;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
-import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.*;
 import com.selfrunner.gwalit.domain.workbook.service.WorkbookService;
@@ -28,13 +26,13 @@ public class WorkbookController {
     private final WorkbookService workbookService;
 
     @Operation(summary = "콘텐츠 페이지 과목 정보 반환")
-    @GetMapping("/subject/list")
+    @GetMapping("/subject")
     public ApplicationResponse<List<GetSubjectRes>> getSubjectList() {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectList());
     }
 
     @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
-    @GetMapping("/subject/list")
+    @GetMapping("/subject/material")
     public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@RequestParam("subject") String subject) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getSubjectMaterialList(subject));
     }
@@ -68,15 +66,5 @@ public class WorkbookController {
     @GetMapping("")
     public ApplicationResponse<Void> getWorkbookList(@RequestParam(name = "cursor") Long cursorId, @RequestParam(name = "limit") Long limit) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getWorkbookList(cursorId, limit));
-    }
-
-    @PostMapping("/problem")
-    public ApplicationResponse<PostProblemRes> registerProblem(@Auth Member member, @Valid @RequestPart(value = "data") PostProblemReq postProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerProblem(member, postProblemReq, problemFile, solveFile));
-    }
-
-    @PutMapping("/problem/{problem_id}")
-    public ApplicationResponse<PutProblemRes> updateProblem(@Auth Member member, @PathVariable("problem_id") Long problemId, @Valid @RequestPart(value = "data") PutProblemReq putProblemReq, @RequestPart(value = "problem") MultipartFile problemFile, @RequestPart(value = "solve") MultipartFile solveFile) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateProblem(member, problemId, putProblemReq, problemFile, solveFile));
     }
 }

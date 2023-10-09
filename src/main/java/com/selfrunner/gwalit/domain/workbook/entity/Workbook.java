@@ -42,7 +42,7 @@ public class Workbook {
     @Column(name = "time", columnDefinition = "int")
     private Integer time;
 
-    @Column(name = "explain", columnDefinition = "text")
+    @Column(name = "explain", columnDefinition = "varchar(255)")
     private String explain;
 
     @Builder

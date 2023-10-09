@@ -1,21 +1,13 @@
 package com.selfrunner.gwalit.domain.workbook.service;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.workbook.dto.request.PostProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PostWorkbookReq;
-import com.selfrunner.gwalit.domain.workbook.dto.request.PutProblemReq;
 import com.selfrunner.gwalit.domain.workbook.dto.request.PutWorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.*;
-import com.selfrunner.gwalit.domain.workbook.entity.Problem;
 import com.selfrunner.gwalit.domain.workbook.entity.Subject;
 import com.selfrunner.gwalit.domain.workbook.entity.SubjectDetail;
 import com.selfrunner.gwalit.domain.workbook.entity.WorkbookType;
-import com.selfrunner.gwalit.domain.workbook.exception.WorkbookException;
-import com.selfrunner.gwalit.domain.workbook.repository.ProblemRepository;
-import com.selfrunner.gwalit.domain.workbook.repository.WorkbookAndProblemRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookRepository;
-import com.selfrunner.gwalit.global.exception.ApplicationException;
-import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,8 +23,6 @@ import java.util.List;
 public class WorkbookService {
 
     private final WorkbookRepository workbookRepository;
-    private final WorkbookAndProblemRepository workbookAndProblemRepository;
-    private final ProblemRepository problemRepository;
     private final S3Client s3Client;
 
     @Transactional
@@ -59,7 +49,7 @@ public class WorkbookService {
         // Business Logic: 과목별 상세 페이지에서 콘텐츠 유무 Boolean으로 표현
         List<GetSubjectMaterialRes> getSubjectMaterialResList = new ArrayList<>();
 
-        switch (Subject.valueOf(subject)) {
+        switch (Subject.valueOf(subject.toUpperCase())) {
             case KOREAN:
 
             case ENGLISH:
@@ -153,48 +143,6 @@ public class WorkbookService {
 
         // Response
         return null;
-    }
-
-    @Transactional
-    public PostProblemRes registerProblem(Member member, PostProblemReq postProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
-        // Validation
-        /*
-        TODO: 관리자 권한 확인 코드 반영 필요
-         */
-
-        // Business Logic
-        try {
-            String problemUrl = s3Client.upload(problemFile, "problem/problem");
-            String solveUrl = s3Client.upload(solveFile, "problem/solve");
-            Problem problem = postProblemReq.toEntity(problemUrl, solveUrl);
-            problemRepository.save(problem);
-
-            // Response
-            return PostProblemRes.toDto(problem);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
-    }
-
-    @Transactional
-    public PutProblemRes updateProblem(Member member, Long problemId, PutProblemReq putProblemReq, MultipartFile problemFile, MultipartFile solveFile) {
-        // Validation
-        /*
-        TODO: 관리자 권한 확인 코드 반영 필요
-         */
-        Problem problem = problemRepository.findById(problemId).orElseThrow(() -> new WorkbookException(ErrorCode.NOT_FOUND_EXCEPTION));
-
-        // Business Logic
-        try {
-            if(problemFile != null) {
-
-            }
-
-            // Response
-            return PutProblemRes.toDto(problem);
-        } catch (Exception e) {
-            throw new ApplicationException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
-        }
     }
 
     // 과목별 탐구 내에서 사용하게 될 문제집 정보들 리스트 생성용 메소드
