@@ -26,36 +26,50 @@ public class Content extends BaseTimeEntity {
     @Column(name = "contentId")
     private Long contentId;
 
-    @Column(name = "title")
+    @Column(name = "title", columnDefinition = "varchar(255)")
     private String title;
 
-    @Column(name = "type")
+    @Column(name = "writer", columnDefinition = "varchar(255)")
+    private String writer;
+
+    @Column(name = "type", columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private ContentType type;
 
-    @Column(name = "linkUrl", columnDefinition = "text")
-    private String linkUrl;
+    @Column(name = "classification", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private ContentClassification classification;
 
-    @Column(name = "thumbnail", columnDefinition = "text")
-    private String thumbnail;
 
-    @Column(name = "duration")
-    private Time duration;
+    @Column(name = "url_link", columnDefinition = "text")
+    private String urlLink;
+
+    @Column(name = "thumbnail_link", columnDefinition = "text")
+    private String thumbnailLink;
+
+    @Column(name = "duration", columnDefinition = "int")
+    private Integer duration;
+
+    @Column(name = "is_pinned", columnDefinition = "tinyint(1)")
+    private Boolean isPinned;
 
     public void update(Content content) {
         this.title = content.getTitle();
         this.type = content.getType();
-        this.linkUrl = content.getLinkUrl();
-        this.thumbnail = content.getThumbnail();
+        this.urlLink = content.getUrlLink();
+        this.thumbnailLink = content.getThumbnailLink();
         this.duration = content.getDuration();
     }
 
     @Builder
-    public Content(String title, String type, String linkUrl, String thumbnail, Time duration) {
+    public Content(String title, String writer, String type, String classification, String urlLink, String thumbnailLink, Integer duration, Boolean isPinned) {
         this.title = title;
+        this.writer = writer;
         this.type = ContentType.valueOf(type);
-        this.linkUrl = linkUrl;
-        this.thumbnail = thumbnail;
+        this.classification = ContentClassification.valueOf(classification);
+        this.urlLink = urlLink;
+        this.thumbnailLink = thumbnailLink;
         this.duration = duration;
+        this.isPinned = isPinned;
     }
 }
