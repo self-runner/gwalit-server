@@ -5,9 +5,6 @@ import com.selfrunner.gwalit.domain.workbook.entity.WorkbookType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @RequiredArgsConstructor
 public class WorkbookTypeRes {

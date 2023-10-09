@@ -2,7 +2,6 @@ package com.selfrunner.gwalit.domain.workbook.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.selfrunner.gwalit.domain.workbook.entity.Subject;
-import lombok.RequiredArgsConstructor;
 
 public class GetSubjectRes {
 
