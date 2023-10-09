@@ -46,11 +46,13 @@ public class Workbook {
     private String explain;
 
     @Builder
-    public Workbook(String title, String type, String thumbnailLink, String workbookFileLink, String explain) {
+    public Workbook(String title, String type, String thumbnailLink, String workbookFileLink, String answerFileLink, Integer time, String explain) {
         this.title = title;
         this.type = WorkbookType.valueOf(type);
         this.thumbnailLink = thumbnailLink;
         this.workbookFileLink = workbookFileLink;
+        this.answerFileLink = answerFileLink;
+        this.time = time;
         this.explain = explain;
     }
 }
