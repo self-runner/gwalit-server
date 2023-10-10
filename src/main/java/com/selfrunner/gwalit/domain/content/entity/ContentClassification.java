@@ -11,5 +11,8 @@ public enum ContentClassification {
     PLAY_LIST,
 
     // 재미 + 동기부여
-    MOTIVATION
+    MOTIVATION,
+
+    // 꿀팁
+    TIP
 }

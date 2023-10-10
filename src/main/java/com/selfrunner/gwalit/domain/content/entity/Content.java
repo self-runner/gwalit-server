@@ -48,7 +48,7 @@ public class Content extends BaseTimeEntity {
     @Column(name = "duration", columnDefinition = "int")
     private Integer duration;
 
-    @Column(name = "is_pinned", columnDefinition = "tinyint(1)")
+    @Column(name = "is_pinned")
     private Boolean isPinned;
 
     public void updateVideo(ContentReq contentReq) {
@@ -64,10 +64,13 @@ public class Content extends BaseTimeEntity {
 
     public void updateNotion(ContentReq contentReq, String thumbnailUrl) {
         this.title = contentReq.getTitle();
+        this.writer = contentReq.getWriter();
         this.type = ContentType.valueOf(contentReq.getType());
+        this.classification = ContentClassification.valueOf(contentReq.getClassification());
         this.linkUrl = contentReq.getLinkUrl();
-        this.thumbnailUrl = contentReq.getThumbnailUrl();
+        this.thumbnailUrl = thumbnailUrl;
         this.duration = contentReq.getDuration();
+        this.isPinned = contentReq.getIsPinned();
     }
 
     public void updateIsPinned() {

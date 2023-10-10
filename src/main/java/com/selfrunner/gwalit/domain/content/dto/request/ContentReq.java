@@ -25,10 +25,10 @@ public class ContentReq {
     @NotEmpty
     private String classification;
 
+    @NotEmpty
     @Pattern(regexp = "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
     private String linkUrl;
 
-    @NotEmpty
     @Pattern(regexp = "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
     private String thumbnailUrl;
 
