@@ -1,14 +1,13 @@
 package com.selfrunner.gwalit.domain.content.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.selfrunner.gwalit.domain.content.entity.Content;
+import com.selfrunner.gwalit.domain.content.entity.ContentType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import java.sql.Time;
 
 @Getter
 @RequiredArgsConstructor
@@ -18,27 +17,50 @@ public class ContentReq {
     private String title;
 
     @NotEmpty
+    private String writer;
+
+    @NotEmpty
     private String type;
+
+    @NotEmpty
+    private String classification;
 
     @NotEmpty
     @Pattern(regexp = "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
     private String linkUrl;
 
-    @NotEmpty
     @Pattern(regexp = "(https?:\\/\\/)?(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b([-a-zA-Z0-9@:%_\\+.~#?&//=]*)")
-    private String thumbnail;
+    private String thumbnailUrl;
 
     @NotNull
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Seoul")
-    private Time duration;
+    private Integer duration;
 
-    public Content toEntity() {
+    @NotNull
+    private Boolean isPinned;
+
+    public Content toEntity(String thumbnailUrl) {
+        if(ContentType.valueOf(this.type).equals(ContentType.NOTION)) {
+            return Content.builder()
+                    .title(this.title)
+                    .writer(this.writer)
+                    .type(this.type)
+                    .classification(this.classification)
+                    .linkUrl(this.linkUrl)
+                    .thumbnailUrl(thumbnailUrl)
+                    .duration(this.duration)
+                    .isPinned(this.isPinned)
+                    .build();
+        }
+
         return Content.builder()
                 .title(this.title)
+                .writer(this.writer)
                 .type(this.type)
+                .classification(this.classification)
                 .linkUrl(this.linkUrl)
-                .thumbnail(this.thumbnail)
+                .thumbnailUrl(this.thumbnailUrl)
                 .duration(this.duration)
+                .isPinned(this.isPinned)
                 .build();
     }
 }
