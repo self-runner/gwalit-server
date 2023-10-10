@@ -35,6 +35,11 @@ public class ContentController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.update(member, contentId, contentReq, thumbnailImage));
     }
 
+    @PatchMapping("/{content_id}")
+    public ApplicationResponse<ContentRes> updateIsPinned(@Auth Member member, @PathVariable("content_id") Long contentId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.updateIsPinned(member, contentId));
+    }
+
     @DeleteMapping("/{content_id}")
     public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("content_id") Long contentId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.delete(member, contentId));
