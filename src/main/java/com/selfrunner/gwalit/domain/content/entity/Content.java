@@ -70,6 +70,10 @@ public class Content extends BaseTimeEntity {
         this.duration = contentReq.getDuration();
     }
 
+    public void updateIsPinned() {
+        this.isPinned = !this.isPinned;
+    }
+
     @Builder
     public Content(String title, String writer, String type, String classification, String linkUrl, String thumbnailUrl, Integer duration, Boolean isPinned) {
         this.title = title;

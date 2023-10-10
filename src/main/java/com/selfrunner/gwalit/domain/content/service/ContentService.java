@@ -71,7 +71,7 @@ public class ContentService {
          */
         Content content = contentRepository.findById(contentId).orElseThrow();
         if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
-            throw new ApplicationException(ErrorCode.ALREADY_EXIST_CONTENT);
+            throw new ContentException(ErrorCode.ALREADY_EXIST_CONTENT);
         }
 
         // Business Logic
@@ -101,7 +101,10 @@ public class ContentService {
     @Transactional
     public Void delete(Member member, Long contentId) {
         // Validation
-        Content content = contentRepository.findById(contentId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        /**
+         * TODO: 관리자 권한 확인 조건 추가 필요
+         */
+        Content content = contentRepository.findById(contentId).orElseThrow(() -> new ContentException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(content.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.ALREADY_DELETE_EXCEPTION);
         }
@@ -121,14 +124,28 @@ public class ContentService {
     }
 
     @Transactional
+    public ContentRes updateIsPinned(Member member, Long contentId) {
+        // Validation
+        /**
+         * TODO: 관리자 권한 확인 조건 추가 필요
+         */
+        Content content = contentRepository.findById(contentId).orElseThrow(() -> new ContentException(ErrorCode.NOT_FOUND_EXCEPTION));
+
+        // Business Logic
+        content.updateIsPinned();
+
+        // Response
+        return new ContentRes(content);
+    }
+
     public List<ContentRes> getAll() {
         // Validation
 
         // Business Logic
-        List<Content> contents = contentRepository.findAll();
+        List<Content> contentList = contentRepository.findAll();
 
         // Response
-        return contents.stream()
+        return contentList.stream()
                 .map(ContentRes::new)
                 .collect(Collectors.toList());
     }
