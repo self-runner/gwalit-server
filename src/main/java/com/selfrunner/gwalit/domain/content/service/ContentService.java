@@ -64,29 +64,56 @@ public class ContentService {
     }
 
     @Transactional
-    public ContentRes update(Long contentId, ContentReq contentReq) {
-        // Validation
+    public ContentRes update(Member member, Long contentId, ContentReq contentReq, MultipartFile thumbnailImage) {
+        // Validation: 기존에 존재하는 링크를 재등록하는지 확인
+        /**
+         * TODO: 관리자 권한 확인 조건 추가 필요
+         */
         Content content = contentRepository.findById(contentId).orElseThrow();
         if(contentRepository.existsByLinkUrl(contentReq.getLinkUrl())) {
             throw new ApplicationException(ErrorCode.ALREADY_EXIST_CONTENT);
         }
 
         // Business Logic
-        //content.update(contentReq.toEntity());
+        switch (ContentType.valueOf(contentReq.getType())) {
+            case VIDEO:
+                content.updateVideo(contentReq);
+
+                return new ContentRes(content);
+
+            case NOTION:
+                String thumbnailUrl;
+                try {
+                    s3Client.delete(content.getThumbnailUrl());
+                    thumbnailUrl = s3Client.upload(thumbnailImage, "content");
+                } catch (Exception e) {
+                    throw new ContentException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+                }
+                content.updateNotion(contentReq, thumbnailUrl);
+
+                return new ContentRes(content);
+        }
 
         // Response
-        return new ContentRes(content);
+        return null;
     }
 
     @Transactional
-    public Void delete(Long contentId) {
+    public Void delete(Member member, Long contentId) {
         // Validation
         Content content = contentRepository.findById(contentId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(content.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.ALREADY_DELETE_EXCEPTION);
         }
 
-        // Business Logic
+        // Business Logic: 썸네일 이미지 삭제 및 Row 삭제
+        if(content.getType().equals(ContentType.NOTION)) {
+            try {
+                s3Client.delete(content.getThumbnailUrl());
+            } catch (Exception e) {
+                throw new ContentException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
+            }
+        }
         contentRepository.delete(content);
 
         // Response

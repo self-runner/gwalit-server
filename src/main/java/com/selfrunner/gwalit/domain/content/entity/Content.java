@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.content.entity;
 
+import com.selfrunner.gwalit.domain.content.dto.request.ContentReq;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -50,12 +51,23 @@ public class Content extends BaseTimeEntity {
     @Column(name = "is_pinned", columnDefinition = "tinyint(1)")
     private Boolean isPinned;
 
-    public void update(Content content) {
-        this.title = content.getTitle();
-        this.type = content.getType();
-        this.linkUrl = content.getLinkUrl();
-        this.thumbnailUrl = content.getThumbnailUrl();
-        this.duration = content.getDuration();
+    public void updateVideo(ContentReq contentReq) {
+        this.title = contentReq.getTitle();
+        this.writer = contentReq.getWriter();
+        this.type = ContentType.valueOf(contentReq.getType());
+        this.classification = ContentClassification.valueOf(contentReq.getClassification());
+        this.linkUrl = contentReq.getLinkUrl();
+        this.thumbnailUrl = contentReq.getThumbnailUrl();
+        this.duration = contentReq.getDuration();
+        this.isPinned = contentReq.getIsPinned();
+    }
+
+    public void updateNotion(ContentReq contentReq, String thumbnailUrl) {
+        this.title = contentReq.getTitle();
+        this.type = ContentType.valueOf(contentReq.getType());
+        this.linkUrl = contentReq.getLinkUrl();
+        this.thumbnailUrl = contentReq.getThumbnailUrl();
+        this.duration = contentReq.getDuration();
     }
 
     @Builder
