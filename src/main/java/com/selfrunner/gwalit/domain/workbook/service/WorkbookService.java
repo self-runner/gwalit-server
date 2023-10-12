@@ -87,24 +87,23 @@ public class WorkbookService {
         Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(() -> new WorkbookException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Business Logic: 이미지, 파일 등 등록 이후, Entity로 업데이트
-        String thumbnailUrl, workbookFileUrl, answerFileUrl;
         // 문제집 파일을 직접 올릴 경우
         if(workbookReq.getIsFile().equals(Boolean.TRUE)) {
             try {
-                if(!thumbnailImage.isEmpty()) {
+                if(thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     s3Client.delete(workbook.getThumbnailUrl());
                     String updateThumbnailImageUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
                     workbook.updateThumbnailUrl(updateThumbnailImageUrl);
                 }
-                if(!workbookFile.isEmpty()) {
+                if(workbookFile != null && !workbookFile.isEmpty()) {
                     s3Client.delete(workbook.getWorkbookFileUrl());
                     String updateWorkbookFileUrl = s3Client.upload(workbookFile, "workbook/" + workbookReq.getType());
-                    workbook.updateThumbnailUrl(updateWorkbookFileUrl);
+                    workbook.updateWorkbookFileUrl(updateWorkbookFileUrl);
                 }
-                if(!answerFile.isEmpty()) {
+                if(answerFile != null && !answerFile.isEmpty()) {
                     s3Client.delete(workbook.getAnswerFileUrl());
                     String updateAnswerFileUrl = s3Client.upload(answerFile, "workbook/" + workbookReq.getType());
-                    workbook.updateThumbnailUrl(updateAnswerFileUrl);
+                    workbook.updateAnswerFileUrl(updateAnswerFileUrl);
                 }
                 workbook.update(workbookReq);
 
@@ -118,7 +117,7 @@ public class WorkbookService {
         // 문제를 별도로 등록하여, 참조 테이블로 엮어서 만드는 경우
         if(workbookReq.getIsFile().equals(Boolean.FALSE)) {
             try {
-                if(!thumbnailImage.isEmpty()) {
+                if(thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     s3Client.delete(workbook.getThumbnailUrl());
                     String updateThumbnailImageUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
                     workbook.updateThumbnailUrl(updateThumbnailImageUrl);

@@ -30,13 +30,13 @@ public class WorkbookController {
 
     @Operation(summary = "문제집 등록")
     @PostMapping("")
-    public ApplicationResponse<WorkbookRes> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "answer") MultipartFile answerFile) {
+    public ApplicationResponse<WorkbookRes> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerWorkbook(member, workbookReq, thumbnailImage, workbookFile, answerFile));
     }
 
     @Operation(summary = "문제집 수정")
     @PutMapping("/{workbook_id}")
-    public ApplicationResponse<WorkbookRes> updateWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail") MultipartFile thumbnailImage, @RequestPart(value = "workbook") MultipartFile workbookFile, @RequestPart(value = "answer") MultipartFile answerFile) {
+    public ApplicationResponse<WorkbookRes> updateWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateWorkbook(member, workbookId, workbookReq, thumbnailImage, workbookFile, answerFile));
     }
 

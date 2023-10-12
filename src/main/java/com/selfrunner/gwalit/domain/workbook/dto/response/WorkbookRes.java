@@ -1,7 +1,9 @@
 package com.selfrunner.gwalit.domain.workbook.dto.response;
 
 import com.selfrunner.gwalit.domain.workbook.entity.*;
+import lombok.Getter;
 
+@Getter
 public class WorkbookRes {
 
     private Long workbookId;
@@ -26,9 +28,9 @@ public class WorkbookRes {
 
     private Integer time;
 
-    private String explain;
+    private String explanation;
 
-    private String source;
+    private String provider;
 
     private Boolean copyright;
 
@@ -45,12 +47,16 @@ public class WorkbookRes {
         this.type = workbook.getType().getKoreanName();
         this.subject = workbook.getSubject().getKoreanName();
         this.subjectDetail = workbook.getSubjectDetail().getKoreanName();
+        this.chapter = workbook.getChapter();
         this.thumbnailUrl = workbook.getThumbnailUrl();
         this.workbookFileUrl = workbook.getWorkbookFileUrl();
         this.answerFileUrl = workbook.getAnswerFileUrl();
         this.problemCount = workbook.getProblemCount();
         this.time = workbook.getTime();
-        this.explain = workbook.getExplain();
+        this.explanation = workbook.getExplanation();
+        this.provider = workbook.getProvider();
+        this.copyright = workbook.getCopyright();
+        this.isFile = workbook.getIsFile();
         this.difficulty = difficulty;
         this.viewCount = workbook.getViews().getCount();
     }
