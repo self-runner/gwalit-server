@@ -128,11 +128,25 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.select(lesson.lessonId)
                     .from(lesson)
-                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
-                    .where(lecture.lectureId.in(lectureIdList), lecture.deletedAt.isNull(), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
-                    .groupBy(lecture.lectureId)
+                    .where(lesson.lecture.lectureId.in(lectureIdList), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
                     .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
-                    .fetch()
+                    .transform(groupBy(lesson.lecture.lectureId).list(lesson.lessonId))
         );
+    }
+
+    @Override
+    public List<Long> findAllLessonIdByLectureIdList(List<Long> lectureIdList) {
+        return queryFactory.select(lesson.lessonId)
+                        .from(lesson)
+                        .where(lesson.lecture.lectureId.in(lectureIdList))
+                        .fetch();
+    }
+
+    @Override
+    public void deleteAllByLectureLectureIdList(List<Long> lectureIdList) {
+        queryFactory.update(lesson)
+                .set(lesson.deletedAt, LocalDateTime.now())
+                .where(lesson.lecture.lectureId.in(lectureIdList))
+                .execute();
     }
 }

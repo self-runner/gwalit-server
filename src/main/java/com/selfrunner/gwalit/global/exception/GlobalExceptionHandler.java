@@ -17,7 +17,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ApplicationException.class)
     public ResponseEntity<ErrorResponse> applicationException(ApplicationException e) {
         Sentry.captureException(e);
-        log.error(e.toString());
+        log.error(e.toString() + " :  " +e.getErrorCode().toString());
 
         return ResponseEntity
                 .status(e.getErrorCode().getHttpStatus())

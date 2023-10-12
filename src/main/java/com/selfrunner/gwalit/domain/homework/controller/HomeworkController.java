@@ -33,9 +33,8 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 정보 수정")
     @PutMapping("/{homework_id}")
-    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody HomeworkReq homeworkReq) {
-        homeworkService.update(member, homeworkId, homeworkReq);
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    public ApplicationResponse<HomeworkMainRes> update(@Auth Member member, @PathVariable("homework_id") Long homeworkId, @Valid @RequestBody HomeworkReq homeworkReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.update(member, homeworkId, homeworkReq));
     }
 
     @Operation(summary = "숙제 삭제")
@@ -63,10 +62,15 @@ public class HomeworkController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getMain(member));
     }
 
-    @Operation(summary = "클래스 페이지용 가장 최근 수업에 해당하는 수업 정보 반환")
+    @Operation(summary = "클래스 페이지용 가장 최근 수업에 해당하는 숙제 정보 반환")
     @GetMapping("/lecture/{lecture_id}")
     public ApplicationResponse<List<HomeworkMainRes>> getLecture(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getLecture(member, lectureId));
     }
 
+    @Operation(summary = "학생이 가지고 있는 모든 숙제 리스트 반환")
+    @GetMapping("/list")
+    public ApplicationResponse<List<HomeworkMainRes>> getList(@Auth Member member, @RequestParam(value = "lectureId", required = false) Long lectureId, @RequestParam("type") String type) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getList(member, lectureId, type));
+    }
 }

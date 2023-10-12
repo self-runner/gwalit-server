@@ -14,6 +14,7 @@ public interface MemberRepositoryCustom {
 
     Optional<Member> findInviteByPhoneAndTypeAndState(String phone, MemberType type);
 
-
     void deleteMemberByMemberIdList(List<Long> memberIdList);
+
+    Optional<Member> findNotFakeByPhoneAndType(String phone, MemberType memberType);
 }

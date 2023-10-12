@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor

@@ -11,6 +11,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 @Getter
@@ -44,6 +45,12 @@ public class Homework extends BaseTimeEntity {
         this.body = homeworkReq.getBody();
         this.deadline = homeworkReq.getDeadline();
         this.isFinish = homeworkReq.getIsFinish();
+    }
+
+    public boolean isSameHomework(HomeworkReq homeworkReq) {
+        return Objects.equals(body, homeworkReq.getBody()) &&
+                Objects.equals(deadline, homeworkReq.getDeadline()) &&
+                Objects.equals(isFinish, homeworkReq.getIsFinish());
     }
 
     @Builder

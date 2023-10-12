@@ -1,34 +1,42 @@
 package com.selfrunner.gwalit.domain.content.dto.response;
 
 import com.selfrunner.gwalit.domain.content.entity.Content;
+import com.selfrunner.gwalit.domain.content.entity.ContentClassification;
 import com.selfrunner.gwalit.domain.content.entity.ContentType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.sql.Time;
 
 @Getter
 @RequiredArgsConstructor
 public class ContentRes {
 
-    private String contentId;
+    private final Long contentId;
 
-    private String title;
+    private final String title;
 
-    private ContentType type;
+    private final String writer;
 
-    private String linkUrl;
+    private final ContentType type;
 
-    private String thumbnail;
+    private final ContentClassification classification;
 
-    private Time duration;
+    private final String linkUrl;
+
+    private final String thumbnailUrl;
+
+    private final Integer duration;
+
+    private final Boolean isPinned;
 
     public ContentRes(Content content) {
-        this.contentId = content.getContentId().toString();
+        this.contentId = content.getContentId();
         this.title = content.getTitle();
+        this.writer = content.getWriter();
         this.type = content.getType();
+        this.classification = content.getClassification();
         this.linkUrl = content.getLinkUrl();
-        this.thumbnail = content.getThumbnail();
+        this.thumbnailUrl = content.getThumbnailUrl();
         this.duration = content.getDuration();
+        this.isPinned = content.getIsPinned();
     }
 }

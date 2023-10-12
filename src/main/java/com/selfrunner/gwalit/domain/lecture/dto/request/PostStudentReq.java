@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 import java.util.UUID;
 
@@ -19,7 +20,8 @@ public class PostStudentReq {
     private String name;
 
     @NotNull(message = "전화번호가 Null입니다.")
-    @Size(min = 10, max = 11, message = "유효한 전화번호 길이가 아닙니다.")
+    @Size(min = 9, max = 12, message = "유효한 전화번호 길이가 아닙니다.")
+    @Pattern(regexp = "[0-9]+", message = "숫자만 입력되어야 합니다.")
     private String phone;
 
     public Member toEntity() {

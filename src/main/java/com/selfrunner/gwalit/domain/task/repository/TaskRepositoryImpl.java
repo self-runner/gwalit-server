@@ -7,6 +7,7 @@ import com.selfrunner.gwalit.domain.task.dto.response.TaskRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +42,14 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
                 .where(lecture.lectureId.eq(lectureId))
                 .transform(groupBy(task.taskId)
                         .list(Projections.constructor(TaskRes.class, task.taskId, task.lecture.lectureId, lecture.color, task.title, task.deadline, task.isPinned, task.subtasks))));
+    }
+
+    @Override
+    public void deleteAllByLectureIdList(List<Long> lectureIdList) {
+        queryFactory.update(task)
+                .set(task.deletedAt, LocalDateTime.now())
+                .where(task.lecture.lectureId.in(lectureIdList))
+                .execute();
     }
 
 }

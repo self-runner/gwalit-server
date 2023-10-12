@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
+import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,8 @@ public class GetLectureMainRes {
     private final String name;
 
     private final String color;
+
+    private final Subject subject;
 
     private final List<MemberMeta> memberMetas;
 }

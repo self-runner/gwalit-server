@@ -1,6 +1,9 @@
 package com.selfrunner.gwalit.domain.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
+import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthCodeReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostAuthPhoneReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
@@ -10,7 +13,10 @@ import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.SHA256;
@@ -39,6 +45,11 @@ public class AuthService {
     private final RedisClient redisClient;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final MemberAndLectureRepository memberAndLectureRepository;
+    private final LectureRepository lectureRepository;
+    private final LessonRepository lessonRepository;
+    private final HomeworkRepository homeworkRepository;
+    private final TaskRepository taskRepository;
 
     public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
@@ -54,7 +65,7 @@ public class AuthService {
         boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode()) ? true : false;
 
         if(!result) {
-            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+            throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Response
@@ -65,21 +76,21 @@ public class AuthService {
     public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
-            throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+            throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
         Member member = memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType())).orElse(null);
         if(member == null) {
             if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
                 if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT).orElse(null) != null) {
-                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
+                    throw new MemberException(ErrorCode.WRONG_TYPE);
                 }
             }
             else {
                 if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER).orElse(null) != null) {
-                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
+                    throw new MemberException(ErrorCode.WRONG_TYPE);
                 }
             }
-            throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
+            throw new MemberException(ErrorCode.NOT_EXIST_PHONE);
         }
 
         // Business Logic
@@ -95,11 +106,11 @@ public class AuthService {
     public Void register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입 및 논리적 삭제 여부로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.findActiveByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null) != null) {
-            throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
+            throw new MemberException(ErrorCode.ALREADY_EXIST_MEMBER);
         }
         // 비밀번호와 비밀번호 확인 일치 여부 확인
         if(!postMemberReq.getPassword().equals(postMemberReq.getPasswordCheck())) {
-            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+            throw new MemberException(ErrorCode.INVALID_VALUE_EXCEPTION);
         }
 
         // Business Logic: 비밀번호 암호화 및 회원 정보 저장
@@ -122,10 +133,10 @@ public class AuthService {
         // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
         Member member = memberRepository.findActiveByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType())).orElse(null);
         if(member == null) {
-            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+            throw new MemberException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
         if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
-            throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
+            throw new MemberException(ErrorCode.WRONG_PASSWORD);
         }
 
         // Business Logic: 토큰 발급 및 Redis 저장
@@ -176,12 +187,20 @@ public class AuthService {
     public Void withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
-            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
+            throw new MemberException(ErrorCode.ALREADY_DELETE_MEMBER);
         }
 
         // Business Logic: Soft Delete
-        System.out.println("삭제 로직 실행" + member.getMemberId().toString());
         memberRepository.delete(member);
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
+        memberAndLectureRepository.deleteMemberAndLecturesByMember(member);
+        if(lectureIdList != null && member.getType().equals(MemberType.TEACHER)) {
+            taskRepository.deleteAllByLectureIdList(lectureIdList);
+            List<Long> lessonIdList = lessonRepository.findAllLessonIdByLectureIdList(lectureIdList);
+            homeworkRepository.deleteAllByLessonIdList(lessonIdList);
+            lessonRepository.deleteAllByLectureLectureIdList(lectureIdList);
+            lectureRepository.deleteAllByLectureIdList(lectureIdList);
+        }
 
         // Response
         return null;

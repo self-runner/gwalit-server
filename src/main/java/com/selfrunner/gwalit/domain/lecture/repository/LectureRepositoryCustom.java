@@ -14,4 +14,6 @@ public interface LectureRepositoryCustom {
     Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(List<Long> lectureIdList);
 
     Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList);
+
+    void deleteAllByLectureIdList(List<Long> lectureIdList);
 }
