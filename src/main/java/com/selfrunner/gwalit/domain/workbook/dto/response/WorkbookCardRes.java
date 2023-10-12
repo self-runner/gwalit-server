@@ -8,7 +8,7 @@ public class WorkbookCardRes {
 
     private String title;
 
-    // 일관성을 위해, WorkbookType에서 koreanNamer을 반영하기
+    // 일관성을 위해, WorkbookType에서 koreanName을 반영하기
     private String type;
 
     private String thumbnailUrl;
