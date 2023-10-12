@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.workbook.entity;
 
+import com.selfrunner.gwalit.domain.workbook.dto.request.WorkbookReq;
+import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,13 +17,16 @@ import javax.persistence.*;
 @SQLDelete(sql = "UPDATE workbook set deleted_at = NOW() where workbook_id = ?")
 @Where(clause = "deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Workbook {
+public class Workbook extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "workbook_id", columnDefinition = "bigint")
     private Long workbookId;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "views_id", referencedColumnName = "views_id")
+    private Views views;
 
     @Column(name = "title", columnDefinition = "varchar(255)")
     private String title;
@@ -30,14 +35,28 @@ public class Workbook {
     @Enumerated(EnumType.STRING)
     private WorkbookType type;
 
-    @Column(name = "thumbnail_link", columnDefinition = "text")
-    private String thumbnailLink;
+    @Column(name = "subject", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private Subject subject;
 
-    @Column(name = "workbook_file_link", columnDefinition = "text")
-    private String workbookFileLink;
+    @Column(name = "subject_detail", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private SubjectDetail subjectDetail;
 
-    @Column(name = "answer_file_link", columnDefinition = "text")
-    private String answerFileLink;
+    @Column(name = "chapter", columnDefinition = "varchar(255)")
+    private String chapter;
+
+    @Column(name = "thumbnail_url", columnDefinition = "text")
+    private String thumbnailUrl;
+
+    @Column(name = "workbook_file_url", columnDefinition = "text")
+    private String workbookFileUrl;
+
+    @Column(name = "answer_file_url", columnDefinition = "text")
+    private String answerFileUrl;
+
+    @Column(name = "problem_count", columnDefinition = "int")
+    private Integer problemCount;
 
     @Column(name = "time", columnDefinition = "int")
     private Integer time;
@@ -45,14 +64,57 @@ public class Workbook {
     @Column(name = "explain", columnDefinition = "varchar(255)")
     private String explain;
 
+    @Column(name = "source", columnDefinition = "varchar(255)")
+    private String source;
+
+    @Column(name = "copyright")
+    private Boolean copyright;
+
+    @Column(name = "is_file")
+    private Boolean isFile;
+
+    public void update(WorkbookReq workbookReq) {
+        this.title = workbookReq.getTitle();
+        this.type = WorkbookType.valueOf(workbookReq.getType());
+        this.subject = Subject.valueOf(workbookReq.getSubject());
+        this.subjectDetail = SubjectDetail.valueOf(workbookReq.getSubjectDetail());
+        this.chapter = workbookReq.getChapter();
+        this.problemCount = workbookReq.getProblemCount();
+        this.time = workbookReq.getTime();
+        this.explain = workbookReq.getExplain();
+        this.source = workbookReq.getSource();
+        this.copyright = workbookReq.getCopyright();
+        this.isFile = workbookReq.getIsFile();
+    }
+
+    public void updateThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void updateWorkbookFileUrl(String workbookFileUrl) {
+        this.workbookFileUrl = workbookFileUrl;
+    }
+
+    public void updateAnswerFileUrl(String answerFileUrl) {
+        this.answerFileUrl = answerFileUrl;
+    }
+
     @Builder
-    public Workbook(String title, String type, String thumbnailLink, String workbookFileLink, String answerFileLink, Integer time, String explain) {
+    public Workbook(Views views, String title, String type, String subject, String subjectDetail, String chapter, String thumbnailUrl, String workbookFileUrl, String answerFileUrl, Integer problemCount, Integer time, String explain, String source, Boolean copyright, Boolean isFile) {
+        this.views = views;
         this.title = title;
         this.type = WorkbookType.valueOf(type);
-        this.thumbnailLink = thumbnailLink;
-        this.workbookFileLink = workbookFileLink;
-        this.answerFileLink = answerFileLink;
+        this.subject = Subject.valueOf(subject);
+        this.subjectDetail = SubjectDetail.valueOf(subjectDetail);
+        this.chapter = chapter;
+        this.thumbnailUrl = thumbnailUrl;
+        this.workbookFileUrl = workbookFileUrl;
+        this.answerFileUrl = answerFileUrl;
+        this.problemCount = problemCount;
         this.time = time;
         this.explain = explain;
+        this.source = source;
+        this.copyright = copyright;
+        this.isFile = isFile;
     }
 }
