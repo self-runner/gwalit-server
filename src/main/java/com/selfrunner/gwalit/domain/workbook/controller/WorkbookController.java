@@ -61,7 +61,7 @@ public class WorkbookController {
 
     @Operation(summary = "문제집 리스트 페이지네이션")
     @GetMapping("")
-    public ApplicationResponse<Slice<WorkbookCardRes>> getWorkbookList(@Auth Member member, @RequestParam(name = "detail") String subjectDetail, @RequestParam(name = "type") String type, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 10, sort = "created_at DESC")Pageable pageable) {
+    public ApplicationResponse<Slice<WorkbookCardRes>> getWorkbookList(@Auth Member member, @RequestParam(name = "detail") String subjectDetail, @RequestParam(name = "type") String type, @RequestParam(name = "cursor", required = false) Long cursor, @PageableDefault(size = 10, sort = "created_at DESC")Pageable pageable) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getWorkbookList(member, subjectDetail, type, cursor, pageable));
     }
 }

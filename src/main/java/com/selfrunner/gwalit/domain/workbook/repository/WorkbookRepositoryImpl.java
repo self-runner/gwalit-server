@@ -42,7 +42,7 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
         List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count))
                 .from(workbook)
                 .leftJoin(views).on(workbook.views.viewsId.eq(views.viewsId))
-                .where(workbook.subjectDetail.eq(SubjectDetail.valueOf(subjectDetail)), workbook.type.eq(WorkbookType.valueOf(type)), eqCursorId(cursor))
+                .where(workbook.subjectDetail.eq(SubjectDetail.MATH1), workbook.type.eq(WorkbookType.valueOf(type.toUpperCase())), eqCursorId(cursor))
                 .orderBy(workbook.createdAt.desc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
