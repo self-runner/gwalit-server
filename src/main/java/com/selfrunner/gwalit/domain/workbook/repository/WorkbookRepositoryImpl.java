@@ -33,13 +33,13 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
                     .where(workbook.deletedAt.isNull())
                     .orderBy(workbook.createdAt.desc())
                     .limit(limit)
-                    .transform(groupBy(workbook.workbookId).list(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.source, views.count)))
+                    .transform(groupBy(workbook.workbookId).list(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count)))
         );
     }
 
     @Override
     public Slice<WorkbookCardRes> findWorkbookCardPageableBy(String subjectDetail, String type, Long cursor, Pageable pageable) {
-        List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.source, views.count))
+        List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count))
                 .from(workbook)
                 .leftJoin(views).on(workbook.views.viewsId.eq(views.viewsId))
                 .where(workbook.subjectDetail.eq(SubjectDetail.valueOf(subjectDetail)), workbook.type.eq(WorkbookType.valueOf(type)), eqCursorId(cursor))
