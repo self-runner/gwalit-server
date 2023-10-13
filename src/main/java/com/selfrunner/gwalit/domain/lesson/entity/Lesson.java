@@ -48,7 +48,7 @@ public class Lesson extends BaseTimeEntity {
     @Column(name = "participants", columnDefinition = "json")
     private List<Participant> participants;
 
-    @Column(name = "feedback")
+    @Column(name = "feedback", columnDefinition = "text")
     private String feedback;
 
     @Type(type = "json")
