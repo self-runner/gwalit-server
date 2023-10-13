@@ -61,11 +61,11 @@ public class Workbook extends BaseTimeEntity {
     @Column(name = "time", columnDefinition = "int")
     private Integer time;
 
-    @Column(name = "explain", columnDefinition = "varchar(255)")
-    private String explain;
+    @Column(name = "explanation", columnDefinition = "varchar(255)")
+    private String explanation;
 
-    @Column(name = "source", columnDefinition = "varchar(255)")
-    private String source;
+    @Column(name = "provider", columnDefinition = "varchar(255)")
+    private String provider;
 
     @Column(name = "copyright")
     private Boolean copyright;
@@ -81,8 +81,8 @@ public class Workbook extends BaseTimeEntity {
         this.chapter = workbookReq.getChapter();
         this.problemCount = workbookReq.getProblemCount();
         this.time = workbookReq.getTime();
-        this.explain = workbookReq.getExplain();
-        this.source = workbookReq.getSource();
+        this.explanation = workbookReq.getExplanation();
+        this.provider = workbookReq.getProvider();
         this.copyright = workbookReq.getCopyright();
         this.isFile = workbookReq.getIsFile();
     }
@@ -100,7 +100,7 @@ public class Workbook extends BaseTimeEntity {
     }
 
     @Builder
-    public Workbook(Views views, String title, String type, String subject, String subjectDetail, String chapter, String thumbnailUrl, String workbookFileUrl, String answerFileUrl, Integer problemCount, Integer time, String explain, String source, Boolean copyright, Boolean isFile) {
+    public Workbook(Views views, String title, String type, String subject, String subjectDetail, String chapter, String thumbnailUrl, String workbookFileUrl, String answerFileUrl, Integer problemCount, Integer time, String explanation, String provider, Boolean copyright, Boolean isFile) {
         this.views = views;
         this.title = title;
         this.type = WorkbookType.valueOf(type);
@@ -112,8 +112,8 @@ public class Workbook extends BaseTimeEntity {
         this.answerFileUrl = answerFileUrl;
         this.problemCount = problemCount;
         this.time = time;
-        this.explain = explain;
-        this.source = source;
+        this.explanation = explanation;
+        this.provider = provider;
         this.copyright = copyright;
         this.isFile = isFile;
     }

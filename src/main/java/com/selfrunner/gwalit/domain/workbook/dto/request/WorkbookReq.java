@@ -21,9 +21,9 @@ public class WorkbookReq {
 
     private Integer time;
 
-    private String explain;
+    private String explanation;
 
-    private String source;
+    private String provider;
 
     private Boolean copyright;
 
@@ -43,8 +43,8 @@ public class WorkbookReq {
                 .answerFileUrl(answerFileUrl)
                 .problemCount(this.problemCount)
                 .time(this.time)
-                .explain(this.explain)
-                .source(this.source)
+                .explanation(this.explanation)
+                .provider(this.provider)
                 .copyright(this.copyright)
                 .isFile(this.isFile)
                 .build();
@@ -62,8 +62,8 @@ public class WorkbookReq {
                 .thumbnailUrl(thumbnailUrl)
                 .problemCount(this.problemCount)
                 .time(this.time)
-                .explain(this.explain)
-                .source(this.source)
+                .explanation(this.explanation)
+                .provider(this.provider)
                 .copyright(this.copyright)
                 .isFile(this.isFile)
                 .build();
