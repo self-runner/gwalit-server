@@ -24,6 +24,10 @@ public class Views extends BaseTimeEntity {
     @Column(name = "count", columnDefinition = "int default 0")
     private Integer count;
 
+    public void update() {
+        this.count++;
+    }
+
     @Builder
     public Views(Integer count) {
         this.count = count;
