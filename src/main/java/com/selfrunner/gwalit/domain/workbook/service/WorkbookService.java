@@ -167,11 +167,13 @@ public class WorkbookService {
         return null;
     }
 
+    @Transactional
     public WorkbookRes getOneWorkbook(Member member, Long workbookId) {
         // Validation: Controller에서 @Auth를 통해 인증된 사용자만 접근할 수 있도록 함.
 
         // Business Logic
         Workbook workbook = workbookRepository.findById(workbookId).orElseThrow(() -> new WorkbookException(ErrorCode.NOT_FOUND_EXCEPTION));
+        workbook.getViews().update();
         WorkbookRes workbookRes = new WorkbookRes(workbook, null); // 추후, 문제 테이블을 만들어 문제별로 관리하게 된다면, 난이도 부분을 별도로 적용해야 함을 감안해 미리 생성 후 null로 바인딩.
 
         // Response

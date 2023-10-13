@@ -3,6 +3,8 @@ package com.selfrunner.gwalit.domain.workbook.dto.response;
 import com.selfrunner.gwalit.domain.workbook.entity.*;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class WorkbookRes {
 
@@ -40,6 +42,8 @@ public class WorkbookRes {
 
     private Integer viewCount;
 
+    private LocalDateTime modifiedAt;
+
     // 문제 테이블을 별도로 만들어서, 난이도를 관리하게 될 경우, Difficulty를 따로 계산해서 바인딩할 예정
     public WorkbookRes(Workbook workbook, DifficultyRes difficulty) {
         this.workbookId = workbook.getWorkbookId();
@@ -59,5 +63,6 @@ public class WorkbookRes {
         this.isFile = workbook.getIsFile();
         this.difficulty = difficulty;
         this.viewCount = workbook.getViews().getCount();
+        this.modifiedAt = workbook.getModifiedAt();
     }
 }
