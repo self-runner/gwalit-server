@@ -3,23 +3,22 @@ package com.selfrunner.gwalit.domain.workbook.service;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.workbook.dto.request.WorkbookReq;
 import com.selfrunner.gwalit.domain.workbook.dto.response.*;
+import com.selfrunner.gwalit.domain.workbook.entity.SubjectDetail;
 import com.selfrunner.gwalit.domain.workbook.entity.Views;
 import com.selfrunner.gwalit.domain.workbook.entity.Workbook;
 import com.selfrunner.gwalit.domain.workbook.exception.WorkbookException;
 import com.selfrunner.gwalit.domain.workbook.repository.ViewsRepository;
 import com.selfrunner.gwalit.domain.workbook.repository.WorkbookRepository;
-import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -189,13 +188,33 @@ public class WorkbookService {
         return workbookCardResList;
     }
 
-    public Slice<WorkbookCardRes> getWorkbookList(Member member, String subjectDetail, String type, Long cursor, Pageable pageable) {
+    public Slice<WorkbookCardRes> getWorkbookList(Member member, String detail, String type, Long cursor, Pageable pageable) {
         // Validation: Controller에서 @Auth를 통해 인증된 사용자만 접근할 수 있도록 함.
 
         // Business Logic
-        Slice<WorkbookCardRes> workbookCardResSlice = workbookRepository.findWorkbookCardPageableBy(subjectDetail, type, cursor, pageable);
+        SubjectDetail subjectDetail = getSubjectDetail(detail);
+
+        LocalDateTime cursorCreatedAt = (cursor != null) ? workbookRepository.findById(cursor).get().getCreatedAt() : null;
+        
+        Slice<WorkbookCardRes> workbookCardResSlice = workbookRepository.findWorkbookCardPageableBy(subjectDetail, type, cursor, cursorCreatedAt, pageable);
 
         // Response
         return workbookCardResSlice;
+    }
+
+    // detail 과목 정보 조회 메소드
+    private static SubjectDetail getSubjectDetail(String detail) {
+        SubjectDetail subjectDetail = null;
+        SubjectDetail[] subjectDetailList = SubjectDetail.values();
+        for(SubjectDetail temp : subjectDetailList) {
+            if(temp.getEnglishName().equals(detail)) {
+                subjectDetail = temp;
+                break;
+            }
+        }
+        if(subjectDetail == null) {
+            throw new WorkbookException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
+        return subjectDetail;
     }
 }

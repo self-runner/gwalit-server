@@ -12,6 +12,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,12 +39,12 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
     }
 
     @Override
-    public Slice<WorkbookCardRes> findWorkbookCardPageableBy(String subjectDetail, String type, Long cursor, Pageable pageable) {
+    public Slice<WorkbookCardRes> findWorkbookCardPageableBy(SubjectDetail subjectDetail, String type, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
         List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count))
                 .from(workbook)
                 .leftJoin(views).on(workbook.views.viewsId.eq(views.viewsId))
-                .where(workbook.subjectDetail.eq(SubjectDetail.MATH1), workbook.type.eq(WorkbookType.valueOf(type.toUpperCase())), eqCursorId(cursor))
-                .orderBy(workbook.createdAt.desc())
+                .where(workbook.subjectDetail.eq(subjectDetail), workbook.type.eq(WorkbookType.valueOf(type.toUpperCase())), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt))
+                .orderBy(workbook.createdAt.desc(), workbook.workbookId.asc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
@@ -58,10 +59,13 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
     }
 
     // 커서기반 페이지네이션에서, 커서 뒤인지 확인하는 메소드
-    private BooleanExpression eqCursorId(Long cursorId) {
-        if (cursorId != null) {
-            return workbook.workbookId.gt(cursorId);
+    private BooleanExpression eqCursorIdAndCursorCreatedAt(Long cursorId, LocalDateTime cursorCreatedAt) {
+        if(cursorId == null || cursorCreatedAt == null) {
+            return null;
         }
-        return null;
+
+        return workbook.createdAt.lt(cursorCreatedAt)
+                .or(workbook.workbookId.gt(cursorId)
+                        .and( workbook.createdAt.eq(cursorCreatedAt)));
     }
 }
