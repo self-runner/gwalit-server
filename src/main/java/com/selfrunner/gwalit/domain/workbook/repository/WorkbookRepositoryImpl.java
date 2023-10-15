@@ -34,13 +34,13 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
                     .where(workbook.deletedAt.isNull())
                     .orderBy(workbook.createdAt.desc())
                     .limit(limit)
-                    .transform(groupBy(workbook.workbookId).list(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count)))
+                    .transform(groupBy(workbook.workbookId).list(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count, checkIsNew(LocalDateTime.now()))))
         );
     }
 
     @Override
     public Slice<WorkbookCardRes> findWorkbookCardPageableBy(SubjectDetail subjectDetail, String type, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
-        List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count))
+        List<WorkbookCardRes> content = queryFactory.select(Projections.constructor(WorkbookCardRes.class, workbook.workbookId, workbook.title, workbook.type, workbook.thumbnailUrl, workbook.problemCount, workbook.time, workbook.provider, views.count, checkIsNew(LocalDateTime.now())))
                 .from(workbook)
                 .leftJoin(views).on(workbook.views.viewsId.eq(views.viewsId))
                 .where(workbook.subjectDetail.eq(subjectDetail), workbook.type.eq(WorkbookType.valueOf(type.toUpperCase())), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt))
@@ -49,7 +49,7 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
                 .fetch();
 
         // 다음 페이지 존재 여부 계산
-        Boolean hasNext = false;
+        boolean hasNext = false;
         if (content.size() > pageable.getPageSize()) {
             content.remove(pageable.getPageSize());
             hasNext = true;
@@ -67,5 +67,10 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
         return workbook.createdAt.lt(cursorCreatedAt)
                 .or(workbook.workbookId.gt(cursorId)
                         .and( workbook.createdAt.eq(cursorCreatedAt)));
+    }
+
+    // 최신 업데이트된 정보인지에 대해 확인하는 메소드
+    private BooleanExpression checkIsNew(LocalDateTime now) {
+        return workbook.createdAt.goe(now.minusDays(3L));
     }
 }
