@@ -68,4 +68,9 @@ public class WorkbookRepositoryImpl implements WorkbookRepositoryCustom{
                 .or(workbook.workbookId.gt(cursorId)
                         .and( workbook.createdAt.eq(cursorCreatedAt)));
     }
+
+    // 최신 업데이트된 정보인지에 대해 확인하는 메소드
+    private BooleanExpression checkIsNew(LocalDateTime createdAt) {
+        return workbook.createdAt.goe(LocalDateTime.now().minusDays(3L));
+    }
 }
