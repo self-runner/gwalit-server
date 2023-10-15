@@ -78,6 +78,8 @@ dependencies {
 	// Sentry
 	implementation 'io.sentry:sentry-spring-boot-starter:6.28.0'
 
+	// FCM
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 
 tasks.named('test') {
