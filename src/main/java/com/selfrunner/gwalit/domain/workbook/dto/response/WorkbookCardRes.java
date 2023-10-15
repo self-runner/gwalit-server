@@ -23,7 +23,9 @@ public class WorkbookCardRes {
 
     private Integer viewCount;
 
-    public WorkbookCardRes(Long workbookId, String title, WorkbookType workbookType, String thumbnailUrl, Integer problemCount, Integer time, String provider, Integer viewCount) {
+    private Boolean isNew;
+
+    public WorkbookCardRes(Long workbookId, String title, WorkbookType workbookType, String thumbnailUrl, Integer problemCount, Integer time, String provider, Integer viewCount, Boolean isNew) {
         this.workbookId = workbookId;
         this.title = title;
         this.type = workbookType.getKoreanName();
@@ -32,5 +34,6 @@ public class WorkbookCardRes {
         this.time = time;
         this.provider = provider;
         this.viewCount = viewCount;
+        this.isNew = isNew;
     }
 }
