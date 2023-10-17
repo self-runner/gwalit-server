@@ -32,23 +32,24 @@ public class WorkbookService {
 
 
     @Transactional
-    public WorkbookRes registerWorkbook(Member member, WorkbookReq workbookReq, MultipartFile thumbnailImage, MultipartFile workbookFile, MultipartFile answerFile) {
+    public WorkbookRes registerWorkbook(Member member, WorkbookReq workbookReq, MultipartFile thumbnailImage, MultipartFile thumbnailCardImage, MultipartFile workbookFile, MultipartFile answerFile) {
         // Validation
         /*
         TODO: 관리자 권한 확인 코드 반영 필요
          */
 
         // Business Logic: 이미지, 파일 등 등록 이후, Entity로 저장
-        String thumbnailUrl, workbookFileUrl, answerFileUrl;
+        String thumbnailUrl, thumbnailCardUrl, workbookFileUrl, answerFileUrl;
         // 문제집 파일을 직접 올릴 경우
         if(workbookReq.getIsFile().equals(Boolean.TRUE)) {
             try {
                 thumbnailUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
+                thumbnailCardUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
                 workbookFileUrl = s3Client.upload(workbookFile, "workbook/" + workbookReq.getType());
                 answerFileUrl = s3Client.upload(answerFile, "workbook/" + workbookReq.getType());
                 Views views = Views.builder().count(0).build();
                 Views savedViews = viewsRepository.save(views);
-                Workbook workbook = workbookReq.toFileEntity(savedViews, thumbnailUrl, workbookFileUrl, answerFileUrl);
+                Workbook workbook = workbookReq.toFileEntity(savedViews, thumbnailUrl, thumbnailCardUrl, workbookFileUrl, answerFileUrl);
                 workbookRepository.save(workbook);
 
                 return new WorkbookRes(workbook, null);
@@ -62,9 +63,10 @@ public class WorkbookService {
         if(workbookReq.getIsFile().equals(Boolean.FALSE)) {
             try {
                 thumbnailUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
+                thumbnailCardUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
                 Views views = Views.builder().count(0).build();
                 Views savedViews = viewsRepository.save(views);
-                Workbook workbook = workbookReq.toNonFileEntity(savedViews, thumbnailUrl);
+                Workbook workbook = workbookReq.toNonFileEntity(savedViews, thumbnailUrl, thumbnailCardUrl);
                 workbookRepository.save(workbook);
 
                 return new WorkbookRes(workbook, null);
@@ -78,7 +80,7 @@ public class WorkbookService {
     }
 
     @Transactional
-    public WorkbookRes updateWorkbook(Member member, Long workbookId, WorkbookReq workbookReq, MultipartFile thumbnailImage, MultipartFile workbookFile, MultipartFile answerFile) {
+    public WorkbookRes updateWorkbook(Member member, Long workbookId, WorkbookReq workbookReq, MultipartFile thumbnailImage, MultipartFile thumbnailCardImage, MultipartFile workbookFile, MultipartFile answerFile) {
         // Validation
         /*
         TODO: 관리자 권한 확인 코드 반영 필요
@@ -92,6 +94,13 @@ public class WorkbookService {
                 if(thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     s3Client.delete(workbook.getThumbnailUrl());
                     String updateThumbnailImageUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
+                    workbook.updateThumbnailUrl(updateThumbnailImageUrl);
+                }
+                if(thumbnailCardImage != null && !thumbnailCardImage.isEmpty()) {
+                    if(workbook.getThumbnailCardUrl() != null) {
+                        s3Client.delete(workbook.getThumbnailCardUrl());
+                    }
+                    String updateThumbnailImageUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
                     workbook.updateThumbnailUrl(updateThumbnailImageUrl);
                 }
                 if(workbookFile != null && !workbookFile.isEmpty()) {
@@ -119,6 +128,13 @@ public class WorkbookService {
                 if(thumbnailImage != null && !thumbnailImage.isEmpty()) {
                     s3Client.delete(workbook.getThumbnailUrl());
                     String updateThumbnailImageUrl = s3Client.upload(thumbnailImage, "workbook/" + workbookReq.getType());
+                    workbook.updateThumbnailUrl(updateThumbnailImageUrl);
+                }
+                if(thumbnailCardImage != null && !thumbnailCardImage.isEmpty()) {
+                    if(workbook.getThumbnailCardUrl() != null) {
+                        s3Client.delete(workbook.getThumbnailCardUrl());
+                    }
+                    String updateThumbnailImageUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
                     workbook.updateThumbnailUrl(updateThumbnailImageUrl);
                 }
                 workbook.update(workbookReq);
