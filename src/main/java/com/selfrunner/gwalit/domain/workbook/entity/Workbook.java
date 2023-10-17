@@ -49,6 +49,9 @@ public class Workbook extends BaseTimeEntity {
     @Column(name = "thumbnail_url", columnDefinition = "text")
     private String thumbnailUrl;
 
+    @Column(name = "thumbnail_card_url", columnDefinition = "text")
+    private String thumbnailCardUrl;
+
     @Column(name = "workbook_file_url", columnDefinition = "text")
     private String workbookFileUrl;
 
@@ -91,6 +94,10 @@ public class Workbook extends BaseTimeEntity {
         this.thumbnailUrl = thumbnailUrl;
     }
 
+    public void updateThumbnailCardUrl(String thumbnailCardUrl) {
+        this.thumbnailCardUrl = thumbnailCardUrl;
+    }
+
     public void updateWorkbookFileUrl(String workbookFileUrl) {
         this.workbookFileUrl = workbookFileUrl;
     }
@@ -100,7 +107,7 @@ public class Workbook extends BaseTimeEntity {
     }
 
     @Builder
-    public Workbook(Views views, String title, String type, String subject, String subjectDetail, String chapter, String thumbnailUrl, String workbookFileUrl, String answerFileUrl, Integer problemCount, Integer time, String explanation, String provider, Boolean copyright, Boolean isFile) {
+    public Workbook(Views views, String title, String type, String subject, String subjectDetail, String chapter, String thumbnailUrl, String thumbnailCardUrl, String workbookFileUrl, String answerFileUrl, Integer problemCount, Integer time, String explanation, String provider, Boolean copyright, Boolean isFile) {
         this.views = views;
         this.title = title;
         this.type = WorkbookType.valueOf(type);
@@ -108,6 +115,7 @@ public class Workbook extends BaseTimeEntity {
         this.subjectDetail = SubjectDetail.valueOf(subjectDetail);
         this.chapter = chapter;
         this.thumbnailUrl = thumbnailUrl;
+        this.thumbnailCardUrl = thumbnailCardUrl;
         this.workbookFileUrl = workbookFileUrl;
         this.answerFileUrl = answerFileUrl;
         this.problemCount = problemCount;
