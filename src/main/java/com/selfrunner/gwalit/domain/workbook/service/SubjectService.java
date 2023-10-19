@@ -44,10 +44,14 @@ public class SubjectService {
 
         switch (Subject.valueOf(subject.toUpperCase())) {
             case KOREAN:
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.SPEECH_WRITING, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.LANGUAGE_MEDIA, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
 
                 break;
 
             case ENGLISH:
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.HIGH, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MIDDLE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
 
                 break;
 
@@ -69,10 +73,15 @@ public class SubjectService {
                 break;
 
             case SCIENCE:
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.PHYSICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.CHEMISTRY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.BIOSCIENCE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.GEOSCIENCE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
 
                 break;
 
             default:
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.KOREAN_HISTORY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
         }
 
 
