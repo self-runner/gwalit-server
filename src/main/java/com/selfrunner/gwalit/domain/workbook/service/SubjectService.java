@@ -24,12 +24,12 @@ public class SubjectService {
 
         // Business Logic: 과목별 페이지 사용 여부 Boolean으로 표현
         List<GetSubjectRes> getSubjectResList = new ArrayList<>();
-        getSubjectResList.add(new GetSubjectRes(Subject.KOREAN, Boolean.FALSE));
+        getSubjectResList.add(new GetSubjectRes(Subject.KOREAN, Boolean.TRUE));
         getSubjectResList.add(new GetSubjectRes(Subject.MATH, Boolean.TRUE));
-        getSubjectResList.add(new GetSubjectRes(Subject.ENGLISH, Boolean.FALSE));
+        getSubjectResList.add(new GetSubjectRes(Subject.ENGLISH, Boolean.TRUE));
         getSubjectResList.add(new GetSubjectRes(Subject.SOCIETY, Boolean.TRUE));
-        getSubjectResList.add(new GetSubjectRes(Subject.SCIENCE, Boolean.FALSE));
-        getSubjectResList.add(new GetSubjectRes(Subject.ETC, Boolean.FALSE));
+        getSubjectResList.add(new GetSubjectRes(Subject.SCIENCE, Boolean.TRUE));
+        getSubjectResList.add(new GetSubjectRes(Subject.ETC, Boolean.TRUE));
 
         // Response
         return getSubjectResList;
