@@ -36,6 +36,11 @@ public class BannerController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.getAll());
     }
 
+    @GetMapping("/content")
+    public ApplicationResponse<List<BannerRes>> getContent() {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.getContent());
+    }
+
     @DeleteMapping("/{banner_id}")
     public ApplicationResponse<Void> delete(@PathVariable("banner_id") Long bannerId) {
         bannerService.delete(bannerId);
