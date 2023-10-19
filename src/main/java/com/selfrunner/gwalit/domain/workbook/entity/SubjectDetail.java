@@ -38,7 +38,6 @@ public enum SubjectDetail {
     KOREAN_HISTORY("한국사", "korean_history");
 
 
-
     private final String koreanName;
 
     private final String englishName;

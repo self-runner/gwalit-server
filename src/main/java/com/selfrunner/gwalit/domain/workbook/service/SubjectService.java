@@ -52,7 +52,7 @@ public class SubjectService {
             case ENGLISH:
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.HIGH, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MIDDLE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
-
+            
                 break;
 
             case MATH:
@@ -77,7 +77,7 @@ public class SubjectService {
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.CHEMISTRY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.BIOSCIENCE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.GEOSCIENCE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
-
+            
                 break;
 
             default:
