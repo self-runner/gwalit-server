@@ -1,15 +1,9 @@
 package com.selfrunner.gwalit.domain.content.entity;
 
 public enum ContentType {
-    // 재미용 교육 콘텐츠
-    FUN,
+    // 유튜브 비디오
+    VIDEO,
 
-    // 해설 강의 등
-    SOLUTION,
-
-    // 입시 정보 등
-    INFORM,
-
-    // ASMR, 화이트 노이즈 등
-    SOUND
+    // 꿀팁 등 노션
+    NOTION
 }

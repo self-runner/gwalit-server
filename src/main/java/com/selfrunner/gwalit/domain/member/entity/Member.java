@@ -68,7 +68,7 @@ public class Member extends BaseTimeEntity {
 
     public void update(PutMemberReq putMemberReq) {
         this.name = putMemberReq.getName();
-        this.school = (putMemberReq.getSchool() != null) ? putMemberReq.getSchool() : this.school;
+        this.school = putMemberReq.getSchool();
         this.grade = (putMemberReq.getGrade() != null) ? MemberGrade.valueOf(putMemberReq.getGrade()) : this.grade;
         this.isAdvertisement = putMemberReq.getIsAdvertisement();
         this.isPrivacy = putMemberReq.getIsPrivacy();
