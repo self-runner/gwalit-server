@@ -56,19 +56,19 @@ public class SubjectService {
                 break;
 
             case MATH:
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MATH1, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MATH2, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.CALCULUS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.STATISTICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.GEOMETRY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MATH1, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MATH2, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.CALCULUS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.STATISTICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.GEOMETRY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
 
                 break;
 
             case SOCIETY:
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.SOCIETY_CULTURE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.EVERYDAY_ETHICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.ETHICS_IDEOLOGY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.LAW_POLITICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.TRUE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.SOCIETY_CULTURE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.EVERYDAY_ETHICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.TRUE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.ETHICS_IDEOLOGY, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.LAW_POLITICS, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
 
                 break;
 
