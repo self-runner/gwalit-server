@@ -24,6 +24,10 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "bannerId")
     private Long bannerId;
 
+    @Column(name = "type", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private BannerType type;
+
     @Column(name = "imageUrl", columnDefinition = "text")
     private String imageUrl;
 
@@ -33,19 +37,26 @@ public class Banner extends BaseTimeEntity {
     @Column(name = "information", columnDefinition = "varchar(255)")
     private String information;
 
+    @Column(name = "priority", columnDefinition = "int")
+    private Integer priority;
+
     public void updateImage(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
     public void update(BannerReq bannerReq) {
+        this.type = BannerType.valueOf(bannerReq.getType());
         this.linkUrl = bannerReq.getLinkUrl();
         this.information = bannerReq.getInformation();
+        this.priority = bannerReq.getPriority();
     }
 
     @Builder
-    public Banner(String imageUrl, String linkUrl, String information) {
+    public Banner(String imageUrl, String type, String linkUrl, String information, Integer priority) {
         this.imageUrl = imageUrl;
+        this.type = BannerType.valueOf(type);
         this.linkUrl = linkUrl;
         this.information = information;
+        this.priority = priority;
     }
 }
