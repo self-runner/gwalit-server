@@ -2,7 +2,6 @@ package com.selfrunner.gwalit.domain.member.entity;
 
 import com.selfrunner.gwalit.domain.lecture.dto.request.PatchColorReq;
 import com.selfrunner.gwalit.domain.lecture.dto.request.PatchNameReq;
-import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
