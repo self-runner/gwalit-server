@@ -87,10 +87,10 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
     }
 
     @Override
-    public Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
+    public Optional<MemberAndLecture> findMemberAndLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
         return Optional.ofNullable(
-            queryFactory.selectFrom(lecture)
-                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+            queryFactory.selectFrom(memberAndLecture)
+                    .leftJoin(lecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
                     .where(memberAndLecture.member.memberId.eq(memberId), lecture.lectureId.eq(lectureId))
                     .fetchOne()
         );

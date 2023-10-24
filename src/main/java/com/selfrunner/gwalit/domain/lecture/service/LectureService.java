@@ -186,10 +186,14 @@ public class LectureService {
     @Transactional
     public GetLectureMainRes updateColor(Member member, Long lectureId, PatchColorReq patchColorReq) {
         // Validation
-        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
-        lecture.updateColor(patchColorReq);
+        if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
+            lecture.updateColor(patchColorReq);
+        }
+        memberAndLecture.updateColor(patchColorReq);
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
         GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
 
@@ -200,10 +204,14 @@ public class LectureService {
     @Transactional
     public GetLectureMainRes updateName(Member member, Long lectureId, PatchNameReq patchNameReq) {
         // Validation
-        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
-        lecture.updateName(patchNameReq);
+        if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
+            lecture.updateName(patchNameReq);
+        }
+        memberAndLecture.updateName(patchNameReq);
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
         GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
 
