@@ -91,6 +91,9 @@ public class LectureService {
     @Transactional
     public Void delete(Member member, Long lectureId) {
         // Validation
+        if(member.getType() != MemberType.TEACHER) { // 방 삭제 권한 없음
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
@@ -124,6 +127,9 @@ public class LectureService {
     @Transactional
     public Void update(Member member, Long lectureId, PutLectureReq putLectureReq) {
         // Validation
+        if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
         if(ChronoUnit.DAYS.between(putLectureReq.getStartDate(), putLectureReq.getEndDate()) > 365) {
             throw new LectureException(ErrorCode.INVALID_VALUE_EXCEPTION);
