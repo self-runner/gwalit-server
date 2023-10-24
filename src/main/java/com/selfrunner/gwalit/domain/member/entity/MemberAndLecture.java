@@ -35,10 +35,18 @@ public class MemberAndLecture extends BaseTimeEntity {
     @Column(name = "isTeacher")
     private Boolean isTeacher;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "color")
+    private String color;
+
     @Builder
     public MemberAndLecture(Member member, Lecture lecture) {
         this.member = member;
         this.lecture = lecture;
         this.isTeacher = (member.getType().equals(MemberType.TEACHER)) ? Boolean.TRUE : Boolean.FALSE;
+        this.name = lecture.getName();
+        this.color = lecture.getColor();
     }
 }
