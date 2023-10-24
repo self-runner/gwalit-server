@@ -1,5 +1,8 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchColorReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchNameReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PutLectureReq;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
@@ -40,6 +43,19 @@ public class MemberAndLecture extends BaseTimeEntity {
 
     @Column(name = "color")
     private String color;
+
+    public void update(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void updateName(PatchNameReq patchNameReq) {
+        this.name = patchNameReq.getName();
+    }
+
+    public void updateColor(PatchColorReq patchColorReq) {
+        this.color = patchColorReq.getColor();
+    }
 
     @Builder
     public MemberAndLecture(Member member, Lecture lecture) {

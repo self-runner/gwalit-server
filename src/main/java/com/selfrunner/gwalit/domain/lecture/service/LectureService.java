@@ -177,6 +177,7 @@ public class LectureService {
         }
 
         lecture.update(putLectureReq);
+        memberAndLecture.update(putLectureReq.getName(), putLectureReq.getColor());
 
         // Response
         return null;
