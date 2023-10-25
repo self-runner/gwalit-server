@@ -200,6 +200,9 @@ public class LectureService {
             lecture.updateColor(patchColorReq);
             memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, lecture.getName(), patchColorReq.getColor());
         }
+        else {
+            memberAndLecture.updateIsUpdate();
+        }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
 
         // Response
@@ -217,6 +220,9 @@ public class LectureService {
         if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
             lecture.updateName(patchNameReq);
             memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, patchNameReq.getName(), lecture.getColor());
+        }
+        else {
+            memberAndLecture.updateIsUpdate();
         }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
 
