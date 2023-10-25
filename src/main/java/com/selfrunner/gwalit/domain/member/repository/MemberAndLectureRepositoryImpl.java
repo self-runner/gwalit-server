@@ -3,7 +3,6 @@ package com.selfrunner.gwalit.domain.member.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
-import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -105,5 +104,14 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                     .where(member.phone.eq(phone), member.type.eq(MemberType.STUDENT), member.state.ne(MemberState.FAKE), memberAndLecture.lecture.lectureId.eq(lectureId), member.deletedAt.isNull(), memberAndLecture.deletedAt.isNull())
                     .fetchOne()
         );
+    }
+
+    @Override
+    public void updateNameAndColorByLectureId(Long lectureId, String name, String color) {
+        queryFactory.update(memberAndLecture)
+                .set(memberAndLecture.name, name)
+                .set(memberAndLecture.color, color)
+                .where(memberAndLecture.isUpdate.eq(Boolean.FALSE))
+                .execute();
     }
 }

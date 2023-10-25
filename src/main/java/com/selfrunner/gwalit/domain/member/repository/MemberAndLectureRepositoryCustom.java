@@ -27,4 +27,6 @@ public interface MemberAndLectureRepositoryCustom {
     Optional<MemberAndLecture> findMemberAndLectureByMemberIdAndLectureId(Long memberId, Long lectureId);
 
     Optional<Member> findMemberAndLectureIdByMemberPhoneAndLectureId(String phone, Long lectureId);
+
+    void updateNameAndColorByLectureId(Long lectureId, String name, String color);
 }

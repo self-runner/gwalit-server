@@ -118,10 +118,9 @@ public class LectureService {
          */
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_EXIST_CLASS));
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), lecture.getSubjectDetail(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
 
         // Response
-        return getLectureMetaRes;
+        return new GetLectureMetaRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), lecture.getSubjectDetail(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
     }
 
     @Transactional
@@ -140,7 +139,7 @@ public class LectureService {
 
         // Business Logic
         Lecture lecture = memberAndLecture.getLecture();
-        Boolean check = Boolean.TRUE;
+        boolean check = Boolean.TRUE;
         if(putLectureReq.getSchedules().size() == lecture.getSchedules().size()) {
             for(int i = 0; i < putLectureReq.getSchedules().size(); i++) {
                 if(!putLectureReq.getSchedules().get(i).equals(lecture.getSchedules().get(i))) {
@@ -183,7 +182,7 @@ public class LectureService {
         }
 
         lecture.update(putLectureReq);
-        memberAndLecture.update(putLectureReq.getName(), putLectureReq.getColor());
+        memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, putLectureReq.getName(), putLectureReq.getColor());
 
         // Response
         return null;
@@ -198,13 +197,15 @@ public class LectureService {
         // Business Logic
         if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
             lecture.updateColor(patchColorReq);
+            memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, lecture.getName(), patchColorReq.getColor());
         }
-        memberAndLecture.updateColor(patchColorReq);
+        else {
+            memberAndLecture.updateColor(patchColorReq);
+        }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
-        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
 
         // Response
-        return getLectureMainRes;
+        return new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
     }
 
     @Transactional
@@ -216,13 +217,15 @@ public class LectureService {
         // Business Logic
         if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
             lecture.updateName(patchNameReq);
+            memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, patchNameReq.getName(), lecture.getColor());
         }
-        memberAndLecture.updateName(patchNameReq);
+        else {
+            memberAndLecture.updateName(patchNameReq);
+        }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
-        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
 
         // Response
-        return getLectureMainRes;
+        return new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
     }
 
     public List<GetLectureMainRes> getAllMain(Member member) {
@@ -231,10 +234,8 @@ public class LectureService {
         // Business Logic: member가 해당하는 Class들 조회 -> Class 기본 정보들 다 불러오고, 학생들 정보 역으로 참조해야 함.
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        List<GetLectureMainRes> getLectureMainResList = lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-
         // Response
-        return getLectureMainResList;
+        return lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public List<GetLectureMetaRes> getAllMeta(Member member) {
@@ -242,10 +243,9 @@ public class LectureService {
 
         // Business Logic
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<GetLectureMetaRes> getLectureMetaRes = lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return getLectureMetaRes;
+        return lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
@@ -257,10 +257,9 @@ public class LectureService {
         List<LessonMetaRes> lessonMetaRess = new ArrayList<>();
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdBeforeNow(lectureId).orElse(null)); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdAfterNow(lectureId).orElse(null));
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberAndLecture, memberMetas, lessonMetaRess);
 
         // Response
-        return getLectureRes;
+        return new GetLectureRes(memberAndLecture.getLecture(), memberAndLecture, memberMetas, lessonMetaRess);
     }
 
     @Transactional
