@@ -1,8 +1,8 @@
 package com.selfrunner.gwalit.domain.member.repository;
 
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
-import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 
 import java.util.List;
@@ -24,7 +24,9 @@ public interface MemberAndLectureRepositoryCustom {
 
     void deleteMemberAndLecturesByMember(Member member);
 
-    Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId);
+    Optional<MemberAndLecture> findMemberAndLectureByMemberIdAndLectureId(Long memberId, Long lectureId);
 
     Optional<Member> findMemberAndLectureIdByMemberPhoneAndLectureId(String phone, Long lectureId);
+
+    void updateNameAndColorByLectureId(Long lectureId, String name, String color);
 }
