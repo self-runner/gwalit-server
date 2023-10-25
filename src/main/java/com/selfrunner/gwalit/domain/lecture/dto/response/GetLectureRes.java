@@ -4,6 +4,7 @@ import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Rule;
 import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
@@ -38,10 +39,10 @@ public class GetLectureRes {
 
     private final List<LessonMetaRes> lessonMetaRess;
 
-    public GetLectureRes(Lecture lecture, List<MemberMeta> memberMetas, List<LessonMetaRes> lessonMetaRess) {
+    public GetLectureRes(Lecture lecture, MemberAndLecture memberAndLecture, List<MemberMeta> memberMetas, List<LessonMetaRes> lessonMetaRess) {
         this.lectureId = lecture.getLectureId();
-        this.name = lecture.getName();
-        this.color = lecture.getColor();
+        this.name = memberAndLecture.getName();
+        this.color = memberAndLecture.getColor();
         this.subject = lecture.getSubject();
         this.subjectDetail = lecture.getSubjectDetail();
         this.startDate = lecture.getStartDate();
