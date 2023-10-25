@@ -111,6 +111,7 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
         queryFactory.update(memberAndLecture)
                 .set(memberAndLecture.name, name)
                 .set(memberAndLecture.color, color)
+                .set(memberAndLecture.modifiedAt, LocalDateTime.now())
                 .where(memberAndLecture.isUpdate.eq(Boolean.FALSE), memberAndLecture.lecture.lectureId.eq(lectureId))
                 .execute();
     }
