@@ -43,10 +43,8 @@ public class MemberAndLecture extends BaseTimeEntity {
     @Column(name = "color")
     private String color;
 
-    public void update(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
+    @Column(name = "is_update") // 학생이 업데이트한 적이 있는지 확인하는 문구
+    private Boolean isUpdate;
 
     public void updateName(PatchNameReq patchNameReq) {
         this.name = patchNameReq.getName();
@@ -63,5 +61,6 @@ public class MemberAndLecture extends BaseTimeEntity {
         this.isTeacher = (member.getType().equals(MemberType.TEACHER)) ? Boolean.TRUE : Boolean.FALSE;
         this.name = lecture.getName();
         this.color = lecture.getColor();
+        this.isUpdate = Boolean.FALSE;
     }
 }
