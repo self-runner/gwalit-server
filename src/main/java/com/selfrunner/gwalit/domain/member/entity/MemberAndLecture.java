@@ -54,6 +54,10 @@ public class MemberAndLecture extends BaseTimeEntity {
         this.color = patchColorReq.getColor();
     }
 
+    public void updateIsUpdate() {
+        this.isUpdate = !this.isUpdate;
+    }
+
     @Builder
     public MemberAndLecture(Member member, Lecture lecture) {
         this.member = member;
