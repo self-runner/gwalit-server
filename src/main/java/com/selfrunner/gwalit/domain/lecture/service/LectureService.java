@@ -195,12 +195,10 @@ public class LectureService {
         Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
+        memberAndLecture.updateColor(patchColorReq);
         if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
             lecture.updateColor(patchColorReq);
             memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, lecture.getName(), patchColorReq.getColor());
-        }
-        else {
-            memberAndLecture.updateColor(patchColorReq);
         }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
 
@@ -215,12 +213,10 @@ public class LectureService {
         Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
+        memberAndLecture.updateName(patchNameReq);
         if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
             lecture.updateName(patchNameReq);
             memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, patchNameReq.getName(), lecture.getColor());
-        }
-        else {
-            memberAndLecture.updateName(patchNameReq);
         }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
 
