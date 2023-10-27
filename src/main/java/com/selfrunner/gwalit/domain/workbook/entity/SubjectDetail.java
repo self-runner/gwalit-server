@@ -26,7 +26,7 @@ public enum SubjectDetail {
     SOCIETY_CULTURE("사회문화", "society_culture"),
     EVERYDAY_ETHICS("생활과 윤리", "everyday_ethics"),
     ETHICS_IDEOLOGY("윤리와 사상", "ehtics_ideology"),
-    LAW_POLITICS("법과 정치", "law_politics"),
+    LAW_POLITICS("정치와 법", "law_politics"),
 
     // 과학탐구 (물리, 화학, 생명과학, 지구과학)
     PHYSICS("물리", "physics"),
