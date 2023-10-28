@@ -161,6 +161,7 @@ public class AuthService {
     public GetRefreshRes reissue(HttpServletRequest httpServletRequest) {
         // Validation: RTK 조회
         String rtk = httpServletRequest.getHeader("Authorization");
+        tokenProvider.validateToken(rtk); // RTK 유효성 검증
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
         String value = redisClient.getValue(key);
         if(rtk.isBlank() || value == null || !value.equals(rtk)) {
