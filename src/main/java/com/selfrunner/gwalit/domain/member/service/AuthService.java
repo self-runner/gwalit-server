@@ -11,7 +11,6 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
@@ -55,14 +54,14 @@ public class AuthService {
         // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
-        redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
+        redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
 
         // Response
         return null;
     }
     public Void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
-        boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode()) ? true : false;
+        boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode());
 
         if(!result) {
             throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
@@ -145,9 +144,7 @@ public class AuthService {
         redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
 
         // Response
-        PostLoginRes postLoginRes = new PostLoginRes().toDto(tokenDto, member);
-
-        return postLoginRes;
+        return new PostLoginRes().toDto(tokenDto, member);
     }
 
     public Void logout(String atk, Member member) {
@@ -175,12 +172,14 @@ public class AuthService {
         }
 
         // Business Logic
-        String atk = tokenProvider.regenerateToken(member);
+        TokenDto tokenDto = tokenProvider.regenerateToken(member, rtk);
+        String newRefreshToken = tokenDto.getRefreshToken();
+        if(!newRefreshToken.equals(rtk)) {
+            redisClient.setValue(key, newRefreshToken, tokenProvider.getExpiration(newRefreshToken));
+        }
 
         // Response
-        GetRefreshRes getRefreshRes = new GetRefreshRes().toDto(atk);
-
-        return getRefreshRes;
+        return new GetRefreshRes().toDto(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
     }
 
     @Transactional

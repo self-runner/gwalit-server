@@ -20,7 +20,7 @@ public class TokenProvider {
     @Value("${jwt.secret-key}")
     private String secretKey;
 
-    private static final long ACCESS_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L; // 30일
+    private static final long ACCESS_TOKEN_VALID_TIME = 7 * 24 * 60 * 60 * 1000L; // 7일
 
     private static final long REFRESH_TOKEN_VALID_TIME = 30 * 24 * 60 * 60 * 1000L; // 30일
 
@@ -74,9 +74,22 @@ public class TokenProvider {
     }
 
     // 토큰 재발급
-    public String regenerateToken(Member member) {
+    public TokenDto regenerateToken(Member member, String rtk) {
         String atk = createAccessToken(member);
-        return atk;
+
+        TokenDto tokenDto = TokenDto.builder()
+                .accessToken(atk)
+                .refreshToken(rtk)
+                .build();
+
+        long expirationDate = getExpiration(rtk);
+        Date currentDate = new Date();
+        if(expirationDate - currentDate.getTime() <=  ACCESS_TOKEN_VALID_TIME) {
+            String reissueRtk = createRefreshToken(member);
+            tokenDto.setRefreshToken(reissueRtk);
+        }
+
+        return tokenDto;
     }
 
     // 토큰 검증
