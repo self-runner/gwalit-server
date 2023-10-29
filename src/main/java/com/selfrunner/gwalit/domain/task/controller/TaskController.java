@@ -18,42 +18,42 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/task")
+@RequestMapping("")
 @Tag(name = "Task", description = "할 일 관련")
 public class TaskController {
 
     private final TaskService taskService;
 
     @Operation(description = "할 일 생성")
-    @PostMapping("")
-    public ApplicationResponse<Void> register(@Auth Member member, @Valid @RequestBody PostTaskReq postTaskReq) {
+    @PostMapping({"/task", "/api/v{version}/task"})
+    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PostTaskReq postTaskReq) {
         taskService.register(member, postTaskReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "할 일 수정")
-    @PutMapping("/{task_id}")
-    public ApplicationResponse<Void> update(@Auth Member member, @PathVariable("task_id") Long taskId, @Valid @RequestBody PutTaskReq putTaskReq) {
+    @PutMapping({"/task/{task_id}", "/api/v{version}/task/{task_id}"})
+    public ApplicationResponse<Void> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("task_id") Long taskId, @Valid @RequestBody PutTaskReq putTaskReq) {
         taskService.update(member, taskId, putTaskReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "할 일 삭제")
-    @DeleteMapping("/{task_id}")
-    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("task_id") Long taskId) {
+    @DeleteMapping({"/task/{task_id}", "/api/v{version}/task/{task_id}"})
+    public ApplicationResponse<Void> delete(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("task_id") Long taskId) {
         taskService.delete(member, taskId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "유저의 할 일 가져오기")
-    @GetMapping("/main")
-    public ApplicationResponse<List<TaskRes>> getTasksByUser(@Auth Member member) {
+    @GetMapping({"/task/main", "/api/v{version}/task/main"})
+    public ApplicationResponse<List<TaskRes>> getTasksByUser(@PathVariable(name = "version", required = false) Long version, @Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByUser(member));
     }
 
     @Operation(description = "Class별 할 일 가져오기")
-    @GetMapping("/lecture/{lecture_id}")
-    public ApplicationResponse<List<TaskRes>> getTasksByLecture(@Auth Member member, @PathVariable("lecture_id") Long lectureId) {
+    @GetMapping({"/task/lecture/{lecture_id}", "/api/v{version}/task/lecture/{lecture_id}"})
+    public ApplicationResponse<List<TaskRes>> getTasksByLecture(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.getTasksByLecture(member, lectureId));
     }
 }
