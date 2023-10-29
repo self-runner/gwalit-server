@@ -22,46 +22,46 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/workbook")
+@RequestMapping("")
 @Tag(name = "WorkbookAndProblem", description = "문제 제작 & 문제집 제작 및 풀이 API")
 public class WorkbookController {
 
     private final WorkbookService workbookService;
 
     @Operation(summary = "문제집 등록")
-    @PostMapping("")
-    public ApplicationResponse<WorkbookRes> registerWorkbook(@Auth Member member, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "thumbnail_card", required = false) MultipartFile thumbnailCardImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
+    @PostMapping({"/workbook", "/api/v{version}/workbook"})
+    public ApplicationResponse<WorkbookRes> registerWorkbook(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "thumbnail_card", required = false) MultipartFile thumbnailCardImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.registerWorkbook(member, workbookReq, thumbnailImage, thumbnailCardImage, workbookFile, answerFile));
     }
 
     @Operation(summary = "문제집 수정")
-    @PutMapping("/{workbook_id}")
-    public ApplicationResponse<WorkbookRes> updateWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "thumbnail_card", required = false) MultipartFile thumbnailCardImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
+    @PutMapping({"/workbook/{workbook_id}", "/api/v{version}/workbook/{workbook_id}"})
+    public ApplicationResponse<WorkbookRes> updateWorkbook(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("workbook_id") Long workbookId, @Valid @RequestPart(value = "data") WorkbookReq workbookReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage, @RequestPart(value = "thumbnail_card", required = false) MultipartFile thumbnailCardImage, @RequestPart(value = "workbook", required = false) MultipartFile workbookFile, @RequestPart(value = "answer", required = false) MultipartFile answerFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.updateWorkbook(member, workbookId, workbookReq, thumbnailImage, thumbnailCardImage, workbookFile, answerFile));
     }
 
     @Operation(summary = "문제집 삭제")
-    @DeleteMapping("/{workbook_id}")
-    public ApplicationResponse<Void> deleteWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId) {
+    @DeleteMapping({"/workbook/{workbook_id}", "/api/v{version}/workbook/{workbook_id}"})
+    public ApplicationResponse<Void> deleteWorkbook(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("workbook_id") Long workbookId) {
         workbookService.deleteWorkbook(member, workbookId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "특정 문제집 반환")
-    @GetMapping("/{workbook_id}")
-    public ApplicationResponse<WorkbookRes> getOneWorkbook(@Auth Member member, @PathVariable("workbook_id") Long workbookId) {
+    @GetMapping({"/workbook/{workbook_id}", "/api/v{version}/workbook/{workbook_id}"})
+    public ApplicationResponse<WorkbookRes> getOneWorkbook(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("workbook_id") Long workbookId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getOneWorkbook(member, workbookId));
     }
 
     @Operation(summary = "콘텐츠 메인 페이지의 최신 문제집 리스트 반환")
-    @GetMapping("/main")
-    public ApplicationResponse<List<WorkbookCardRes>> getMainWorkbookList(@Auth Member member) {
+    @GetMapping({"/workbook/main", "/api/v{version}/workbook/main"})
+    public ApplicationResponse<List<WorkbookCardRes>> getMainWorkbookList(@PathVariable(name = "version", required = false) Long version, @Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getMainWorkbookList(member));
     }
 
     @Operation(summary = "문제집 리스트 페이지네이션")
-    @GetMapping("")
-    public ApplicationResponse<Slice<WorkbookCardRes>> getWorkbookList(@Auth Member member, @RequestParam(name = "detail") String subjectDetail, @RequestParam(name = "type") String type, @RequestParam(name = "cursor", required = false) Long cursor, @PageableDefault(size = 10, sort = "created_at DESC")Pageable pageable) {
+    @GetMapping({"/workbook", "/api/v{version}/workbook"})
+    public ApplicationResponse<Slice<WorkbookCardRes>> getWorkbookList(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @RequestParam(name = "detail") String subjectDetail, @RequestParam(name = "type") String type, @RequestParam(name = "cursor", required = false) Long cursor, @PageableDefault(size = 10, sort = "created_at DESC")Pageable pageable) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, workbookService.getWorkbookList(member, subjectDetail, type, cursor, pageable));
     }
 }

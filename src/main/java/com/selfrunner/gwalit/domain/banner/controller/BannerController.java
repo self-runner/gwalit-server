@@ -15,34 +15,34 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/banner")
+@RequestMapping("")
 @Tag(name = "Banner", description = "메인 페이지 배너 관련")
 public class BannerController {
 
     private final BannerService bannerService;
 
-    @PostMapping("")
-    public ApplicationResponse<BannerRes> register(@Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file") MultipartFile multipartFile) {
+    @PostMapping({"/banner", "/api/v{version}/banner"})
+    public ApplicationResponse<BannerRes> register(@PathVariable(name = "version", required = false) Long version, @Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file") MultipartFile multipartFile) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, bannerService.register(bannerReq, multipartFile));
     }
 
-    @PutMapping("/{banner_id}")
-    public ApplicationResponse<BannerRes> update(@PathVariable("banner_id") Long bannerId, @Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
+    @PutMapping({"/banner/{banner_id}", "/api/v{version}/banner/{banner_id}"})
+    public ApplicationResponse<BannerRes> update(@PathVariable(name = "version", required = false) Long version, @PathVariable("banner_id") Long bannerId, @Valid @RequestPart(value = "data") BannerReq bannerReq, @RequestPart(value = "file", required = false) MultipartFile multipartFile) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.update(bannerId, bannerReq, multipartFile));
     }
 
-    @GetMapping("")
-    public ApplicationResponse<List<BannerRes>> getAll() {
+    @GetMapping({"/banner", "/api/v{version}/banner"})
+    public ApplicationResponse<List<BannerRes>> getAll(@PathVariable(name = "version", required = false) Long version) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.getAll());
     }
 
-    @GetMapping("/content")
-    public ApplicationResponse<List<BannerRes>> getContent() {
+    @GetMapping({"/banner/content", "/api/v{version}/banner/content"})
+    public ApplicationResponse<List<BannerRes>> getContent(@PathVariable(name = "version", required = false) Long version) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, bannerService.getContent());
     }
 
-    @DeleteMapping("/{banner_id}")
-    public ApplicationResponse<Void> delete(@PathVariable("banner_id") Long bannerId) {
+    @DeleteMapping({"/banner/{banner_id}", "/api/v{version}/banner/{banner_id}"})
+    public ApplicationResponse<Void> delete(@PathVariable(name = "version", required = false) Long version, @PathVariable("banner_id") Long bannerId) {
         bannerService.delete(bannerId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
