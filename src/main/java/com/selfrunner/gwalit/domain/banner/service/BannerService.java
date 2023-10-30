@@ -97,7 +97,7 @@ public class BannerService {
     }
 
     @Transactional
-    public Void delete(Long bannerId) {
+    public void delete(Long bannerId) {
         // Validation
         Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(banner.getDeletedAt() != null) {
@@ -109,6 +109,5 @@ public class BannerService {
         s3Client.delete(banner.getImageUrl());
 
         // Response
-        return null;
     }
 }
