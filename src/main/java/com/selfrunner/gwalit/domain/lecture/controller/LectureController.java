@@ -34,9 +34,8 @@ public class LectureController {
 
     @Operation(summary = "Class 생성")
     @PostMapping({"/lecture", "/api/v{version}/lecture"})
-    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PostLectureReq postLectureReq) {
-        lectureService.register(member, postLectureReq);
-        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    public ApplicationResponse<GetLectureMetaRes> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PostLectureReq postLectureReq) {
+        return ApplicationResponse.create(ErrorCode.SUCCESS, lectureService.register(member, postLectureReq));
     }
 
     @Operation(summary = "Class 삭제")
@@ -54,7 +53,7 @@ public class LectureController {
 
     @Operation(summary = "Class 수정")
     @PutMapping({"/lecture/{lecture_id}", "/api/v{version}/lecture/{lecture_id}"})
-    public ApplicationResponse<Void> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PutLectureReq putLectureReq) {
+    public ApplicationResponse<GetLectureMetaRes> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody PutLectureReq putLectureReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, lectureService.update(member, lectureId, putLectureReq));
     }
 

@@ -43,7 +43,8 @@ public class AuthController {
     @Operation(summary = "인증번호 확인 요청")
     @PostMapping({"/auth/authorization", "/api/v{version}/auth/authorization"})
     public ApplicationResponse<Void> checkAuthorizationCode(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostAuthCodeReq postauthCodeReq) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.checkAuthorizationCode(postauthCodeReq));
+        authService.checkAuthorizationCode(postauthCodeReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "임시 비밀번호 발급")

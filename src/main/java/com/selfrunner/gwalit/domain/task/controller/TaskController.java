@@ -26,16 +26,14 @@ public class TaskController {
 
     @Operation(description = "할 일 생성")
     @PostMapping({"/task", "/api/v{version}/task"})
-    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PostTaskReq postTaskReq) {
-        taskService.register(member, postTaskReq);
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    public ApplicationResponse<TaskRes> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PostTaskReq postTaskReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.register(member, postTaskReq));
     }
 
     @Operation(description = "할 일 수정")
     @PutMapping({"/task/{task_id}", "/api/v{version}/task/{task_id}"})
-    public ApplicationResponse<Void> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("task_id") Long taskId, @Valid @RequestBody PutTaskReq putTaskReq) {
-        taskService.update(member, taskId, putTaskReq);
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    public ApplicationResponse<TaskRes> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("task_id") Long taskId, @Valid @RequestBody PutTaskReq putTaskReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, taskService.update(member, taskId, putTaskReq));
     }
 
     @Operation(description = "할 일 삭제")

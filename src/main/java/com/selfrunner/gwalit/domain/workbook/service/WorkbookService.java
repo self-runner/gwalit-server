@@ -150,7 +150,7 @@ public class WorkbookService {
     }
 
     @Transactional
-    public Void deleteWorkbook(Member member, Long workbookId) {
+    public void deleteWorkbook(Member member, Long workbookId) {
         // Validation
         /*
         TODO: 관리자 권한 확인 코드 반영 필요
@@ -180,7 +180,6 @@ public class WorkbookService {
         }
 
         // Response
-        return null;
     }
 
     @Transactional

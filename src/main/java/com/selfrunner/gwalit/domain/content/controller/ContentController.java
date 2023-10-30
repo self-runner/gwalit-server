@@ -42,7 +42,8 @@ public class ContentController {
 
     @DeleteMapping({"/content/{content_id}", "/api/v{version}/content/{content_id}"})
     public ApplicationResponse<Void> delete(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("content_id") Long contentId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.delete(member, contentId));
+        contentService.delete(member, contentId);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "고정 설정이 된 칼럼만 반환")

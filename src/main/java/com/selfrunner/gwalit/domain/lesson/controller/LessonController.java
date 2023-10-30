@@ -35,19 +35,10 @@ public class LessonController {
         return ApplicationResponse.create(ErrorCode.SUCCESS, lessonService.register(member, postLessonReq));
     }
 
-//  Lesson 생성 로직 변경으로 인한 API 미사용으로 변경
-//    @Operation(summary = "수업 리포트 생성")
-//    @PostMapping("/deleted/{lecture_id}")
-//    public ApplicationResponse<Void> registerAllDeletedLesson(@Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostLessonReq> postLessonReqList) {
-//        lessonService.registerAllDeletedLesson(member, lectureId, postLessonReqList);
-//        return ApplicationResponse.create(ErrorCode.SUCCESS);
-//    }
-
     @Operation(summary = "수업 리포트 수정")
     @PutMapping({"/lesson/{lesson_id}", "/api/v{version}/lesson/{lesson_id}"})
-    public ApplicationResponse<Void> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
-        lessonService.update(member, lessonId, putLessonReq);
-        return ApplicationResponse.ok(ErrorCode.SUCCESS);
+    public ApplicationResponse<LessonRes> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lesson_id") Long lessonId, @Valid @RequestBody PutLessonReq putLessonReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, lessonService.update(member, lessonId, putLessonReq));
     }
 
     @Operation(summary = "수업 리포트 일부 정보 수정")

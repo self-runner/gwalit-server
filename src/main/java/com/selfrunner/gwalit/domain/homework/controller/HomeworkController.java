@@ -26,9 +26,8 @@ public class HomeworkController {
 
     @Operation(summary = "숙제 생성")
     @PostMapping({"/homework", "/api/v{version}/homework"})
-    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @RequestParam(value = "lesson_id", required = false) Long lessonId, @Valid @RequestBody HomeworkReq homeworkReq) {
-        homeworkService.register(member, lessonId, homeworkReq);
-        return ApplicationResponse.create(ErrorCode.SUCCESS);
+    public ApplicationResponse<HomeworkRes> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @RequestParam(value = "lesson_id", required = false) Long lessonId, @Valid @RequestBody HomeworkReq homeworkReq) {
+        return ApplicationResponse.create(ErrorCode.SUCCESS, homeworkService.register(member, lessonId, homeworkReq));
     }
 
     @Operation(summary = "숙제 정보 수정")
