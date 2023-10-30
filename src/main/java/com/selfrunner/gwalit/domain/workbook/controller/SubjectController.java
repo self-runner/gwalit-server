@@ -27,7 +27,7 @@ public class SubjectController {
     }
 
     @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
-    @GetMapping({"/subject/material", "/api/v{version}/subject"})
+    @GetMapping({"/subject/material", "/api/v{version}/subject/material"})
     public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@PathVariable(name = "version", required = false) Long version, @RequestParam("subject") String subject) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, subjectService.getSubjectMaterialList(subject));
     }
