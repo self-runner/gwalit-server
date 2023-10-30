@@ -99,7 +99,7 @@ public class ContentService {
     }
 
     @Transactional
-    public Void delete(Member member, Long contentId) {
+    public void delete(Member member, Long contentId) {
         // Validation
         /**
          * TODO: 관리자 권한 확인 조건 추가 필요
@@ -120,7 +120,6 @@ public class ContentService {
         contentRepository.delete(content);
 
         // Response
-        return null;
     }
 
     @Transactional
