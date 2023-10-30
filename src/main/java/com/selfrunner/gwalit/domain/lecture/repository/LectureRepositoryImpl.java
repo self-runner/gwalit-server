@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
@@ -39,7 +40,10 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull(), memberAndLecture.member.memberId.eq(m.getMemberId()))
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
+                .orderBy(lecture.lectureId.asc(), new CaseBuilder()
+                        .when(memberAndLecture.member.memberId.eq(m.getMemberId())).then(0)
+                            .otherwise(1).asc())
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, memberAndLecture.name, memberAndLecture.color, lecture.subject,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
@@ -51,7 +55,10 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull(), memberAndLecture.member.memberId.eq(m.getMemberId()))
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
+                .orderBy(lecture.lectureId.asc(), new CaseBuilder()
+                        .when(memberAndLecture.member.memberId.eq(m.getMemberId())).then(0)
+                        .otherwise(1).asc())
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, memberAndLecture.name, memberAndLecture.color, lecture.subject, lecture.subjectDetail, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
