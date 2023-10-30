@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface LectureRepositoryCustom {
 
     Optional<List<Long>> findAllLectureIdByMember(Member member);
-    Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(List<Long> lectureIdList);
+    Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(Member member, List<Long> lectureIdList);
 
-    Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList);
+    Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(Member member, List<Long> lectureIdList);
 
     void deleteAllByLectureIdList(List<Long> lectureIdList);
 }

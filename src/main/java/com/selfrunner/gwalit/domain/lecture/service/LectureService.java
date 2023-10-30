@@ -237,7 +237,7 @@ public class LectureService {
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
+        return lectureRepository.findAllLectureMainByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public List<GetLectureMetaRes> getAllMeta(Member member) {
@@ -247,7 +247,7 @@ public class LectureService {
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
+        return lectureRepository.findAllLectureMetaByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
