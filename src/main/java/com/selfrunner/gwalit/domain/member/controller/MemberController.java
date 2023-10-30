@@ -34,6 +34,7 @@ public class MemberController {
 
     @PutMapping({"/member/password", "/api/v{version}/member/password"})
     public ApplicationResponse<Void> updatePassword(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PutPasswordReq putPasswordReq) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updatePassword(member, putPasswordReq));
+        memberService.updatePassword(member, putPasswordReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 }
