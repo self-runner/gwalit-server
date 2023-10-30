@@ -35,11 +35,11 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     }
 
     @Override
-    public Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(List<Long> lectureIdList) {
+    public Optional<List<GetLectureMainRes>> findAllLectureMainByLectureIdList(Member m, List<Long> lectureIdList) {
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .leftJoin(memberAndLecture).on(lecture.eq(memberAndLecture.lecture))
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull(), memberAndLecture.member.memberId.eq(m.getMemberId()))
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMainRes.class, lecture.lectureId, memberAndLecture.name, memberAndLecture.color, lecture.subject,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));
@@ -47,11 +47,11 @@ public class LectureRepositoryImpl implements LectureRepositoryCustom{
     }
 
     @Override
-    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(List<Long> lectureIdList) {
+    public Optional<List<GetLectureMetaRes>> findAllLectureMetaByLectureIdList(Member m, List<Long> lectureIdList) {
         return Optional.ofNullable(queryFactory.selectFrom(lecture)
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.eq(lecture))
                 .leftJoin(member).on(member.eq(memberAndLecture.member))
-                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull())
+                .where(lecture.lectureId.in(lectureIdList), memberAndLecture.deletedAt.isNull(), memberAndLecture.member.memberId.eq(m.getMemberId()))
                 .transform(groupBy(lecture.lectureId)
                         .list(Projections.constructor(GetLectureMetaRes.class, lecture.lectureId, memberAndLecture.name, memberAndLecture.color, lecture.subject, lecture.subjectDetail, lecture.startDate, lecture.endDate, lecture.schedules,
                                 list(Projections.constructor(MemberMeta.class, member.memberId, member.name, memberAndLecture.isTeacher))))));

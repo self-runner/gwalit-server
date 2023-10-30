@@ -113,9 +113,6 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        /*
-        TODO: 쿼리 튜닝을 통한 성능향상 필요
-         */
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_EXIST_CLASS));
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
@@ -237,7 +234,7 @@ public class LectureService {
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
+        return lectureRepository.findAllLectureMainByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public List<GetLectureMetaRes> getAllMeta(Member member) {
@@ -247,7 +244,7 @@ public class LectureService {
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
+        return lectureRepository.findAllLectureMetaByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
