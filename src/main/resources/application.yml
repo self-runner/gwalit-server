@@ -37,6 +37,10 @@ spring:
       max-file-size: 10MB
       max-request-size: 100MB
 
+firebase:
+  config: firebase-dev.json
+  project:
+    id: ENC(JL+YdUZZjKD+CVEr4FFbJg==)
 
 jasypt:
   encryptor:
