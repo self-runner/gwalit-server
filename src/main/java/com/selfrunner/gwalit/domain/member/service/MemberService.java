@@ -46,7 +46,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Void updatePassword(Member member, PutPasswordReq putPasswordReq) {
+    public void updatePassword(Member member, PutPasswordReq putPasswordReq) {
         // Validation
         Member change = memberRepository.findById(putPasswordReq.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(change.getDeletedAt() != null) {
@@ -66,6 +66,5 @@ public class MemberService {
         change.encryptPassword(putPasswordReq.getNewPassword());
 
         // Response
-        return null;
     }
 }

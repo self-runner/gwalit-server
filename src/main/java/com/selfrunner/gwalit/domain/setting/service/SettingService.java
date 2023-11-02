@@ -50,12 +50,11 @@ public class SettingService {
     }
 
     @Transactional
-    public Void delete(Long settingId) {
+    public void delete(Long settingId) {
         // Business Logic
         settingRepository.deleteById(settingId);
 
         // Response
-        return null;
     }
 
     public TosRes getTermsOfService() {

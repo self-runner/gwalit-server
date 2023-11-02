@@ -15,40 +15,40 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/setting")
+@RequestMapping("")
 @Tag(name = "설정", description = "설정 페이지 관련 API")
 public class SettingController {
 
     private final SettingService settingService;
 
     @Operation(description = "설정 정보 등록 API")
-    @PostMapping("")
-    public ApplicationResponse<SettingRes> register(@Valid @RequestBody SettingReq settingReq) {
+    @PostMapping({"/setting", "/api/v{version}/setting"})
+    public ApplicationResponse<SettingRes> register(@PathVariable("version") Long version, @Valid @RequestBody SettingReq settingReq) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, settingService.register(settingReq));
     }
 
     @Operation(description = "설정 정보 수정 API")
-    @PutMapping("/{setting_id}")
-    public ApplicationResponse<SettingRes> update(@PathVariable("setting_id") Long settingId, @Valid @RequestBody SettingReq settingReq) {
+    @PutMapping({"/setting/{setting_id}", "/api/v{version}/setting/{setting_id}"})
+    public ApplicationResponse<SettingRes> update(@PathVariable(name = "version", required = false) Long version, @PathVariable("setting_id") Long settingId, @Valid @RequestBody SettingReq settingReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.update(settingId, settingReq));
     }
 
     @Operation(description = "설정 정보 삭제 API")
-    @DeleteMapping("/{setting_id}")
-    public ApplicationResponse<Void> delete(@PathVariable("setting_id") Long settingId) {
+    @DeleteMapping({"/setting/{setting_id}", "/api/v{version}/setting/{setting_id}"})
+    public ApplicationResponse<Void> delete(@PathVariable(name = "version", required = false) Long version, @PathVariable("setting_id") Long settingId) {
         settingService.delete(settingId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "설정 정보 반환 API")
-    @GetMapping("")
-    public ApplicationResponse<SettingRes> getSettingInform() {
+    @GetMapping({"/setting", "/api/v{version}/setting"})
+    public ApplicationResponse<SettingRes> getSettingInform(@PathVariable(name = "version", required = false) Long version) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.getSettingInform());
     }
 
     @Operation(description = "이용 약관 주소 반환 API")
-    @GetMapping("/tos")
-    public ApplicationResponse<TosRes> getTermsOfService() {
+    @GetMapping({"/setting/tos", "/api/v{version}/setting/tos"})
+    public ApplicationResponse<TosRes> getTermsOfService(@PathVariable(name = "version", required = false) Long version) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, settingService.getTermsOfService());
     }
 }

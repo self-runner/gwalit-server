@@ -15,12 +15,11 @@ public class LogService {
     private final LogRepository logRepository;
 
     @Transactional
-    public Void register(LogReq logReq) {
+    public void register(LogReq logReq) {
         // Business Logic
         Log log = logReq.toEntity();
         logRepository.save(log);
 
         // Response
-        return null;
     }
 }

@@ -35,7 +35,7 @@ public class HomeworkService {
     private final MemberAndLectureRepository memberAndLectureRepository;
 
     @Transactional
-    public Void register(Member member, Long lessonId, HomeworkReq homeworkReq) {
+    public HomeworkRes register(Member member, Long lessonId, HomeworkReq homeworkReq) {
         // Validation
         if(lessonId != null) {
             Lesson lesson = lessonRepository.findById(Long.valueOf(lessonId)).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON)); // 해당 수업이 미존재 시, 에러 반환
@@ -47,7 +47,7 @@ public class HomeworkService {
         homeworkRepository.save(homework);
 
         // Response
-        return null;
+        return new HomeworkRes(homework);
     }
 
     @Transactional
@@ -67,7 +67,7 @@ public class HomeworkService {
     }
 
     @Transactional
-    public Void delete(Member member, Long homeworkId) {
+    public void delete(Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
 
@@ -75,7 +75,6 @@ public class HomeworkService {
         homeworkRepository.delete(homework);
 
         // Response
-        return null;
     }
 
     public HomeworkRes get(Member member, Long homeworkId) {
