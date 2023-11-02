@@ -56,6 +56,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "isPrivacy")
     private Boolean isPrivacy;
 
+    @Column(name = "token", columnDefinition = "varchar(255)")
+    private String token;
+
 
     public void encryptPassword(String password) {
         this.password = SHA256.encrypt(password);

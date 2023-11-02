@@ -2,7 +2,9 @@ package com.selfrunner.gwalit.domain.member.service;
 
 import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PutPasswordReq;
+import com.selfrunner.gwalit.domain.member.dto.request.TokenReq;
 import com.selfrunner.gwalit.domain.member.dto.response.MemberRes;
+import com.selfrunner.gwalit.domain.member.dto.response.TokenRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
@@ -11,6 +13,8 @@ import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
 
 @Service
 @Transactional(readOnly = true)
@@ -46,7 +50,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Void updatePassword(Member member, PutPasswordReq putPasswordReq) {
+    public void updatePassword(Member member, PutPasswordReq putPasswordReq) {
         // Validation
         Member change = memberRepository.findById(putPasswordReq.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(change.getDeletedAt() != null) {
@@ -55,7 +59,7 @@ public class MemberService {
         if(!member.getMemberId().equals(putPasswordReq.getMemberId())) {
             throw new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
-        if(!SHA256.encrypt(putPasswordReq.getOldPassword()).equals(change.getPassword())) {
+        if(!Objects.equals(SHA256.encrypt(putPasswordReq.getOldPassword()), change.getPassword())) {
             throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
         }
         if(!putPasswordReq.getNewPassword().equals(putPasswordReq.getNewPasswordCheck())) {
@@ -66,6 +70,15 @@ public class MemberService {
         change.encryptPassword(putPasswordReq.getNewPassword());
 
         // Response
+    }
+
+    @Transactional
+    public TokenRes saveToken(Long version, Member member, TokenReq tokenReq) {
+        // Validation
+
+        // Business Logic
+
+        // Repsonse
         return null;
     }
 }
