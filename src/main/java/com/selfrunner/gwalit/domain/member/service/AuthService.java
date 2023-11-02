@@ -11,7 +11,6 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
@@ -51,29 +50,27 @@ public class AuthService {
     private final HomeworkRepository homeworkRepository;
     private final TaskRepository taskRepository;
 
-    public Void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic
         String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
-        redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, Long.valueOf(300));
+        redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
 
         // Response
-        return null;
     }
-    public Void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
+    public void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
-        boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode()) ? true : false;
+        boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode());
 
         if(!result) {
             throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 
         // Response
-        return null;
     }
 
     @Transactional
-    public Void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
         if(!redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())) {
             throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
@@ -99,11 +96,10 @@ public class AuthService {
         member.setNeedNotification();
 
         // Response
-        return null;
     }
 
     @Transactional
-    public Void register(PostMemberReq postMemberReq) {
+    public void register(PostMemberReq postMemberReq) {
         // Validation: 전화번호와 타입 및 논리적 삭제 여부로 회원가입 이미 진행했는지 여부 확인
         if(memberRepository.findActiveByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null) != null) {
             throw new MemberException(ErrorCode.ALREADY_EXIST_MEMBER);
@@ -125,7 +121,6 @@ public class AuthService {
         }
 
         // Response
-        return null;
     }
 
     @Transactional
@@ -145,25 +140,23 @@ public class AuthService {
         redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
 
         // Response
-        PostLoginRes postLoginRes = new PostLoginRes().toDto(tokenDto, member);
-
-        return postLoginRes;
+        return new PostLoginRes().toDto(tokenDto, member);
     }
 
-    public Void logout(String atk, Member member) {
+    public void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
         redisClient.deleteValue(key);
         redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
 
         // Response
-        return null;
     }
 
     @Transactional
     public GetRefreshRes reissue(HttpServletRequest httpServletRequest) {
         // Validation: RTK 조회
         String rtk = httpServletRequest.getHeader("Authorization");
+        tokenProvider.validateToken(rtk); // RTK 유효성 검증
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
         String value = redisClient.getValue(key);
         if(rtk.isBlank() || value == null || !value.equals(rtk)) {
@@ -175,16 +168,18 @@ public class AuthService {
         }
 
         // Business Logic
-        String atk = tokenProvider.regenerateToken(member);
+        TokenDto tokenDto = tokenProvider.regenerateToken(member, rtk);
+        String newRefreshToken = tokenDto.getRefreshToken();
+        if(!newRefreshToken.equals(rtk)) {
+            redisClient.setValue(key, newRefreshToken, tokenProvider.getExpiration(newRefreshToken));
+        }
 
         // Response
-        GetRefreshRes getRefreshRes = new GetRefreshRes().toDto(atk);
-
-        return getRefreshRes;
+        return new GetRefreshRes().toDto(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
     }
 
     @Transactional
-    public Void withdrawal(Member member) {
+    public void withdrawal(Member member) {
         // Validation: 기 탈퇴 여부 확인
         if(member.getDeletedAt() != null) {
             throw new MemberException(ErrorCode.ALREADY_DELETE_MEMBER);
@@ -203,6 +198,5 @@ public class AuthService {
         }
 
         // Response
-        return null;
     }
 }

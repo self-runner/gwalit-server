@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -30,4 +31,16 @@ public class GetLectureMetaRes {
     private final List<Schedule> schedules;
 
     private final List<MemberMeta> memberMetas;
+
+    public GetLectureMetaRes(Lecture lecture, List<MemberMeta> memberMetas) {
+        this.lectureId = lecture.getLectureId();
+        this.name = lecture.getName();
+        this.color = lecture.getColor();
+        this.subject = lecture.getSubject();
+        this.subjectDetail = lecture.getSubjectDetail();
+        this.startDate = lecture.getStartDate();
+        this.endDate = lecture.getEndDate();
+        this.schedules = lecture.getSchedules();
+        this.memberMetas = memberMetas;
+    }
 }

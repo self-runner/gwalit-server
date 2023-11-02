@@ -7,25 +7,22 @@ import com.selfrunner.gwalit.global.exception.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/log")
+@RequestMapping("")
 @Tag(name = "Log", description = "API 로깅")
 public class LogController {
 
     private final LogService logService;
 
     @Operation(description = "로그 등록")
-    @PostMapping("")
-    public ApplicationResponse<Void> register(@Valid @RequestBody LogReq logReq ) {
+    @PostMapping({"/log", "/api/v{version}/log"})
+    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody LogReq logReq ) {
         logService.register(logReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }

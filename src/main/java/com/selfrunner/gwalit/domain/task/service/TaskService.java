@@ -10,7 +10,6 @@ import com.selfrunner.gwalit.domain.task.dto.response.TaskRes;
 import com.selfrunner.gwalit.domain.task.entity.Task;
 import com.selfrunner.gwalit.domain.task.exception.TaskException;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
-import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,7 +26,7 @@ public class TaskService {
     private final MemberAndLectureRepository memberAndLectureRepository;
 
     @Transactional
-    public Void register(Member member, PostTaskReq postTaskReq) {
+    public TaskRes register(Member member, PostTaskReq postTaskReq) {
         // Validation: 사용자 접근 권한 확인
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postTaskReq.getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         if(postTaskReq.getSubtasks().size() > 20) {
@@ -39,11 +38,11 @@ public class TaskService {
         taskRepository.save(task);
 
         // Response
-        return null;
+        return new TaskRes(task.getTaskId(), task.getLecture().getLectureId(), task.getLecture().getColor(), task.getTitle(), task.getDeadline(), task.getIsPinned(), task.getSubtasks());
     }
 
     @Transactional
-    public Void update(Member member, Long taskId, PutTaskReq putTaskReq) {
+    public TaskRes update(Member member, Long taskId, PutTaskReq putTaskReq) {
         // Validation
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskException(ErrorCode.NOT_FOUND_EXCEPTION));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
@@ -55,11 +54,11 @@ public class TaskService {
         task.update(putTaskReq);
 
         // Response
-        return null;
+        return new TaskRes(task.getTaskId(), task.getLecture().getLectureId(), task.getLecture().getColor(), task.getTitle(), task.getDeadline(), task.getIsPinned(), task.getSubtasks());
     }
 
     @Transactional
-    public Void delete(Member member, Long taskId) {
+    public void delete(Member member, Long taskId) {
         // Validation
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new TaskException(ErrorCode.NOT_FOUND_EXCEPTION));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, task.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
@@ -68,7 +67,6 @@ public class TaskService {
         taskRepository.delete(task);
 
         // Response
-        return null;
     }
 
     public List<TaskRes> getTasksByUser(Member member) {
