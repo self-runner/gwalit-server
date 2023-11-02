@@ -55,7 +55,7 @@ public class MemberAndLecture extends BaseTimeEntity {
     }
 
     public void updateIsUpdate() {
-        this.isUpdate = Boolean.FALSE; // 한 번이라도 학생이 변경 시도하면 Boolean.TRUE 값 고정되어야 함.
+        this.isUpdate = Boolean.TRUE; // 한 번이라도 학생이 변경 시도하면 Boolean.TRUE 값 고정되어야 함.
     }
 
     @Builder
