@@ -18,6 +18,7 @@ public class FCMMessageDto {
         private String token;
         private Notification notification;
         private Data data;
+        private Android android;
     }
 
     @Getter
@@ -37,10 +38,13 @@ public class FCMMessageDto {
     }
 
     @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class android {
-        private String priority;
+    public static class Android {
+        private String priority = "high";
+    }
+
+    @Getter
+    public static class Apns {
+
     }
 }
 
