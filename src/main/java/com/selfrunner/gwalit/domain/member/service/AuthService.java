@@ -143,6 +143,7 @@ public class AuthService {
         return new PostLoginRes().toDto(tokenDto, member);
     }
 
+    @Transactional
     public void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
