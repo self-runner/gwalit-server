@@ -3,7 +3,6 @@ package com.selfrunner.gwalit.domain.member.repository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
-import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -87,10 +86,10 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
     }
 
     @Override
-    public Optional<Lecture> findLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
+    public Optional<MemberAndLecture> findMemberAndLectureByMemberIdAndLectureId(Long memberId, Long lectureId) {
         return Optional.ofNullable(
-            queryFactory.selectFrom(lecture)
-                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+            queryFactory.selectFrom(memberAndLecture)
+                    .leftJoin(lecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
                     .where(memberAndLecture.member.memberId.eq(memberId), lecture.lectureId.eq(lectureId))
                     .fetchOne()
         );
@@ -105,5 +104,15 @@ public class MemberAndLectureRepositoryImpl implements MemberAndLectureRepositor
                     .where(member.phone.eq(phone), member.type.eq(MemberType.STUDENT), member.state.ne(MemberState.FAKE), memberAndLecture.lecture.lectureId.eq(lectureId), member.deletedAt.isNull(), memberAndLecture.deletedAt.isNull())
                     .fetchOne()
         );
+    }
+
+    @Override
+    public void updateNameAndColorByLectureId(Long lectureId, String name, String color) {
+        queryFactory.update(memberAndLecture)
+                .set(memberAndLecture.name, name)
+                .set(memberAndLecture.color, color)
+                .set(memberAndLecture.modifiedAt, LocalDateTime.now())
+                .where(memberAndLecture.isUpdate.eq(Boolean.FALSE), memberAndLecture.lecture.lectureId.eq(lectureId))
+                .execute();
     }
 }

@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.banner.service;
 import com.selfrunner.gwalit.domain.banner.dto.request.BannerReq;
 import com.selfrunner.gwalit.domain.banner.dto.response.BannerRes;
 import com.selfrunner.gwalit.domain.banner.entity.Banner;
+import com.selfrunner.gwalit.domain.banner.entity.BannerType;
 import com.selfrunner.gwalit.domain.banner.repository.BannerRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -73,7 +74,19 @@ public class BannerService {
 
     public List<BannerRes> getAll() {
         // Business Logic
-        List<Banner> bannerList = bannerRepository.findAll();
+        List<Banner> bannerList = bannerRepository.findAllByTypeOrderByPriorityAsc(BannerType.MAIN);
+
+        // Response
+        List<BannerRes> bannerRes = bannerList.stream()
+                .map(BannerRes::new)
+                .collect(Collectors.toList());
+
+        return bannerRes;
+    }
+
+    public List<BannerRes> getContent() {
+        // Business Logic
+        List<Banner> bannerList = bannerRepository.findAllByTypeOrderByPriorityAsc(BannerType.CONTENT);
 
         // Response
         List<BannerRes> bannerRes = bannerList.stream()
@@ -84,7 +97,7 @@ public class BannerService {
     }
 
     @Transactional
-    public Void delete(Long bannerId) {
+    public void delete(Long bannerId) {
         // Validation
         Banner banner = bannerRepository.findById(bannerId).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(banner.getDeletedAt() != null) {
@@ -96,6 +109,5 @@ public class BannerService {
         s3Client.delete(banner.getImageUrl());
 
         // Response
-        return null;
     }
 }

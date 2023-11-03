@@ -51,12 +51,12 @@ public class LectureService {
     private final SmsClient smsClient;
 
     @Transactional
-    public Void register(Member member, PostLectureReq postLectureReq) {
+    public GetLectureMetaRes register(Member member, PostLectureReq postLectureReq) {
         // Valid
         if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
-        if(memberAndLectureRepository.findCountByMember(member) > 3) {
+        if(memberAndLectureRepository.findCountByMember(member) > 7) {
             throw new LectureException(ErrorCode.FAILED_MAKE_CLASS);
         }
         if(postLectureReq.getEndDate().isAfter(postLectureReq.getStartDate().plusYears(1).minusDays(1))) {
@@ -85,12 +85,17 @@ public class LectureService {
         lessonRepository.saveAll(lessonList);
 
         // Response
-        return null;
+        List<MemberMeta> memberMetas = new ArrayList<>();
+        memberMetas.add(new MemberMeta(memberAndLecture.getMember().getMemberId(), member.getName(), memberAndLecture.getIsTeacher()));
+        return new GetLectureMetaRes(lecture, memberMetas);
     }
 
     @Transactional
-    public Void delete(Member member, Long lectureId) {
+    public void delete(Member member, Long lectureId) {
         // Validation
+        if(member.getType() != MemberType.TEACHER) { // 방 삭제 권한 없음
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
@@ -102,28 +107,26 @@ public class LectureService {
         lectureRepository.delete(memberAndLecture.getLecture());
 
         // Response
-        return null;
     }
 
     public GetLectureMetaRes get(Member member, Long lectureId) {
         // Validation
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
 
         // Business Logic
-        /*
-        TODO: 쿼리 튜닝을 통한 성능향상 필요
-         */
         Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_EXIST_CLASS));
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-        GetLectureMetaRes getLectureMetaRes = new GetLectureMetaRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), lecture.getSubjectDetail(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
 
         // Response
-        return getLectureMetaRes;
+        return new GetLectureMetaRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), lecture.getSubjectDetail(), lecture.getStartDate(), lecture.getEndDate(), lecture.getSchedules(), memberMetas);
     }
 
     @Transactional
-    public Void update(Member member, Long lectureId, PutLectureReq putLectureReq) {
+    public GetLectureMetaRes update(Member member, Long lectureId, PutLectureReq putLectureReq) {
         // Validation
+        if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
+            throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
         if(ChronoUnit.DAYS.between(putLectureReq.getStartDate(), putLectureReq.getEndDate()) > 365) {
             throw new LectureException(ErrorCode.INVALID_VALUE_EXCEPTION);
@@ -134,7 +137,7 @@ public class LectureService {
 
         // Business Logic
         Lecture lecture = memberAndLecture.getLecture();
-        Boolean check = Boolean.TRUE;
+        boolean check = Boolean.TRUE;
         if(putLectureReq.getSchedules().size() == lecture.getSchedules().size()) {
             for(int i = 0; i < putLectureReq.getSchedules().size(); i++) {
                 if(!putLectureReq.getSchedules().get(i).equals(lecture.getSchedules().get(i))) {
@@ -177,37 +180,53 @@ public class LectureService {
         }
 
         lecture.update(putLectureReq);
+        memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, putLectureReq.getName(), putLectureReq.getColor());
 
         // Response
-        return null;
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
+        return new GetLectureMetaRes(lecture, memberMetas);
     }
 
     @Transactional
     public GetLectureMainRes updateColor(Member member, Long lectureId, PatchColorReq patchColorReq) {
         // Validation
-        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
-        lecture.updateColor(patchColorReq);
+        memberAndLecture.updateColor(patchColorReq);
+        if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
+            lecture.updateColor(patchColorReq);
+            memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, lecture.getName(), patchColorReq.getColor());
+        }
+        else {
+            memberAndLecture.updateIsUpdate();
+        }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
-        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
 
         // Response
-        return getLectureMainRes;
+        return new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
     }
 
     @Transactional
     public GetLectureMainRes updateName(Member member, Long lectureId, PatchNameReq patchNameReq) {
         // Validation
-        Lecture lecture = memberAndLectureRepository.findLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberIdAndLectureId(member.getMemberId(), lectureId).orElseThrow(() -> new MemberException(ErrorCode.NOT_EXIST_CLASS)); // Class 소속 여부 확인
+        Lecture lecture = memberAndLecture.getLecture();
 
         // Business Logic
-        lecture.updateName(patchNameReq);
+        memberAndLecture.updateName(patchNameReq);
+        if(memberAndLecture.getIsTeacher().equals(Boolean.TRUE)) {
+            lecture.updateName(patchNameReq);
+            memberAndLectureRepository.updateNameAndColorByLectureId(lectureId, patchNameReq.getName(), lecture.getColor());
+        }
+        else {
+            memberAndLecture.updateIsUpdate();
+        }
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId).orElse(null);
-        GetLectureMainRes getLectureMainRes = new GetLectureMainRes(lecture.getLectureId(), lecture.getName(), lecture.getColor(), lecture.getSubject(), memberMetas);
 
         // Response
-        return getLectureMainRes;
+        return new GetLectureMainRes(lecture.getLectureId(), memberAndLecture.getName(), memberAndLecture.getColor(), lecture.getSubject(), memberMetas);
     }
 
     public List<GetLectureMainRes> getAllMain(Member member) {
@@ -216,10 +235,8 @@ public class LectureService {
         // Business Logic: member가 해당하는 Class들 조회 -> Class 기본 정보들 다 불러오고, 학생들 정보 역으로 참조해야 함.
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
-        List<GetLectureMainRes> getLectureMainResList = lectureRepository.findAllLectureMainByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-
         // Response
-        return getLectureMainResList;
+        return lectureRepository.findAllLectureMainByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public List<GetLectureMetaRes> getAllMeta(Member member) {
@@ -227,10 +244,9 @@ public class LectureService {
 
         // Business Logic
         List<Long> lectureIdList = lectureRepository.findAllLectureIdByMember(member).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
-        List<GetLectureMetaRes> getLectureMetaRes = lectureRepository.findAllLectureMetaByLectureIdList(lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
 
         // Response
-        return getLectureMetaRes;
+        return lectureRepository.findAllLectureMetaByLectureIdList(member, lectureIdList).orElseThrow(() -> new LectureException(ErrorCode.NOT_FOUND_EXCEPTION));
     }
 
     public GetLectureRes getLectureAndLesson(Member member, Long lectureId) {
@@ -242,14 +258,13 @@ public class LectureService {
         List<LessonMetaRes> lessonMetaRess = new ArrayList<>();
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdBeforeNow(lectureId).orElse(null)); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdAfterNow(lectureId).orElse(null));
-        GetLectureRes getLectureRes = new GetLectureRes(memberAndLecture.getLecture(), memberMetas, lessonMetaRess);
 
         // Response
-        return getLectureRes;
+        return new GetLectureRes(memberAndLecture.getLecture(), memberAndLecture, memberMetas, lessonMetaRess);
     }
 
     @Transactional
-    public Void inviteStudent(Member member, Long lectureId, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    public void inviteStudent(Member member, Long lectureId, PostInviteReq postInviteReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         if(!member.getType().equals(MemberType.TEACHER)) {
@@ -259,8 +274,6 @@ public class LectureService {
         if(memberAndLectureRepository.findMemberAndLectureIdByMemberPhoneAndLectureId(postInviteReq.getPhone(), lectureId).orElse(null) != null) {
             throw new LectureException(ErrorCode.ALREADY_INVITE_STUDENT);
         }
-
-
 
         // Business Logic
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
@@ -289,11 +302,10 @@ public class LectureService {
         }
 
         // Response
-        return null;
     }
 
     @Transactional
-    public Void registerStudent(Member member, Long lectureId, PostStudentReq postStudentReq) {
+    public void registerStudent(Member member, Long lectureId, PostStudentReq postStudentReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
@@ -307,11 +319,10 @@ public class LectureService {
         memberAndLectureRepository.save(studentAndLecture);
 
         // Response
-        return null;
     }
 
     @Transactional
-    public Void emitStudent(Member member, Long lectureId, List<PostStudentIdReq> postStudentIdReqList) {
+    public void emitStudent(Member member, Long lectureId, List<PostStudentIdReq> postStudentIdReqList) {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
@@ -323,7 +334,6 @@ public class LectureService {
         memberRepository.deleteMemberByMemberIdList(memberIdList);
 
         // Response
-        return null;
     }
 
     public List<GetStudentRes> getStudent(Member member, Long lectureId) {

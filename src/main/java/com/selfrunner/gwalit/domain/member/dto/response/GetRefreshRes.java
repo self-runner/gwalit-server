@@ -6,11 +6,15 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class GetRefreshRes {
+
     private String accessToken;
 
-    public GetRefreshRes toDto(String accessToken) {
+    private String refreshToken;
+
+    public GetRefreshRes toDto(String accessToken, String refreshToken) {
         GetRefreshRes getRefreshRes = new GetRefreshRes();
         getRefreshRes.accessToken = accessToken;
+        getRefreshRes.refreshToken = refreshToken;
 
         return getRefreshRes;
     }

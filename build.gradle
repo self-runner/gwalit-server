@@ -78,7 +78,10 @@ dependencies {
 	// Sentry
 	implementation 'io.sentry:sentry-spring-boot-starter:6.28.0'
 
-	// FCM
+	// AOP
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // FCM
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
 }
 

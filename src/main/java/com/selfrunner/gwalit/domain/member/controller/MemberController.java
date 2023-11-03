@@ -19,24 +19,24 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/member")
+@RequestMapping("")
 @Tag(name = "Member", description = "사용자 정보 변경 관련")
 public class MemberController {
 
     private final MemberService memberService;
 
-    @GetMapping("/profile")
-    public ApplicationResponse<MemberRes> getProfile(@Auth Member member) {
+    @GetMapping({"/member/profile", "/api/v{version}/member/profile"})
+    public ApplicationResponse<MemberRes> getProfile(@PathVariable(name = "version", required = false) Long version, @Auth Member member) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.getProfile(member));
     }
 
-    @PutMapping("/profile")
-    public ApplicationResponse<MemberRes> updateProfile(@Auth Member member, @Valid @RequestBody PutMemberReq putMemberReq) {
+    @PutMapping({"/member/profile", "/api/v{version}/member/profile"})
+    public ApplicationResponse<MemberRes> updateProfile(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PutMemberReq putMemberReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.updateProfile(member, putMemberReq));
     }
 
-    @PutMapping("/password")
-    public ApplicationResponse<Void> updatePassword(@Auth Member member, @Valid @RequestBody PutPasswordReq putPasswordReq) {
+    @PutMapping({"/member/password", "/api/v{version}/member/password"})
+    public ApplicationResponse<Void> updatePassword(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestBody PutPasswordReq putPasswordReq) {
         memberService.updatePassword(member, putPasswordReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }

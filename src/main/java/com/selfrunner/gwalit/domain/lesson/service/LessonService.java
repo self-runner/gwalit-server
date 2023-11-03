@@ -14,7 +14,6 @@ import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
-import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.exception.LessonException;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
@@ -24,7 +23,6 @@ import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.common.Schedule;
-import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -68,87 +66,19 @@ public class LessonService {
         homeworkRepository.saveAll(homeworkList);
 
         // Response
-        LessonIdRes lessonIdRes = new LessonIdRes(lesson.getLessonId());
-        return lessonIdRes;
+        return new LessonIdRes(lesson.getLessonId());
     }
 
-//    @Transactional
-//    public Void registerAllDeletedLesson(Member member, Long lectureId, List<PostLessonReq> postLessonReqList) {
-//        // Validation
-//        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION));
-//
-//        // Business Logic: 삭제를 위한 수업들은 숙제 칸이 비어 있으므로 단 건 생성 API와 분리
-//        List<Lesson> lessonList = postLessonReqList.stream()
-//                .map(postLessonReq -> PostLessonReq.staticToEntity(postLessonReq, memberAndLecture.getLecture()))
-//                .collect(Collectors.toList());
-//        lessonRepository.saveAll(lessonList);
-//
-//        // Response
-//        return null;
-//    }
-
     @Transactional
-    public Void update(Member member, Long lessonId, PutLessonReq putLessonReq) {
+    public LessonRes update(Member member, Long lessonId, PutLessonReq putLessonReq) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic: Homework 변경 여부 확인 진행
-        // 참여자 비교
-        Boolean needUpdate = Boolean.FALSE;
-        if(lesson.getParticipants() == null) {
-            needUpdate = Boolean.TRUE;
-        }
-        if(lesson.getParticipants() != null) {
-            if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
-                needUpdate = Boolean.TRUE;
-            }
-            if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
-                for(Participant lessonParticipant : lesson.getParticipants()) {
-                    Boolean temp = Boolean.FALSE;
-                    for(Participant dtoParticipant : putLessonReq.getParticipants()) {
-                        if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
-                            temp = Boolean.TRUE;
-                        }
-                    }
-                    if(!temp) {
-                        needUpdate = Boolean.TRUE;
-                        break;
-                    }
-                }
-            }
-        }
-
-        // 숙제 비교
-        List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lessonId).orElse(null);
-        if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
-            needUpdate = Boolean.TRUE;
-        }
-        if(homeworkRowList == null && putLessonReq.getHomeworks() != null ) {
-            needUpdate = Boolean.TRUE;
-        }
-        if(homeworkRowList != null && putLessonReq.getHomeworks() != null) {
-            if(homeworkRowList.size() == putLessonReq.getHomeworks().size()) {
-                for(Homework homework : homeworkRowList) {
-                    for(HomeworkReq homeworkReq : putLessonReq.getHomeworks()) {
-                        if(!homework.isSameHomework(homeworkReq)) {
-                            needUpdate = Boolean.TRUE;
-                            break;
-                        }
-                    }
-                    if(needUpdate) {
-                        break;
-                    }
-                }
-            }
-            if(homeworkRowList.size() != putLessonReq.getHomeworks().size()) {
-                needUpdate = Boolean.TRUE;
-            }
-        }
-
         // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
         lesson.update(putLessonReq);
-        if(needUpdate && putLessonReq.getHomeworks() != null) {
+        if((changeParticipant(lesson, putLessonReq) || changeHomework(member, lesson, putLessonReq)) && putLessonReq.getHomeworks() != null) {
             homeworkRepository.deleteHomeworkByLessonId(lessonId);
             List<Homework> homeworkInsertList = new ArrayList<>();
             for (Participant participant : putLessonReq.getParticipants()) {
@@ -160,8 +90,11 @@ public class LessonService {
             homeworkRepository.saveAll(homeworkInsertList);
         }
 
+        List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
+        List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElse(null);
+
         // Response
-        return null;
+        return LessonRes.toDto(lesson, memberAndLecture.getColor(), homeworkRes, memberMetas, Boolean.TRUE);
     }
 
     @Transactional
@@ -178,13 +111,13 @@ public class LessonService {
 
             if(lesson.getParticipants() != null) {
                 List<Long> deleteIdList = lesson.getParticipants().stream()
-                        .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> participant.getMemberId() == patchParticipant.getMemberId()))
+                        .filter(participant -> patchLessonMetaRes.getParticipants().stream().noneMatch(patchParticipant -> Objects.equals(participant.getMemberId(), patchParticipant.getMemberId())))
                         .map(Participant::getMemberId)
                         .collect(Collectors.toList());
                 homeworkRepository.deleteAllByLessonIdAndMemberIdList(lessonId, deleteIdList);
 
                 for (Participant participant : patchLessonMetaRes.getParticipants()) {
-                    if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> lessonParticipant.getMemberId() == participant.getMemberId())) {
+                    if(lesson.getParticipants().stream().noneMatch(lessonParticipant -> Objects.equals(lessonParticipant.getMemberId(), participant.getMemberId()))) {
                         List<Homework> tempHomeworkList = homeworkResList.stream()
                                 .map(homeworkRes -> {
                                     // homeworkRes에서 필요한 내용을 가져와서 Homework.builder()를 사용하여 Homework 객체를 생성
@@ -241,7 +174,7 @@ public class LessonService {
     }
 
     @Transactional
-    public Void deleteAll(Member member, Long lectureId, List<PutLessonIdReq> putLessonIdReqList) {
+    public void deleteAll(Member member, Long lectureId, List<PutLessonIdReq> putLessonIdReqList) {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
@@ -253,11 +186,10 @@ public class LessonService {
         lessonRepository.deleteAll(lessonList);
 
         // Response
-        return null;
     }
 
     @Transactional
-    public Void delete(Member member, Long lessonId) {
+    public void delete(Member member, Long lessonId) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
@@ -267,7 +199,6 @@ public class LessonService {
         lessonRepository.delete(lesson);
 
         // Response
-        return null;
     }
 
     public LessonRes get(Member member, Long lessonId) {
@@ -279,10 +210,8 @@ public class LessonService {
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElseThrow(() -> new LessonException((ErrorCode.NOT_FOUND_EXCEPTION)));
 
-        LessonRes lessonRes = new LessonRes().toDto(lesson, lesson.getLecture().getColor(), homeworkRes, memberMetas, (lesson.getCreatedAt().equals(lesson.getModifiedAt())) ? Boolean.TRUE : Boolean.FALSE);
-
         // Response
-        return lessonRes;
+        return LessonRes.toDto(lesson, lesson.getLecture().getColor(), homeworkRes, memberMetas, (lesson.getCreatedAt().equals(lesson.getModifiedAt())) ? Boolean.TRUE : Boolean.FALSE);
     }
 
     public List<LessonMetaRes> getAllLessonMeta(Member member, Long lectureId) {
@@ -320,5 +249,77 @@ public class LessonService {
 
         // Response
         return lessonProgressRes;
+    }
+
+    /**
+     * 참여자 변동사항 확인
+     * @param lesson
+     * @param putLessonReq
+     * @return
+     */
+    private boolean changeParticipant(Lesson lesson, PutLessonReq putLessonReq) {
+        boolean needUpdate = Boolean.FALSE;
+        if(lesson.getParticipants() == null) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(lesson.getParticipants() != null) {
+            if(lesson.getParticipants().size() != putLessonReq.getParticipants().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+            if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
+                for(Participant lessonParticipant : lesson.getParticipants()) {
+                    boolean temp = Boolean.FALSE;
+                    for(Participant dtoParticipant : putLessonReq.getParticipants()) {
+                        if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
+                            temp = Boolean.TRUE;
+                        }
+                    }
+                    if(!temp) {
+                        needUpdate = Boolean.TRUE;
+                        break;
+                    }
+                }
+            }
+        }
+
+        return needUpdate;
+    }
+
+    /**
+     * 숙제 변동사항 확인
+     * @param member
+     * @param lesson
+     * @param putLessonReq
+     * @return
+     */
+    private boolean changeHomework(Member member, Lesson lesson, PutLessonReq putLessonReq) {
+        boolean needUpdate = Boolean.FALSE;
+        List<Homework> homeworkRowList = homeworkRepository.findAllByMemberIdAndLessonIdAndDeletedAtIsNull(member.getMemberId(), lesson.getLessonId()).orElse(null);
+        if(homeworkRowList != null && putLessonReq.getHomeworks() == null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList == null && putLessonReq.getHomeworks() != null ) {
+            needUpdate = Boolean.TRUE;
+        }
+        if(homeworkRowList != null && putLessonReq.getHomeworks() != null) {
+            if(homeworkRowList.size() == putLessonReq.getHomeworks().size()) {
+                for(Homework homework : homeworkRowList) {
+                    for(HomeworkReq homeworkReq : putLessonReq.getHomeworks()) {
+                        if(!homework.isSameHomework(homeworkReq)) {
+                            needUpdate = Boolean.TRUE;
+                            break;
+                        }
+                    }
+                    if(needUpdate) {
+                        break;
+                    }
+                }
+            }
+            if(homeworkRowList.size() != putLessonReq.getHomeworks().size()) {
+                needUpdate = Boolean.TRUE;
+            }
+        }
+
+        return needUpdate;
     }
 }

@@ -30,7 +30,7 @@ public class WorkbookReq {
     private Boolean isFile;
 
     // 문제집 파일을 직접 올릴 경우
-    public Workbook toFileEntity(Views views, String thumbnailUrl, String workbookFileUrl, String answerFileUrl) {
+    public Workbook toFileEntity(Views views, String thumbnailUrl, String thumbnailCardUrl, String workbookFileUrl, String answerFileUrl) {
         return Workbook.builder()
                 .views(views)
                 .title(this.title)
@@ -39,6 +39,7 @@ public class WorkbookReq {
                 .subjectDetail(this.subjectDetail)
                 .chapter(this.chapter)
                 .thumbnailUrl(thumbnailUrl)
+                .thumbnailCardUrl(thumbnailCardUrl)
                 .workbookFileUrl(workbookFileUrl)
                 .answerFileUrl(answerFileUrl)
                 .problemCount(this.problemCount)
@@ -51,7 +52,7 @@ public class WorkbookReq {
     }
 
     // 문제를 별도로 등록 후 참조 테이블 엮어서 만드는 경우
-    public Workbook toNonFileEntity(Views views, String thumbnailUrl) {
+    public Workbook toNonFileEntity(Views views, String thumbnailUrl, String thumbnailCardUrl) {
         return Workbook.builder()
                 .views(views)
                 .title(this.title)
@@ -60,6 +61,7 @@ public class WorkbookReq {
                 .subjectDetail(this.subjectDetail)
                 .chapter(this.chapter)
                 .thumbnailUrl(thumbnailUrl)
+                .thumbnailCardUrl(thumbnailCardUrl)
                 .problemCount(this.problemCount)
                 .time(this.time)
                 .explanation(this.explanation)

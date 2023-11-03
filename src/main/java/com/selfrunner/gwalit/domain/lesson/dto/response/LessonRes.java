@@ -10,7 +10,6 @@ import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import javax.servlet.http.Part;
 import java.util.List;
 
 @Getter
@@ -41,7 +40,7 @@ public class LessonRes {
 
     private Boolean isFirst;
 
-    public LessonRes toDto(Lesson lesson, String color, List<HomeworkRes> homeworks, List<MemberMeta> memberMetas, Boolean isFirst) {
+    public static LessonRes toDto(Lesson lesson, String color, List<HomeworkRes> homeworks, List<MemberMeta> memberMetas, Boolean isFirst) {
         LessonRes lessonRes = new LessonRes();
         lessonRes.lessonId = lesson.getLessonId();
         lessonRes.lectureId = lesson.getLecture().getLectureId();

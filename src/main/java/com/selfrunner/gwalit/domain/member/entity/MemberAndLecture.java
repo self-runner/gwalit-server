@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchColorReq;
+import com.selfrunner.gwalit.domain.lecture.dto.request.PatchNameReq;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
@@ -35,10 +37,34 @@ public class MemberAndLecture extends BaseTimeEntity {
     @Column(name = "isTeacher")
     private Boolean isTeacher;
 
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "color")
+    private String color;
+
+    @Column(name = "is_update") // 학생이 업데이트한 적이 있는지 확인하는 문구
+    private Boolean isUpdate;
+
+    public void updateName(PatchNameReq patchNameReq) {
+        this.name = patchNameReq.getName();
+    }
+
+    public void updateColor(PatchColorReq patchColorReq) {
+        this.color = patchColorReq.getColor();
+    }
+
+    public void updateIsUpdate() {
+        this.isUpdate = Boolean.TRUE; // 한 번이라도 학생이 변경 시도하면 Boolean.TRUE 값 고정되어야 함.
+    }
+
     @Builder
     public MemberAndLecture(Member member, Lecture lecture) {
         this.member = member;
         this.lecture = lecture;
         this.isTeacher = (member.getType().equals(MemberType.TEACHER)) ? Boolean.TRUE : Boolean.FALSE;
+        this.name = lecture.getName();
+        this.color = lecture.getColor();
+        this.isUpdate = Boolean.FALSE;
     }
 }

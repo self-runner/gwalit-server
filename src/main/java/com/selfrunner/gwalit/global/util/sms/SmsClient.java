@@ -101,7 +101,7 @@ public class SmsClient {
         temporaryPassword += list[idx];
 
         for(Integer i = 3; i < 10; i++) {
-            idx = (int)(Math.random() * (list.length + 1)) + 0;
+            idx = (int) (Math.random() * (list.length));
             temporaryPassword += list[idx];
         }
         // 문자열을 문자 리스트로 변환
