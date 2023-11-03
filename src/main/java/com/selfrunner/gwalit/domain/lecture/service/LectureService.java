@@ -22,6 +22,8 @@ import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
+import com.selfrunner.gwalit.global.util.fcm.dto.FCMMessageDto;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class LectureService {
     private final LessonRepository lessonRepository;
     private final HomeworkRepository homeworkRepository;
     private final SmsClient smsClient;
+    private final FCMClient fcmClient;
 
     @Transactional
     public GetLectureMetaRes register(Member member, PostLectureReq postLectureReq) {
@@ -276,13 +279,16 @@ public class LectureService {
         }
 
         // Business Logic
+        String lectureName = memberAndLecture.getLecture().getName();
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
             if(check.getState().equals(MemberState.INVITE)) {
-                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(), postInviteReq, Boolean.TRUE);
+                smsClient.sendInvitation(member.getName(), lectureName, postInviteReq, Boolean.TRUE);
             }
             if(check.getState().equals(MemberState.ACTIVE)) {
-                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(),postInviteReq, Boolean.FALSE);
+                smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
+                FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(check.getToken(), member.getName(), lectureName, lectureId);
+                fcmClient.send(fcmMessageDto);
             }
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
                     .member(check)
