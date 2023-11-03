@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.notification.entity;
 
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -27,4 +28,14 @@ public class Notification extends BaseTimeEntity {
 
     @Column(name = "title", columnDefinition = "varchar(255)")
     private String title;
+
+    @Column(name = "body", columnDefinition = "text")
+    private String body;
+
+    @Builder
+    public Notification(Long memberId, String title, String body) {
+        this.memberId = memberId;
+        this.title = title;
+        this.body = body;
+    }
 }

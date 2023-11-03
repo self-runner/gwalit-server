@@ -88,6 +88,14 @@ public class Member extends BaseTimeEntity {
         this.isPrivacy = postMemberReq.getIsPrivacy();
     }
 
+    /**
+     * FCM용 Token을 관리하는 메소드
+     * @param token - 토큰 정보를 입력시 해당 토큰 값으로 DB 업데이트 진행
+     */
+    public void updateToken(String token) {
+        this.token = token;
+    }
+
     @Builder
     public Member(String name, String type, MemberState state, String phone, String password, String school, String grade, Boolean isAdvertisement, Boolean isPrivacy) {
         this.name = name;
