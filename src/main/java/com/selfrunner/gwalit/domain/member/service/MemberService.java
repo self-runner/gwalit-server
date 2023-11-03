@@ -77,8 +77,10 @@ public class MemberService {
         // Validation
 
         // Business Logic
+        member.updateToken(tokenReq.getToken());
+        Member saveMember = memberRepository.save(member);
 
         // Repsonse
-        return null;
+        return new TokenRes(saveMember.getMemberId(), saveMember.getToken());
     }
 }
