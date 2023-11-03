@@ -4,22 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
+@Builder
 @AllArgsConstructor
 public class FCMMessageDto {
-    private boolean    validateOnly;
-    private Message    message;
-
-
-    @Getter
-    @Builder
-    @AllArgsConstructor
-    public static class Message {
-        private String token;
-        private Notification notification;
-        private Data data;
-        private Android android;
-    }
+    private String token;
+    private Notification notification;
+    private Data data;
 
     @Getter
     @Builder
@@ -34,17 +28,59 @@ public class FCMMessageDto {
     @AllArgsConstructor
     public static class Data {
         private String name;
-        private String description;
+        private Map<String, String> params;
     }
 
-    @Getter
-    public static class Android {
-        private String priority = "high";
+    /**
+     * 클래스 초대 시 알람 객체 만드는 메소드
+     * @param token - FCM 토큰 정보
+     * @param teacherName - 선생님 이름
+     * @param lectureName - 클래스 이름
+     * @param lectureId- 클래스 ID
+     * @return - 만들어진 FCMMessageDto 반환
+     */
+    public static FCMMessageDto toDto(String token, String teacherName, String lectureName, Long lectureId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lectureId", lectureId.toString());
+
+        return FCMMessageDto.builder()
+                .token(token)
+                .notification(FCMMessageDto.Notification.builder()
+                        .title(lectureName + "클래스 초대")
+                        .body("[과릿] " + teacherName + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "접속하여 초대된 클래스를 확인해보세요!")
+                        .build())
+                .data(Data.builder()
+                        .name("studentLectureMain")
+                        .params(params)
+                        .build())
+                .build();
     }
 
-    @Getter
-    public static class Apns {
+    /**
+     * 수업 리포트 등록/수정 시 알람 객체 만드는 메소드
+     * @param token - FCM 토큰 정보
+     * @param teacherName - 선생님  이름
+     * @param lectureName - 클래스 이름
+     * @param lectureId - 클래스 ID
+     * @param lessonId - 수업 리포트 ID
+     * @return - 만들어진 FCMMessageDto 반환
+     */
+    public static FCMMessageDto toDto(String token, String teacherName, String lectureName, Long lectureId, String lessonId) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lectureId", lectureId.toString());
+        params.put("lessonId", lessonId.toLowerCase());
 
+        return FCMMessageDto.builder()
+                .token(token)
+                .notification(FCMMessageDto.Notification.builder()
+                        .title(lectureName + "클래스 초대")
+                        .body("[과릿] " + teacherName + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "접속하여 초대된 클래스를 확인해보세요!")
+                        .build())
+                .data(Data.builder()
+                        .name("studentLectureMain")
+                        .params(params)
+                        .build())
+                .build();
     }
 }
 
