@@ -32,10 +32,22 @@ public class Notification extends BaseTimeEntity {
     @Column(name = "body", columnDefinition = "text")
     private String body;
 
+    @Column(name = "name", columnDefinition = "varchar(255)") // 딥링크용 네임
+    private String name;
+
+    @Column(name = "lecture_id", columnDefinition = "bigint") // 딥링크용 클래스 ID
+    private Long lectureId;
+
+    @Column(name = "lesson_id", columnDefinition = "bigint") // 딥링크용 수업 리포트 ID
+    private Long lessonId;
+
     @Builder
-    public Notification(Long memberId, String title, String body) {
+    public Notification(Long memberId, String title, String body, String name, Long lectureId, Long lessonId) {
         this.memberId = memberId;
         this.title = title;
         this.body = body;
+        this.name = name;
+        this.lectureId = lectureId;
+        this.lessonId = lessonId;
     }
 }
