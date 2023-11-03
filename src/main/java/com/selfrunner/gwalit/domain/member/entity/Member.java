@@ -96,6 +96,10 @@ public class Member extends BaseTimeEntity {
         this.token = token;
     }
 
+    public void deleteToken() {
+        this.token = null;
+    }
+
     @Builder
     public Member(String name, String type, MemberState state, String phone, String password, String school, String grade, Boolean isAdvertisement, Boolean isPrivacy) {
         this.name = name;
