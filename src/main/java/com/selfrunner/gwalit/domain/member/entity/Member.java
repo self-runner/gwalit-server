@@ -96,6 +96,9 @@ public class Member extends BaseTimeEntity {
         this.token = token;
     }
 
+    /**
+     * 로그아웃 시, Token 정보 삭제하는 메소드
+     */
     public void deleteToken() {
         this.token = null;
     }
