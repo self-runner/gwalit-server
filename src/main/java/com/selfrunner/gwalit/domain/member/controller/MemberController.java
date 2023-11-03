@@ -41,8 +41,8 @@ public class MemberController {
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
-    @Operation(description = "토큰 저장 또는 기존에 있는 토큰 갱신 API")
-    @PostMapping("/v{version}/notification/token")
+    @Operation(description = "FCM 토큰 저장 또는 기존에 있는 토큰 갱신 API")
+    @PostMapping("/api/v{version}/member/token")
     public ApplicationResponse<TokenRes> saveToken(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody TokenReq tokenReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, memberService.saveToken(version, member, tokenReq));
     }

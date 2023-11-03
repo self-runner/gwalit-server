@@ -80,7 +80,7 @@ public class MemberService {
         member.updateToken(tokenReq.getToken());
         Member saveMember = memberRepository.save(member);
 
-        // Repsonse
+        // Response
         return new TokenRes(saveMember.getMemberId(), saveMember.getToken());
     }
 }
