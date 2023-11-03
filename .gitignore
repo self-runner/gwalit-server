@@ -40,3 +40,7 @@ out/
 application-secret.yml
 application-test.yml
 docker-compose.yml
+
+### FCM ###
+firebase-dev-admin.json
+firebase-release-admin.json
