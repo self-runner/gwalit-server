@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TokenRes {
 
-    private final Long tokenId;
-
     private final Long memberId;
 
     private final String token;
