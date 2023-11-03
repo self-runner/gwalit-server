@@ -103,7 +103,7 @@ public class LectureController {
     }
 
     @Operation(summary = "학생 내보내기")
-    @PostMapping({"/lecture/student/emit/{lecture_id}", "/api/v{version}/lecture/stdudent/emit/{lecture_id}"})
+    @PostMapping({"/lecture/student/emit/{lecture_id}", "/api/v{version}/lecture/student/emit/{lecture_id}"})
     public ApplicationResponse<Void> emitStudent(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("lecture_id") Long lectureId, @Valid @RequestBody List<PostStudentIdReq> postStudentIdReqList) {
         lectureService.emitStudent(member, lectureId, postStudentIdReqList);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
