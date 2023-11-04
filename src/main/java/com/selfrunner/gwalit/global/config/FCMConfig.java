@@ -31,11 +31,15 @@ public class FCMConfig {
     public void initialize() {
         try {
             // Service Account를 이용하여 Fireabse Admin SDK 초기화
+            System.out.println("Test1");
             ClassPathResource resource =  new ClassPathResource(configFile);
+            System.out.println("Test2");
             FileInputStream serviceAccount = new FileInputStream(resource.getFile());
+            System.out.println("Test3");
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(scope))
                     .build();
+            System.out.println("Test4");
 
             if(FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
