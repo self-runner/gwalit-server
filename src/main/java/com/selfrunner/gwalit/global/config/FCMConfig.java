@@ -17,6 +17,7 @@ import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Slf4j
 @Configuration
@@ -36,7 +37,7 @@ public class FCMConfig {
             InputStream serviceAccount = new ClassPathResource(configFile).getInputStream();
             System.out.println("Test3");
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(scope))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(List.of(scope)))
                     .build();
             System.out.println("Test4");
 
