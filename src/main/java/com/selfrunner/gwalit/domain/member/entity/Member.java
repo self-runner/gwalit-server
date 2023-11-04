@@ -56,6 +56,9 @@ public class Member extends BaseTimeEntity {
     @Column(name = "isPrivacy")
     private Boolean isPrivacy;
 
+    @Column(name = "token", columnDefinition = "varchar(255)")
+    private String token;
+
 
     public void encryptPassword(String password) {
         this.password = SHA256.encrypt(password);
@@ -83,6 +86,21 @@ public class Member extends BaseTimeEntity {
         this.needNotification = Boolean.FALSE;
         this.isAdvertisement = postMemberReq.getIsAdvertisement();
         this.isPrivacy = postMemberReq.getIsPrivacy();
+    }
+
+    /**
+     * FCM용 Token을 관리하는 메소드
+     * @param token - 토큰 정보를 입력시 해당 토큰 값으로 DB 업데이트 진행
+     */
+    public void updateToken(String token) {
+        this.token = token;
+    }
+
+    /**
+     * 로그아웃 시, Token 정보 삭제하는 메소드
+     */
+    public void deleteToken() {
+        this.token = null;
     }
 
     @Builder
