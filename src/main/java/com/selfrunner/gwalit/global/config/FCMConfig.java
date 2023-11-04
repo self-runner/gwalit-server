@@ -35,9 +35,23 @@ public class FCMConfig {
             // Service Account를 이용하여 Fireabse Admin SDK 초기화
             System.out.println("Test2");
             InputStream serviceAccount = new ClassPathResource(configFile).getInputStream();
-            System.out.println("Test3");
+            InputStream serviceAccountStream = new ClassPathResource(configFile).getInputStream();
+
+            // InputStream에서 데이터를 읽어오기 위한 바이트 배열
+            byte[] data = new byte[1024]; // 적절한 크기로 설정
+
+            int bytesRead;
+            StringBuilder content = new StringBuilder();
+            while ((bytesRead = serviceAccountStream.read(data)) != -1) {
+                content.append(new String(data, 0, bytesRead));
+            }
+
+            String serviceAccountData = content.toString();
+            serviceAccountStream.close();
+
+            System.out.println(serviceAccountData);
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(List.of(scope)))
                     .build();
             System.out.println("Test4");
 
