@@ -20,6 +20,7 @@ import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.common.Schedule;
@@ -84,6 +85,9 @@ public class LessonService {
     @Transactional
     public LessonRes update(Member member, Long lessonId, PutLessonReq putLessonReq) {
         // Validation
+        if(!member.getType().equals(MemberType.TEACHER)) {
+            throw new LessonException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 

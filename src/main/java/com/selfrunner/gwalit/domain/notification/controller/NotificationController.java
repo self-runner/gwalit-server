@@ -31,7 +31,7 @@ public class NotificationController {
     public ApplicationResponse<NotificationRes> sendTo(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationDeepLinkReq notificationDeepLinkReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.sendTo(version, member, notificationDeepLinkReq));
     }
-
+  
     @Operation(description = "전체 발송 (알림/광고 등)")
     @PostMapping("/v{version}/notification/all")
     public ApplicationResponse<NotificationRes> sendAll(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationReq notificationReq) {
@@ -43,6 +43,4 @@ public class NotificationController {
     public ApplicationResponse<Slice<NotificationRes>> getNotificationList(@PathVariable("version") Long version, @Auth Member member, @RequestParam("cursor") Long cursor, @PageableDefault(size = 30, sort = "") Pageable pageable) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.getNotificationList(version, member, cursor, pageable));
     }
-
-
 }
