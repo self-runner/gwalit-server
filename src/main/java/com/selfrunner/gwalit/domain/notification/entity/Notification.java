@@ -9,6 +9,8 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -41,13 +43,21 @@ public class Notification extends BaseTimeEntity {
     @Column(name = "lesson_id", columnDefinition = "bigint") // 딥링크용 수업 리포트 ID
     private Long lessonId;
 
+    @Column(name = "date", columnDefinition = "date")
+    private LocalDate date;
+
+    @Column(name = "url", columnDefinition = "text")
+    private String url;
+
     @Builder
-    public Notification(Long memberId, String title, String body, String name, Long lectureId, Long lessonId) {
+    public Notification(Long memberId, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url) {
         this.memberId = memberId;
         this.title = title;
         this.body = body;
         this.name = name;
         this.lectureId = lectureId;
         this.lessonId = lessonId;
+        this.date = date;
+        this.url = url;
     }
 }

@@ -4,20 +4,24 @@ import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.notification.entity.Notification;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Getter
-public class NotificationReq {
+public class NotificationDeepLinkReq {
+
+    private Long memberId;
 
     private String title;
 
     private String body;
 
-    public Notification toEntity(Member member) {
-        return Notification.builder()
-                .memberId(member.getMemberId())
-                .title(this.title)
-                .body(this.body)
-                .build();
+    private String name;
 
-    }
+    private Long lectureId;
 
+    private Long lessonId;
+
+    private LocalDate date;
+
+    private String url;
 }

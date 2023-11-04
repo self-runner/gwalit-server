@@ -286,7 +286,7 @@ public class LectureService {
                 smsClient.sendInvitation(member.getName(), lectureName, postInviteReq, Boolean.TRUE);
             }
             if(check.getState().equals(MemberState.ACTIVE)) {
-                smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
+                // smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
                 FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(check.getToken(), member.getName(), lectureName, lectureId);
                 fcmClient.send(fcmMessageDto);
             }
