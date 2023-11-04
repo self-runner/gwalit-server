@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.notification.controller;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.notification.dto.request.NotificationDeepLinkReq;
 import com.selfrunner.gwalit.domain.notification.dto.request.NotificationReq;
 import com.selfrunner.gwalit.domain.notification.dto.response.NotificationRes;
 import com.selfrunner.gwalit.domain.notification.service.NotificationService;
@@ -25,6 +26,12 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    @Operation(description = "단일 발송")
+    @PostMapping("/v{version}/notification")
+    public ApplicationResponse<NotificationRes> sendTo(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationDeepLinkReq notificationDeepLinkReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.sendTo(version, member, notificationDeepLinkReq));
+    }
+
     @Operation(description = "전체 발송 (알림/광고 등)")
     @PostMapping("/v{version}/notification/all")
     public ApplicationResponse<NotificationRes> sendAll(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationReq notificationReq) {
@@ -36,4 +43,6 @@ public class NotificationController {
     public ApplicationResponse<Slice<NotificationRes>> getNotificationList(@PathVariable("version") Long version, @Auth Member member, @RequestParam("cursor") Long cursor, @PageableDefault(size = 30, sort = "") Pageable pageable) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.getNotificationList(version, member, cursor, pageable));
     }
+
+
 }

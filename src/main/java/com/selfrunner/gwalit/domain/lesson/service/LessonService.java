@@ -24,6 +24,8 @@ import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
+import com.selfrunner.gwalit.global.util.fcm.dto.FCMMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +45,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final HomeworkRepository homeworkRepository;
+    private final FCMClient fcmClient;
 
     @Transactional
     public LessonIdRes register(Member member, PostLessonReq postLessonReq) {
@@ -58,12 +61,21 @@ public class LessonService {
         lessonRepository.save(lesson);
         List<Homework> homeworkList = new ArrayList<>();
         for (Participant participant : postLessonReq.getParticipants()) {
+            // 숙제 리스트 생성
             List<Homework> tempHomeworkList = postLessonReq.getHomeworks().stream()
                     .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
                     .collect(Collectors.toList());
             homeworkList.addAll(tempHomeworkList);
         }
         homeworkRepository.saveAll(homeworkList);
+
+        // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
+//        List<FCMMessageDto> fcmMessageDtoList = new ArrayList<>();
+//        postLessonReq.getParticipants().stream()
+//                .noneMatch(participant -> participant.getMemberId().equals(member.getMemberId())
+//                .map()
+//                .collect(Collectors.toList());
+//        fcmClient.sendAll(fcmMessageDtoList);
 
         // Response
         return new LessonIdRes(lesson.getLessonId());
@@ -92,6 +104,9 @@ public class LessonService {
 
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElse(null);
+
+        // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
+        //fcmClient.sendAll();
 
         // Response
         return LessonRes.toDto(lesson, memberAndLecture.getColor(), homeworkRes, memberMetas, Boolean.TRUE);
@@ -168,6 +183,9 @@ public class LessonService {
 
         // 수업 정보는 무조건 업데이트 진행되므로 조건 필요 X
         lesson.updateMeta(patchLessonMetaRes);
+
+        // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
+        //fcmClient.sendAll();
 
         // Response
         return new LessonMetaRes(lesson.getLessonId(), lesson.getLecture().getLectureId(), lesson.getType(), lesson.getDate(), new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime()), lesson.getParticipants());
