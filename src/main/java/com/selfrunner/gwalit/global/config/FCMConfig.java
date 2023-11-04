@@ -37,7 +37,7 @@ public class FCMConfig {
             InputStream serviceAccount = new ClassPathResource(configFile).getInputStream();
             System.out.println("Test3");
             FirebaseOptions options = new FirebaseOptions.Builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(List.of(scope)))
+                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .build();
             System.out.println("Test4");
 
