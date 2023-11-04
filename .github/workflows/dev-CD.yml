@@ -45,9 +45,8 @@ jobs:
 
       - name: Make firebase json
         run: |
-          cd ./src/main/resources
-          touch firebase/firebase-dev-admin.json
-          echo "${{ secrets.FIREBASE_DEV_ADMIN}}" >> ./firebase/firebase-dev-admin.json
+          mkdir -p ./src/main/resources/firebase
+          echo "${{ secrets.FIREBASE_DEV_ADMIN}}" > ./src/main/resources/firebase/firebase-dev-admin.json
         shell: bash
 
 #      # makeFiles.config 반영
