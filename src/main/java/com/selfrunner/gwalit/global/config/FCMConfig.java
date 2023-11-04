@@ -33,7 +33,7 @@ public class FCMConfig {
         try {
             // Service Account를 이용하여 Fireabse Admin SDK 초기화
             System.out.println("Test2");
-            InputStream serviceAccount = new FileInputStream(configFile);
+            InputStream serviceAccount = new ClassPathResource(configFile).getInputStream();
             System.out.println("Test3");
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount).createScoped(scope))
