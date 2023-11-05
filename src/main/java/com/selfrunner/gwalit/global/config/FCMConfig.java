@@ -49,7 +49,6 @@ public class FCMConfig {
             FirebaseOptions options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(inputStream).createScoped(List.of(scope)))
                     .build();
-            System.out.println("Test4");
 
             if(FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
