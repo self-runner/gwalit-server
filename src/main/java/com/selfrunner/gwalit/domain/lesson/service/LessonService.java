@@ -26,7 +26,6 @@ import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
-import com.selfrunner.gwalit.global.util.fcm.dto.FCMMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

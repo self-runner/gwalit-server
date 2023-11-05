@@ -51,10 +51,10 @@ public class FCMMessageDto {
                         .build())
                 .data(Data.builder()
                         .name(name)
-                        .lectureId((lectureId != null) ? lectureId.toString() : null)
-                        .lessonId((lessonId != null) ? lessonId.toString() : null)
-                        .date((date != null) ? date.format(DateTimeFormatter.ofPattern("%y-%M-%d")) : null)
-                        .url(url)
+                        .lectureId((lectureId != null) ? lectureId.toString() : "")
+                        .lessonId((lessonId != null) ? lessonId.toString() : "")
+                        .date((date != null) ? date.format(DateTimeFormatter.ofPattern("%y-%M-%d")) : "")
+                        .url((url != null) ? url : "")
                         .build())
                 .build();
     }
@@ -68,10 +68,10 @@ public class FCMMessageDto {
                         .build())
                 .data(Data.builder()
                         .name(notification.getName())
-                        .lectureId((notification.getLectureId() != null) ? notification.getLectureId().toString() : null)
-                        .lessonId((notification.getLessonId() != null) ? notification.getLessonId().toString() : null)
-                        .date((notification.getDate() != null) ? notification.getDate().format(DateTimeFormatter.ofPattern("%y-%M-%d")) : null)
-                        .url(notification.getUrl())
+                        .lectureId((notification.getLectureId() != null) ? notification.getLectureId().toString() : "")
+                        .lessonId((notification.getLessonId() != null) ? notification.getLessonId().toString() : "")
+                        .date((notification.getDate() != null) ? notification.getDate().format(DateTimeFormatter.ofPattern("%y-%M-%d")) : "")
+                        .url((notification.getUrl() != null) ? notification.getUrl() : "")
                         .build())
                 .build();
     }
