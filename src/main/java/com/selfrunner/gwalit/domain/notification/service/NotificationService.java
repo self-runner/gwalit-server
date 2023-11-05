@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.notification.service;
 
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.notification.dto.request.NotificationDeepLinkReq;
@@ -10,7 +12,6 @@ import com.selfrunner.gwalit.domain.notification.repository.NotificationReposito
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
-import com.selfrunner.gwalit.global.util.fcm.dto.FCMMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -38,8 +39,9 @@ public class NotificationService {
         if(m.getDeletedAt() != null) {
             throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
-        FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
-        fcmClient.send(fcmMessageDto);
+        //FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
+        Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
+        fcmClient.send(message);
 
         // Response
         return null;
@@ -53,10 +55,11 @@ public class NotificationService {
         // Business Logic
         Notification notification = notificationReq.toEntity();
         Notification saveNotification = notificationRepository.save(notification);
-        FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(saveNotification);
-        List<String> tokenList = memberRepository.findTokenList();;
+        List<String> tokenList = memberRepository.findTokenList();
+        //FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(saveNotification);
+        MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
         if(!tokenList.isEmpty()) {
-            fcmClient.sendMulticast(tokenList, fcmMessageDto);
+            fcmClient.sendMulticast(tokenList, multicastMessage);
         }
         else {
             throw new ApplicationException(ErrorCode.USER_LIST_EMPTY);

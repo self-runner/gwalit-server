@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.lesson.service;
 
+import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
@@ -17,16 +18,16 @@ import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.exception.LessonException;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
-import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
-import com.selfrunner.gwalit.global.util.fcm.dto.FCMMessageDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -46,6 +47,9 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final HomeworkRepository homeworkRepository;
+    private final MemberRepository memberRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationRepository memberAndNotificationRepository;
     private final FCMClient fcmClient;
 
     @Transactional
@@ -61,6 +65,7 @@ public class LessonService {
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
         lessonRepository.save(lesson);
         List<Homework> homeworkList = new ArrayList<>();
+        List<Long> studentIdList = new ArrayList<>();
         for (Participant participant : postLessonReq.getParticipants()) {
             // 숙제 리스트 생성
             List<Homework> tempHomeworkList = postLessonReq.getHomeworks().stream()
@@ -71,12 +76,24 @@ public class LessonService {
         homeworkRepository.saveAll(homeworkList);
 
         // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
-//        List<FCMMessageDto> fcmMessageDtoList = new ArrayList<>();
-//        postLessonReq.getParticipants().stream()
-//                .noneMatch(participant -> participant.getMemberId().equals(member.getMemberId())
-//                .map()
+//        String title = "";
+//        String body = "";
+//        Notification notification = Notification.builder()
+//                .title(title)
+//                .body(body)
+//                .name("")
+//                .build();
+//        Notification saveNotification = notificationRepository.save(notification);
+//        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+//                .map(studentId -> MemberAndNotification.builder()
+//                        .memberId(studentId)
+//                        .notificationId(notification.getNotificationId())
+//                        .build())
 //                .collect(Collectors.toList());
-//        fcmClient.sendAll(fcmMessageDtoList);
+//        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+//        List<String> tokenList = memberRepository.findTokenList();
+//        MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+//        fcmClient.sendMulticast(tokenList, multicastMessage);
 
         // Response
         return new LessonIdRes(lesson.getLessonId());
