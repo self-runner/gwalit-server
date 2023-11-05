@@ -17,6 +17,8 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -41,15 +43,21 @@ public class NotificationService {
     }
 
     @Transactional
-    public NotificationRes sendAll(Long version, Member member, NotificationReq notificationReq) {
+    public NotificationRes sendMulticast(Long version, Member member, NotificationReq notificationReq) {
         // Validation
         // TODO: 관리자 권한 확인 필요
 
         // Business Logic
         Notification notification = notificationReq.toEntity();
         Notification saveNotification = notificationRepository.save(notification);
-        //fcmClient.sendAll();
-
+        FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(saveNotification);
+        List<String> tokenList = memberRepository.findTokenList();;
+        if(!tokenList.isEmpty()) {
+            fcmClient.sendMulticast(tokenList, fcmMessageDto);
+        }
+        else {
+            throw new ApplicationException(ErrorCode.USER_LIST_EMPTY);
+        }
 
         // Response
         return new NotificationRes(saveNotification);
