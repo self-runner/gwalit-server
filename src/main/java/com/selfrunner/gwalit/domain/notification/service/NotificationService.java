@@ -46,12 +46,13 @@ public class NotificationService {
         // TODO: 관리자 권한 확인 필요
 
         // Business Logic
-
+        Notification notification = notificationReq.toEntity();
+        Notification saveNotification = notificationRepository.save(notification);
         //fcmClient.sendAll();
 
 
         // Response
-        return null;
+        return new NotificationRes(saveNotification);
     }
 
     public Slice<NotificationRes> getNotificationList(Long version, Member member, Long cursor, Pageable pageable) {

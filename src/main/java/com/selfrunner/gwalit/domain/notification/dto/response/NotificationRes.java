@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.notification.dto.response;
 
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -24,4 +25,15 @@ public class NotificationRes {
     private final Long lessonId;
 
     private final LocalDateTime createdAt;
+
+    public NotificationRes(Notification notification) {
+        this.notificationId = notification.getNotificationId();
+        this.memberId = notification.getMemberId();
+        this.title = notification.getTitle();
+        this.body = notification.getBody();
+        this.name = notification.getName();
+        this.lectureId = notification.getLectureId();
+        this.lessonId = notification.getLessonId();
+        this.createdAt = notification.getCreatedAt();
+    }
 }

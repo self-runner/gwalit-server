@@ -11,9 +11,8 @@ public class NotificationReq {
 
     private String body;
 
-    public Notification toEntity(Member member) {
+    public Notification toEntity() {
         return Notification.builder()
-                .memberId(member.getMemberId())
                 .title(this.title)
                 .body(this.body)
                 .build();

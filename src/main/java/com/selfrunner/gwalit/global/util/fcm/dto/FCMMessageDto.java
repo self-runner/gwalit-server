@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.global.util.fcm.dto;
 
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -80,6 +81,25 @@ public class FCMMessageDto {
                         .build())
                 .data(Data.builder()
                         .name(name)
+                        .params(params)
+                        .build())
+                .build();
+    }
+
+    public static FCMMessageDto toDto(com.selfrunner.gwalit.domain.notification.entity.Notification notification) {
+        Map<String, String> params = new HashMap<>();
+        params.put("lectureId", notification.getLectureId().toString());
+        params.put("lessonId", notification.getLessonId().toString());
+        params.put("date", notification.getDate().toString());
+        params.put("url", notification.getUrl());
+
+        return FCMMessageDto.builder()
+                .notification(FCMMessageDto.Notification.builder()
+                        .title(notification.getTitle())
+                        .body(notification.getBody())
+                        .build())
+                .data(Data.builder()
+                        .name(notification.getName())
                         .params(params)
                         .build())
                 .build();
