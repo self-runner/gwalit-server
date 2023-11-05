@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.global.util.fcm.dto;
 
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
