@@ -66,9 +66,7 @@ public class FCMClient {
     public void sendMulticast(List<String> tokenList, FCMMessageDto fcmMessageDto) {
         BatchResponse response;
         try {
-            System.out.println("test");
             MulticastMessage multicastMessage = makeMulticastMessage(tokenList, fcmMessageDto);
-            System.out.println("test");
             response = FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
             if (response.getFailureCount() > 0) {
                 List<SendResponse> responses = response.getResponses();
@@ -110,7 +108,10 @@ public class FCMClient {
                         .setBody(fcmMessageDto.getNotification().getBody())
                         .build())
                 .putData("name", fcmMessageDto.getData().getName())
-                .putData("params", fcmMessageDto.getData().getParams().toString())
+                .putData("lectureId", fcmMessageDto.getData().getLectureId())
+                .putData("lessonId", fcmMessageDto.getData().getLessonId())
+                .putData("date", fcmMessageDto.getData().getDate())
+                .putData("url", fcmMessageDto.getData().getUrl())
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
                         .build()) // Priority High 설정
@@ -136,7 +137,10 @@ public class FCMClient {
                         .setBody(fcmMessageDto.getNotification().getBody())
                         .build())
                 .putData("name", fcmMessageDto.getData().getName())
-                .putData("params", fcmMessageDto.getData().getParams().toString())
+                .putData("lectureId", fcmMessageDto.getData().getLectureId())
+                .putData("lessonId", fcmMessageDto.getData().getLessonId())
+                .putData("date", fcmMessageDto.getData().getDate())
+                .putData("url", fcmMessageDto.getData().getUrl())
                 .addAllTokens(tokenList)
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)

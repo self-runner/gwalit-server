@@ -35,6 +35,9 @@ public class NotificationService {
 
         // Business Logic
         Member m = memberRepository.findById(notificationDeepLinkReq.getMemberId()).orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(m.getDeletedAt() != null) {
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+        }
         FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
         fcmClient.send(fcmMessageDto);
 

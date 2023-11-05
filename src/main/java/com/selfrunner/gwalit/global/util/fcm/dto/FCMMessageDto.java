@@ -6,8 +6,6 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 
 @Getter
 @Builder
@@ -30,7 +28,10 @@ public class FCMMessageDto {
     @AllArgsConstructor
     public static class Data {
         private String name;
-        private Map<String, String> params;
+        private String lectureId;
+        private String lessonId;
+        private String date;
+        private String url;
     }
 
     /**
@@ -41,12 +42,6 @@ public class FCMMessageDto {
      * @return - 만들어진 FCMMessageDto 반환
      */
     public static FCMMessageDto toDto(String token, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url) {
-        Map<String, String> params = new HashMap<>();
-        params.put("lectureId", lectureId.toString());
-        params.put("lessonId", lessonId.toString());
-        params.put("date", date.format(DateTimeFormatter.ofPattern("%y-%M-%d")));
-        params.put("url", url);
-
         return FCMMessageDto.builder()
                 .token(token)
                 .notification(FCMMessageDto.Notification.builder()
@@ -55,18 +50,16 @@ public class FCMMessageDto {
                         .build())
                 .data(Data.builder()
                         .name(name)
-                        .params(params)
+                        .lectureId((lectureId != null) ? lectureId.toString() : null)
+                        .lessonId((lessonId != null) ? lessonId.toString() : null)
+                        .date((date != null) ? date.format(DateTimeFormatter.ofPattern("%y-%M-%d")) : null)
+                        .url(url)
                         .build())
                 .build();
     }
 
     public static FCMMessageDto toDto(com.selfrunner.gwalit.domain.notification.entity.Notification notification) {
-        Map<String, String> params = new HashMap<>();
-        params.put("lectureId", (notification.getLectureId() != null) ? notification.getLectureId().toString() : null);
-        params.put("lessonId", (notification.getLessonId() != null) ? notification.getLessonId().toString() : null);
-        params.put("date", (notification.getDate() != null) ? notification.getDate().toString() : null);
-        params.put("url", notification.getUrl());
-
+        System.out.println("T");
         return FCMMessageDto.builder()
                 .notification(FCMMessageDto.Notification.builder()
                         .title(notification.getTitle())
@@ -74,7 +67,10 @@ public class FCMMessageDto {
                         .build())
                 .data(Data.builder()
                         .name(notification.getName())
-                        .params(params)
+                        .lectureId((notification.getLectureId() != null) ? notification.getLectureId().toString() : null)
+                        .lessonId((notification.getLessonId() != null) ? notification.getLessonId().toString() : null)
+                        .date((notification.getDate() != null) ? notification.getDate().format(DateTimeFormatter.ofPattern("%y-%M-%d")) : null)
+                        .url(notification.getUrl())
                         .build())
                 .build();
     }
