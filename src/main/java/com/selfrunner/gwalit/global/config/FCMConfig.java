@@ -27,8 +27,8 @@ import java.util.List;
 @Configuration
 public class FCMConfig {
 
-    @Value("${firebase.config}")
-    private String configFile;
+    //@Value("${firebase.config}")
+    //private String configFile;
 
     @Value("${firebase.scope}")
     private String scope;
