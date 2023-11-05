@@ -28,14 +28,15 @@ public class NotificationController {
 
     @Operation(description = "단일 발송")
     @PostMapping("/v{version}/notification")
-    public ApplicationResponse<NotificationRes> sendTo(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationDeepLinkReq notificationDeepLinkReq) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.sendTo(version, member, notificationDeepLinkReq));
+    public ApplicationResponse<Void> sendTo(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationDeepLinkReq notificationDeepLinkReq) {
+        notificationService.sendTo(version, member, notificationDeepLinkReq);
+        return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
   
     @Operation(description = "전체 발송 (알림/광고 등)")
     @PostMapping("/v{version}/notification/all")
-    public ApplicationResponse<NotificationRes> sendAll(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationReq notificationReq) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.sendAll(version, member, notificationReq));
+    public ApplicationResponse<NotificationRes> sendMulticast(@PathVariable("version") Long version, @Auth Member member, @Valid @RequestBody NotificationReq notificationReq) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.sendMulticast(version, member, notificationReq));
     }
 
     @Operation(description = "알림 리스트 조회하기")

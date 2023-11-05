@@ -17,6 +17,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FCMClient {
 
+    /**
+     * 1:1 단 건 발송
+     * @param fcmMessageDto
+     * @return
+     */
     public String send(FCMMessageDto fcmMessageDto) {
         try {
             Message message = makeMessage(fcmMessageDto);
@@ -58,9 +63,31 @@ public class FCMClient {
         }
     }
 
+    public void sendMulticast(List<String> tokenList, FCMMessageDto fcmMessageDto) {
+        BatchResponse response;
+        try {
+            MulticastMessage multicastMessage = makeMulticastMessage(tokenList, fcmMessageDto);
+            response = FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
+            if (response.getFailureCount() > 0) {
+                List<SendResponse> responses = response.getResponses();
+                List<String> failedTokens = new ArrayList<>();
+                for (int i = 0; i < responses.size(); i++) {
+                    if (!responses.get(i).isSuccessful()) {
+                        // The order of responses corresponds to the order of the registration tokens.
+                        failedTokens.add(tokenList.get(i));
+                    }
+                }
+                log.error("List of tokens are not valid FCM token : " + failedTokens);
+            }
+        } catch (FirebaseMessagingException e) {
+            log.error("cannot send to memberList push message. error info: {}", e.getMessage());
+
+        }
+    }
+
     private Message makeMessage(FCMMessageDto fcmMessageDto) {
         // 딥링크용 정보가 없을 경우
-        if(fcmMessageDto.getData() == null) {
+        if(fcmMessageDto.getData().getName() == null) {
             return Message.builder()
                     .setToken(fcmMessageDto.getToken())
                     .setNotification(Notification.builder()
@@ -81,10 +108,43 @@ public class FCMClient {
                         .setBody(fcmMessageDto.getNotification().getBody())
                         .build())
                 .putData("name", fcmMessageDto.getData().getName())
-                .putData("params", fcmMessageDto.getData().getParams().toString())
+                .putData("lectureId", fcmMessageDto.getData().getLectureId())
+                .putData("lessonId", fcmMessageDto.getData().getLessonId())
+                .putData("date", fcmMessageDto.getData().getDate())
+                .putData("url", fcmMessageDto.getData().getUrl())
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
                         .build()) // Priority High 설정
+                .build();
+    }
+
+    private MulticastMessage makeMulticastMessage(List<String> tokenList, FCMMessageDto fcmMessageDto) {
+        if(fcmMessageDto.getData().getName() == null) {
+            return MulticastMessage.builder()
+                    .setNotification(Notification.builder()
+                            .setTitle(fcmMessageDto.getNotification().getTitle())
+                            .setBody(fcmMessageDto.getNotification().getBody())
+                            .build())
+                    .addAllTokens(tokenList)
+                    .setAndroidConfig(AndroidConfig.builder()
+                            .setPriority(AndroidConfig.Priority.HIGH)
+                            .build())
+                    .build();
+        }
+        return MulticastMessage.builder()
+                .setNotification(Notification.builder()
+                        .setTitle(fcmMessageDto.getNotification().getTitle())
+                        .setBody(fcmMessageDto.getNotification().getBody())
+                        .build())
+                .putData("name", fcmMessageDto.getData().getName())
+                .putData("lectureId", fcmMessageDto.getData().getLectureId())
+                .putData("lessonId", fcmMessageDto.getData().getLessonId())
+                .putData("date", fcmMessageDto.getData().getDate())
+                .putData("url", fcmMessageDto.getData().getUrl())
+                .addAllTokens(tokenList)
+                .setAndroidConfig(AndroidConfig.builder()
+                        .setPriority(AndroidConfig.Priority.HIGH)
+                        .build())
                 .build();
     }
 }

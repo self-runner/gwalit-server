@@ -54,4 +54,12 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
                         .fetchFirst()
         );
     }
+
+    @Override
+    public List<String> findTokenList() {
+        return queryFactory.select(member.token)
+                .from(member)
+                .where(member.deletedAt.isNull(), member.token.isNotNull())
+                .fetch();
+    }
 }

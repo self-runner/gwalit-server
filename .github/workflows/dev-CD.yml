@@ -43,11 +43,11 @@ jobs:
           echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
         shell: bash
 
-      - name: Make firebase json
-        run: |
-          mkdir -p ./src/main/resources/firebase
-          echo "${{ secrets.FIREBASE_DEV_ADMIN}}" > ./src/main/resources/firebase/firebase-dev-admin.json
-        shell: bash
+#      - name: Make firebase json
+#        run: |
+#          mkdir -p ./src/main/resources/firebase
+#          echo "${{ secrets.FIREBASE_DEV_ADMIN}}" > ./src/main/resources/firebase/firebase-dev-admin.json
+#        shell: bash
 
 #      # makeFiles.config 반영
 #      - name: Make 00-makeFiles.config
