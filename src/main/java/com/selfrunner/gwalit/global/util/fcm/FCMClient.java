@@ -5,14 +5,12 @@ import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,8 +19,8 @@ public class FCMClient {
 
     /**
      * 1:1 단 건 발송
-     * @param
-     * @return
+     * @param message - Firebase Message 객체
+     * @return 응답 값 전달
      */
     public String send(Message message) {
         try {
@@ -68,8 +66,8 @@ public class FCMClient {
     public void sendMulticast(List<String> tokenList, MulticastMessage multicastMessage) {
         BatchResponse response;
         try {
-            //MulticastMessage multicastMessage = makeMulticastMessage(tokenList, fcmMessageDto);
             response = FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
+
             if (response.getFailureCount() > 0) {
                 List<SendResponse> responses = response.getResponses();
                 List<String> failedTokens = new ArrayList<>();
