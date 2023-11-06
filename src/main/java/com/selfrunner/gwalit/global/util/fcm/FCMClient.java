@@ -5,12 +5,14 @@ import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
@@ -22,15 +24,15 @@ public class FCMClient {
      * @param message - Firebase Message 객체
      * @return 응답 값 전달
      */
+    @Async
     public String send(Message message) {
         try {
             // Message message = makeMessage(fcmMessageDto);
 
-            String response = FirebaseMessaging.getInstance().send(message);
+            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
             // return response if firebase messaging is successfully completed.
             return response;
-
-        } catch (FirebaseMessagingException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
         }
@@ -63,10 +65,11 @@ public class FCMClient {
 //        }
 //    }
 
+    @Async
     public void sendMulticast(List<String> tokenList, MulticastMessage multicastMessage) {
         BatchResponse response;
         try {
-            response = FirebaseMessaging.getInstance().sendMulticast(multicastMessage);
+            response = FirebaseMessaging.getInstance().sendMulticastAsync(multicastMessage).get();
 
             if (response.getFailureCount() > 0) {
                 List<SendResponse> responses = response.getResponses();
@@ -79,9 +82,10 @@ public class FCMClient {
                 }
                 log.error("List of tokens are not valid FCM token : " + failedTokens);
             }
-        } catch (FirebaseMessagingException e) {
+        } catch (ExecutionException | InterruptedException e) {
             log.error("cannot send to memberList push message. error info: {}", e.getMessage());
-
+            e.printStackTrace();
+            throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
         }
     }
 
