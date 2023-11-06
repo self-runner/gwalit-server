@@ -23,6 +23,7 @@ import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.group.GroupBy.list;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
+import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
@@ -147,9 +148,10 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return queryFactory.selectFrom(lesson)
                 .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
-                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), lesson.date.eq(date))
+                .leftJoin(member).on(memberAndLecture.member.memberId.eq(member.memberId))
+                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), lesson.date.eq(date), member.token.isNotNull(), memberAndLecture.isTeacher.eq(Boolean.TRUE))
                 .transform(groupBy(memberAndLecture.member.memberId)
-                        .list(Projections.constructor(BatchNotificationDto.class, memberAndLecture.member.memberId,
+                        .list(Projections.constructor(BatchNotificationDto.class, memberAndLecture.member.memberId, member.token,
                                 list(Projections.constructor(BatchLessonDto.class, lecture.name, lesson.date, lesson.startTime, lesson.endTime)))));
     }
 }

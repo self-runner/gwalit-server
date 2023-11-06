@@ -1,7 +1,10 @@
 package com.selfrunner.gwalit.global.batch;
 
+import com.google.firebase.messaging.Message;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
+import com.selfrunner.gwalit.global.batch.dto.BatchLessonDto;
 import com.selfrunner.gwalit.global.batch.dto.BatchNotificationDto;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.StepContribution;
@@ -12,6 +15,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -21,6 +26,7 @@ import java.util.List;
 public class NotificationTasklet implements Tasklet {
 
     private final LessonRepository lessonRepository;
+    private final FCMClient fcmClient;
 
     @Override
     public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -28,9 +34,19 @@ public class NotificationTasklet implements Tasklet {
         log.info(contribution.toString());
         log.info(chunkContext.toString());
 
+        List<Message> messageList = new ArrayList<>();
         List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(LocalDate.now());
-        for(BatchNotificationDto b : batchNotificationDtoList) {
-            System.out.println(b.getMemberId() + ": " + b.getLessonList().size());
+        for(BatchNotificationDto notificationDto : batchNotificationDtoList) {
+            String title = "오늘의 수업 일정";
+            StringBuilder body = new StringBuilder("오늘은 수업이 총 " + notificationDto.getLessonList().size() + "개 있어요." + "\n");
+            for(BatchLessonDto lessonDto:  notificationDto.getLessonList()) {
+                String temp = lessonDto.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ~ " + lessonDto.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " " + lessonDto.getName() + "\n";
+                body.append(temp);
+            }
+            messageList.add(fcmClient.makeMessage(notificationDto.getToken(), title, body.toString(), "teacherScheduleManagement", null, null, LocalDate.now(), null));
+        }
+        if(!messageList.isEmpty()) {
+            fcmClient.sendAll(messageList);
         }
 
         return RepeatStatus.FINISHED;

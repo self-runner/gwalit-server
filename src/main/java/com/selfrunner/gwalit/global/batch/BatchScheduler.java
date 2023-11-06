@@ -23,8 +23,8 @@ public class BatchScheduler {
     private final JobLauncher jobLauncher;
     private final BatchConfig batchConfig;
 
+    //@Scheduled(fixedDelay = 60000) // Test용
     @Scheduled(cron = "0 0 9 * * ?")
-    //@Scheduled(fixedDelay = 60000)
     public void runJob() {
 
         // job parameter 설정
