@@ -37,8 +37,8 @@ public class NotificationTasklet implements Tasklet {
         List<Message> messageList = new ArrayList<>();
         List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(LocalDate.now());
         for(BatchNotificationDto notificationDto : batchNotificationDtoList) {
-            String title = "오늘의 수업 일정";
-            StringBuilder body = new StringBuilder("오늘은 수업이 총 " + notificationDto.getLessonList().size() + "개 있어요." + "\n");
+            String title = "오늘은 수업이 총 " + notificationDto.getLessonList().size() + "개 있어요." + "\n";
+            StringBuilder body = new StringBuilder();
             for(BatchLessonDto lessonDto:  notificationDto.getLessonList()) {
                 String temp = lessonDto.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ~ " + lessonDto.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " " + lessonDto.getName() + "\n";
                 body.append(temp);
