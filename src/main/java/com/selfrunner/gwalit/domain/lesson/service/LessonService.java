@@ -29,10 +29,12 @@ import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +44,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class LessonService {
 
     private final LessonRepository lessonRepository;
@@ -63,7 +66,7 @@ public class LessonService {
         // Business Logic
         // 정규 수업 정보 등록
         Lesson lesson = postLessonReq.toEntity(memberAndLecture.getLecture());
-        lessonRepository.save(lesson);
+        Lesson saveLesson = lessonRepository.save(lesson);
         List<Homework> homeworkList = new ArrayList<>();
         List<Long> studentIdList = new ArrayList<>();
         for (Participant participant : postLessonReq.getParticipants()) {
@@ -72,31 +75,37 @@ public class LessonService {
                     .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
                     .collect(Collectors.toList());
             homeworkList.addAll(tempHomeworkList);
+
+            if(!participant.getMemberId().equals(member.getMemberId())) {
+                studentIdList.add(participant.getMemberId());
+            }
         }
         homeworkRepository.saveAll(homeworkList);
 
         // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
-//        String title = "";
-//        String body = "";
-//        Notification notification = Notification.builder()
-//                .title(title)
-//                .body(body)
-//                .name("")
-//                .build();
-//        Notification saveNotification = notificationRepository.save(notification);
-//        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
-//                .map(studentId -> MemberAndNotification.builder()
-//                        .memberId(studentId)
-//                        .notificationId(notification.getNotificationId())
-//                        .build())
-//                .collect(Collectors.toList());
-//        memberAndNotificationRepository.saveAll(memberAndNotificationList);
-//        List<String> tokenList = memberRepository.findTokenList();
-//        MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
-//        fcmClient.sendMulticast(tokenList, multicastMessage);
+        String title = "새로운 수업 등록!";
+        String body = member.getName() + " 선생님이 수업을 등록했어요! 숙제를 확인해보세요!";
+        Notification notification = Notification.builder()
+                .title(title)
+                .body(body)
+                .name("studentLessonReport")
+                .lectureId(postLessonReq.getLectureId())
+                .lessonId(saveLesson.getLessonId())
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+                .map(studentId -> MemberAndNotification.builder()
+                        .memberId(studentId)
+                        .notificationId(saveNotification.getNotificationId())
+                        .build())
+                .collect(Collectors.toList());
+        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
+        MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+        fcmClient.sendMulticast(tokenList, multicastMessage);
 
         // Response
-        return new LessonIdRes(lesson.getLessonId());
+        return new LessonIdRes(saveLesson.getLessonId());
     }
 
     @Transactional
@@ -127,7 +136,31 @@ public class LessonService {
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElse(null);
 
         // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
-        //fcmClient.sendAll();
+        String title = "수업 업데이트!";
+        String body = member.getName() + " 선생님이 " + lesson.getDate().format(DateTimeFormatter.ofPattern("M월 d일")) +  " 수업을 업데이트했어요!" + "\n" + "접속해서 업데이트 내용을 확인해보세요!";
+        Notification notification = Notification.builder()
+                .title(title)
+                .body(body)
+                .name("studentLessonReport")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .lessonId(lessonId)
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+        List<Long> studentIdList = lesson.getParticipants().stream()
+                .filter(participant -> !participant.getMemberId().equals(member.getMemberId()))
+                .map(Participant::getMemberId).collect(Collectors.toList());
+        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+                .map(studentId -> MemberAndNotification.builder()
+                        .memberId(studentId)
+                        .notificationId(saveNotification.getNotificationId())
+                        .build())
+                .collect(Collectors.toList());
+        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
+        if(!tokenList.isEmpty()) {
+            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+            fcmClient.sendMulticast(tokenList, multicastMessage);
+        }
 
         // Response
         return LessonRes.toDto(lesson, memberAndLecture.getColor(), homeworkRes, memberMetas, Boolean.TRUE);
@@ -137,7 +170,7 @@ public class LessonService {
     public LessonMetaRes updateMeta(Member member, Long lessonId, PatchLessonMetaRes patchLessonMetaRes) {
         // Validation
         Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON));
-        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic: 수업 정보 / 숙제 정보 업데이트
         // 수업 여부에 따라서 homework에 Participant 업데이트 진행 필요
@@ -206,7 +239,35 @@ public class LessonService {
         lesson.updateMeta(patchLessonMetaRes);
 
         // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
-        //fcmClient.sendAll();
+        String title = "수업 업데이트!";
+        String body = member.getName() + " 선생님이 " + lesson.getDate().format(DateTimeFormatter.ofPattern("M월 d일")) +  " 수업을 업데이트했어요!" + "\n" + "접속해서 업데이트 내용을 확인해보세요!";
+        Notification notification = Notification.builder()
+                .title(title)
+                .body(body)
+                .name("studentLessonReport")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .lessonId(lessonId)
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+        List<Long> studentIdList = patchLessonMetaRes.getParticipants().stream()
+                .map(Participant::getMemberId)
+                .filter(memberId -> !memberId.equals(member.getMemberId()))
+                .collect(Collectors.toList());
+        for(Long id: studentIdList) {
+            System.out.println(id);
+        }
+        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+                .map(studentId -> MemberAndNotification.builder()
+                        .memberId(studentId)
+                        .notificationId(saveNotification.getNotificationId())
+                        .build())
+                .collect(Collectors.toList());
+        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
+        if(!tokenList.isEmpty()) {
+            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+            fcmClient.sendMulticast(tokenList, multicastMessage);
+        }
 
         // Response
         return new LessonMetaRes(lesson.getLessonId(), lesson.getLecture().getLectureId(), lesson.getType(), lesson.getDate(), new Schedule(lesson.getWeekday(), lesson.getStartTime(), lesson.getEndTime()), lesson.getParticipants());
