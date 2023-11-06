@@ -8,5 +8,5 @@ import java.time.LocalDateTime;
 
 public interface NotificationRepositoryCustom {
 
-    public Slice<NotificationRes> findNotificationPageableBy(Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable, Long memberId);
+    Slice<NotificationRes> findNotificationPageableBy(Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable, Long memberId);
 }

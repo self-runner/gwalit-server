@@ -73,11 +73,11 @@ public class NotificationService {
         // Validation
 
         // Business Logic
-        Notification notification = notificationRepository.findById(cursor).orElse(null);
+        Notification notification = (cursor != null) ? notificationRepository.findById(cursor).orElse(null) : null;
         Slice<NotificationRes> notificationResSlice = (notification != null) ? notificationRepository.findNotificationPageableBy(cursor, notification.getCreatedAt(), pageable, member.getMemberId()) : notificationRepository.findNotificationPageableBy(cursor, null, pageable, member.getMemberId());
 
         // Response
-        return null;
+        return notificationResSlice;
     }
 
 }

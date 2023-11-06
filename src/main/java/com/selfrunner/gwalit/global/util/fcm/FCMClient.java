@@ -92,8 +92,8 @@ public class FCMClient {
             return Message.builder()
                     .setToken(token)
                     .setNotification(Notification.builder()
-                            .setTitle(title)
-                            .setBody(body)
+                            .setTitle(removeEmojis(title))
+                            .setBody(removeEmojis(body))
                             .build())
                     .setAndroidConfig(AndroidConfig.builder()
                             .setPriority(AndroidConfig.Priority.HIGH)
@@ -109,8 +109,8 @@ public class FCMClient {
         return Message.builder()
                 .setToken(token)
                 .setNotification(Notification.builder()
-                        .setTitle(title)
-                        .setBody(body)
+                        .setTitle(removeEmojis(title))
+                        .setBody(removeEmojis(body))
                         .build())
                 .putData("name", name)
                 .putData("lectureId", (lectureId != null) ? lectureId.toString() : "")
@@ -131,8 +131,8 @@ public class FCMClient {
         if(notification.getName() == null) {
             return MulticastMessage.builder()
                     .setNotification(Notification.builder()
-                            .setTitle(notification.getTitle())
-                            .setBody(notification.getBody())
+                            .setTitle(removeEmojis(notification.getTitle()))
+                            .setBody(removeEmojis(notification.getBody()))
                             .build())
                     .addAllTokens(tokenList)
                     .setAndroidConfig(AndroidConfig.builder()
@@ -146,8 +146,8 @@ public class FCMClient {
         }
         return MulticastMessage.builder()
                 .setNotification(Notification.builder()
-                        .setTitle(notification.getTitle())
-                        .setBody(notification.getBody())
+                        .setTitle(removeEmojis(notification.getTitle()))
+                        .setBody(removeEmojis(notification.getBody()))
                         .build())
                 .putData("name", notification.getName())
                 .putData("lectureId", (notification.getLectureId() != null) ? notification.getLectureId().toString() : "")
@@ -163,5 +163,10 @@ public class FCMClient {
                                 .build())
                         .build())
                 .build();
+    }
+
+    private String removeEmojis(String content) {
+        String regexOfEmojis = "[\uD83C-\uDBFF\uDC00-\uDFFF]+";
+        return content.replaceAll(regexOfEmojis, "");
     }
 }
