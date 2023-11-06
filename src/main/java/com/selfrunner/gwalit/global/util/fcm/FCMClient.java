@@ -96,6 +96,10 @@ public class FCMClient {
                             .build())
                     .setAndroidConfig(AndroidConfig.builder()
                             .setPriority(AndroidConfig.Priority.HIGH)
+                            .setNotification(AndroidNotification.builder()
+                                    .setChannelId("gwarit_common_event")
+                                    .setIcon("ic_notification")
+                                    .build())
                             .build()) // Priority High 설정
                     .build();
         }
@@ -114,6 +118,10 @@ public class FCMClient {
                 .putData("url", (url != null) ? url : "")
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
+                        .setNotification(AndroidNotification.builder()
+                                .setChannelId("gwarit_common_event")
+                                .setIcon("ic_notification")
+                                .build())
                         .build()) // Priority High 설정
                 .build();
     }
@@ -128,6 +136,10 @@ public class FCMClient {
                     .addAllTokens(tokenList)
                     .setAndroidConfig(AndroidConfig.builder()
                             .setPriority(AndroidConfig.Priority.HIGH)
+                            .setNotification(AndroidNotification.builder()
+                                    .setChannelId("gwarit_common_event")
+                                    .setIcon("ic_notification")
+                                    .build())
                             .build())
                     .build();
         }
@@ -144,6 +156,10 @@ public class FCMClient {
                 .addAllTokens(tokenList)
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
+                        .setNotification(AndroidNotification.builder()
+                                .setChannelId("gwarit_common_event")
+                                .setIcon("ic_notification")
+                                .build())
                         .build())
                 .build();
     }
