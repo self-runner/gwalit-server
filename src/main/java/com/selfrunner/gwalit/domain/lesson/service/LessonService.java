@@ -86,6 +86,7 @@ public class LessonService {
         String title = "새로운 수업 등록!";
         String body = member.getName() + " 선생님이 수업을 등록했어요! 숙제를 확인해보세요!";
         Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
                 .title(title)
                 .body(body)
                 .name("studentLessonReport")
@@ -141,6 +142,7 @@ public class LessonService {
         String title = "수업 업데이트!";
         String body = member.getName() + " 선생님이 " + lesson.getDate().format(DateTimeFormatter.ofPattern("M월 d일")) +  " 수업을 업데이트했어요!" + "\n" + "접속해서 업데이트 내용을 확인해보세요!";
         Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
                 .title(title)
                 .body(body)
                 .name("studentLessonReport")
@@ -244,6 +246,7 @@ public class LessonService {
         String title = "수업 업데이트!";
         String body = member.getName() + " 선생님이 " + lesson.getDate().format(DateTimeFormatter.ofPattern("M월 d일")) +  " 수업을 업데이트했어요!" + "\n" + "접속해서 업데이트 내용을 확인해보세요!";
         Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
                 .title(title)
                 .body(body)
                 .name("studentLessonReport")

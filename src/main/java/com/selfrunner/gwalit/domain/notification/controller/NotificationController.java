@@ -41,7 +41,7 @@ public class NotificationController {
 
     @Operation(description = "알림 리스트 조회하기")
     @GetMapping("/v{version}/notification/list")
-    public ApplicationResponse<Slice<NotificationRes>> getNotificationList(@PathVariable("version") Long version, @Auth Member member, @RequestParam("cursor") Long cursor, @PageableDefault(size = 30, sort = "") Pageable pageable) {
+    public ApplicationResponse<Slice<NotificationRes>> getNotificationList(@PathVariable("version") Long version, @Auth Member member, @RequestParam(value = "cursor", required = false) Long cursor, @PageableDefault(size = 30, sort = "created_at DESC") Pageable pageable) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, notificationService.getNotificationList(version, member, cursor, pageable));
     }
 }
