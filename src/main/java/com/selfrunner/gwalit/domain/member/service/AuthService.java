@@ -143,11 +143,16 @@ public class AuthService {
         return new PostLoginRes().toDto(tokenDto, member);
     }
 
+    @Transactional
     public void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
         redisClient.deleteValue(key);
         redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
+
+        // FCM 토큰 정보 삭제
+        member.deleteToken();
+        memberRepository.save(member);
 
         // Response
     }

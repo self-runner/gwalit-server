@@ -17,4 +17,8 @@ public interface MemberRepositoryCustom {
     void deleteMemberByMemberIdList(List<Long> memberIdList);
 
     Optional<Member> findNotFakeByPhoneAndType(String phone, MemberType memberType);
+
+    List<String> findTokenList();
+
+    List<String> findTokenListByMemberIdList(List<Long> memberId);
 }
