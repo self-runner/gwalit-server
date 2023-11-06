@@ -100,8 +100,8 @@ public class WorkbookService {
                     if(workbook.getThumbnailCardUrl() != null) {
                         s3Client.delete(workbook.getThumbnailCardUrl());
                     }
-                    String updateThumbnailImageUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
-                    workbook.updateThumbnailUrl(updateThumbnailImageUrl);
+                    String updateThumbnailCardImageUrl = s3Client.upload(thumbnailCardImage, "workbook/" + workbookReq.getType());
+                    workbook.updateThumbnailCardUrl(updateThumbnailCardImageUrl);
                 }
                 if(workbookFile != null && !workbookFile.isEmpty()) {
                     s3Client.delete(workbook.getWorkbookFileUrl());
