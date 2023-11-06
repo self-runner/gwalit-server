@@ -14,6 +14,7 @@ import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonJdbcRepository;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
@@ -49,6 +50,7 @@ public class LectureService {
     private final MemberRepository memberRepository;
     private final TaskRepository taskRepository;
     private final LessonRepository lessonRepository;
+    private final LessonJdbcRepository lessonJdbcRepository;
     private final HomeworkRepository homeworkRepository;
     private final SmsClient smsClient;
     private final FCMClient fcmClient;
@@ -85,7 +87,7 @@ public class LectureService {
                 }
             }
         }
-        lessonRepository.saveAll(lessonList);
+        lessonJdbcRepository.saveAll(lessonList);
 
         // Response
         List<MemberMeta> memberMetas = new ArrayList<>();
@@ -165,7 +167,7 @@ public class LectureService {
                         }
                     }
                 }
-                lessonRepository.saveAll(lessonList);
+                lessonJdbcRepository.saveAll(lessonList);
             }
             if(putLectureReq.getDeleteBefore().equals(Boolean.FALSE)) {
                 lessonRepository.deleteAllByLectureIdAndDate(lectureId, LocalDate.now(), lecture.getEndDate());
@@ -178,7 +180,7 @@ public class LectureService {
                         }
                     }
                 }
-                lessonRepository.saveAll(lessonList);
+                lessonJdbcRepository.saveAll(lessonList);
             }
         }
 
