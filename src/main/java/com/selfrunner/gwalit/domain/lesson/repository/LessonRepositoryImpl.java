@@ -8,7 +8,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
-import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.global.batch.dto.BatchLessonDto;
+import com.selfrunner.gwalit.global.batch.dto.BatchNotificationDto;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.querydsl.core.group.GroupBy.list;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
@@ -80,7 +82,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     public Optional<LessonMetaRes> findLessonMetaByLectureIdBeforeNow(Long lectureId) {
         return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(Schedule.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants))
                 .from(lesson)
-                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1l)))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1L)))
                 .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
                 .fetchFirst());
     }
@@ -92,16 +94,6 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.after(LocalDate.now()))
                 .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
                 .fetchFirst());
-    }
-
-    @Override
-    public Optional<List<LessonMetaRes>> findAllLessonMetaByLectureIdAndDate(Long lectureId) {
-        return Optional.ofNullable(
-                queryFactory.select(lesson)
-                        .from(lesson)
-                        .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.between(LocalDate.now().minusDays(8), LocalDate.now()))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(Schedule.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants)))
-        );
     }
 
     @Override
@@ -117,7 +109,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(queryFactory.select(lesson.lessonId)
                 .from(lesson)
                 .leftJoin(lecture).on(lesson.lecture.lectureId.eq(lecture.lectureId))
-                .where(lesson.lecture.lectureId.eq(lectureId), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
+                .where(lesson.lecture.lectureId.eq(lectureId), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1L)))
                 .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
                 .fetchFirst()
         );
@@ -128,7 +120,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.select(lesson.lessonId)
                     .from(lesson)
-                    .where(lesson.lecture.lectureId.in(lectureIdList), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1l)))
+                    .where(lesson.lecture.lectureId.in(lectureIdList), lesson.deletedAt.isNull(), lesson.date.before(LocalDate.now().plusDays(1L)))
                     .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
                     .transform(groupBy(lesson.lecture.lectureId).list(lesson.lessonId))
         );
@@ -148,5 +140,16 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .set(lesson.deletedAt, LocalDateTime.now())
                 .where(lesson.lecture.lectureId.in(lectureIdList))
                 .execute();
+    }
+
+    @Override
+    public List<BatchNotificationDto> findAllByDate(LocalDate date) {
+        return queryFactory.selectFrom(lesson)
+                .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), lesson.date.eq(date))
+                .transform(groupBy(memberAndLecture.member.memberId)
+                        .list(Projections.constructor(BatchNotificationDto.class, memberAndLecture.member.memberId,
+                                list(Projections.constructor(BatchLessonDto.class, lecture.name, lesson.date, lesson.startTime, lesson.endTime)))));
     }
 }
