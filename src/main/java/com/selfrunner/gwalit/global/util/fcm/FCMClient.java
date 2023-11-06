@@ -5,6 +5,7 @@ import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class FCMClient {
      * @param message - Firebase Message 객체
      * @return 응답 값 전달
      */
+    @Async
     public String send(Message message) {
         try {
             // Message message = makeMessage(fcmMessageDto);
@@ -63,6 +65,7 @@ public class FCMClient {
 //        }
 //    }
 
+    @Async
     public void sendMulticast(List<String> tokenList, MulticastMessage multicastMessage) {
         BatchResponse response;
         try {

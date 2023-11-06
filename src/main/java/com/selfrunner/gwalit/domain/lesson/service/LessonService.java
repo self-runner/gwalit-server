@@ -365,6 +365,7 @@ public class LessonService {
             }
             if(lesson.getParticipants().size() == putLessonReq.getParticipants().size()) {
                 for(Participant lessonParticipant : lesson.getParticipants()) {
+                    System.out.println(lessonParticipant.getMemberId());
                     boolean temp = Boolean.FALSE;
                     for(Participant dtoParticipant : putLessonReq.getParticipants()) {
                         if(lessonParticipant.getMemberId().equals(dtoParticipant.getMemberId())) {
