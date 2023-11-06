@@ -101,8 +101,10 @@ public class LessonService {
                 .collect(Collectors.toList());
         memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
         List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
-        MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
-        fcmClient.sendMulticast(tokenList, multicastMessage);
+        if(!tokenList.isEmpty()) {
+            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+            fcmClient.sendMulticast(tokenList, multicastMessage);
+        }
 
         // Response
         return new LessonIdRes(saveLesson.getLessonId());
