@@ -21,7 +21,7 @@ import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
-import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.notification.entity.Notification;
 import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
@@ -52,7 +52,7 @@ public class LessonService {
     private final HomeworkRepository homeworkRepository;
     private final MemberRepository memberRepository;
     private final NotificationRepository notificationRepository;
-    private final MemberAndNotificationRepository memberAndNotificationRepository;
+    private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
     private final FCMClient fcmClient;
 
     @Transactional
@@ -99,7 +99,7 @@ public class LessonService {
                         .notificationId(saveNotification.getNotificationId())
                         .build())
                 .collect(Collectors.toList());
-        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
         List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
         MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
         fcmClient.sendMulticast(tokenList, multicastMessage);
@@ -155,7 +155,7 @@ public class LessonService {
                         .notificationId(saveNotification.getNotificationId())
                         .build())
                 .collect(Collectors.toList());
-        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
         List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
         if(!tokenList.isEmpty()) {
             MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
@@ -253,16 +253,13 @@ public class LessonService {
                 .map(Participant::getMemberId)
                 .filter(memberId -> !memberId.equals(member.getMemberId()))
                 .collect(Collectors.toList());
-        for(Long id: studentIdList) {
-            System.out.println(id);
-        }
         List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
                 .map(studentId -> MemberAndNotification.builder()
                         .memberId(studentId)
                         .notificationId(saveNotification.getNotificationId())
                         .build())
                 .collect(Collectors.toList());
-        memberAndNotificationRepository.saveAll(memberAndNotificationList);
+        memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
         List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
         if(!tokenList.isEmpty()) {
             MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
