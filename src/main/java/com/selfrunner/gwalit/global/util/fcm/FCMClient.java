@@ -22,48 +22,45 @@ public class FCMClient {
     /**
      * 1:1 단 건 발송
      * @param message - Firebase Message 객체
-     * @return 응답 값 전달
      */
     @Async
-    public String send(Message message) {
+    public void send(Message message) {
         try {
             // Message message = makeMessage(fcmMessageDto);
 
-            String response = FirebaseMessaging.getInstance().sendAsync(message).get();
+            FirebaseMessaging.getInstance().sendAsync(message).get();
+            // String response = FirebaseMessaging.getInstance().sendAsync(message).get();
             // return response if firebase messaging is successfully completed.
-            return response;
+            // return response;
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
         }
     }
 
-//    public void sendAll(List<FCMMessageDto> fcmMessageDtoList) {
-//        BatchResponse response;
-//        try {
-//            List<Message> messageList = fcmMessageDtoList.stream()
-//                    .map(this::makeMessage)
-//                    .collect(Collectors.toList());
-//
-//            // 알림 발송
-//            response = FirebaseMessaging.getInstance().sendAll(messageList);
-//
-//            // 요청에 대한 응답 처리
-//            if (response.getFailureCount() > 0) {
-//                List<SendResponse> responses = response.getResponses();
-//                List<String> failedTokens = new ArrayList<>();
-//
-//                for (int i = 0; i < responses.size(); i++) {
-//                    if (!responses.get(i).isSuccessful()) {
-//                        failedTokens.add(fcmMessageDtoList.get(i).getToken());
-//                    }
-//                }
-//                log.error("List of tokens are not valid FCM token : " + failedTokens);
-//            }
-//        } catch (FirebaseMessagingException e) {
-//            log.error("cannot send to memberList push message. error info : {}", e.getMessage());
-//        }
-//    }
+    public void sendAll(List<Message> messageList) {
+        BatchResponse response;
+        try {
+            // 알림 발송
+            response = FirebaseMessaging.getInstance().sendAllAsync(messageList).get();
+
+            // 요청에 대한 응답 처리
+            if (response.getFailureCount() > 0) {
+                List<SendResponse> responses = response.getResponses();
+                List<String> failedTokens = new ArrayList<>();
+
+                for (int i = 0; i < responses.size(); i++) {
+                    if (!responses.get(i).isSuccessful()) {
+                        failedTokens.add(messageList.get(i).toString());
+                    }
+                }
+                log.error("List of tokens are not valid FCM token : " + failedTokens);
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            log.error("cannot send to memberList push message. error info : {}", e.getMessage());
+            throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
+        }
+    }
 
     @Async
     public void sendMulticast(List<String> tokenList, MulticastMessage multicastMessage) {
