@@ -11,10 +11,14 @@ public class NotificationReq {
 
     private String body;
 
+    private String url;
+
     public Notification toEntity() {
         return Notification.builder()
                 .title(this.title)
                 .body(this.body)
+                .name("notice")
+                .url(this.url)
                 .build();
 
     }
