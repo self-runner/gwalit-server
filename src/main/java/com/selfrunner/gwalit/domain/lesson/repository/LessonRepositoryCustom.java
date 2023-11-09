@@ -31,5 +31,11 @@ public interface LessonRepositoryCustom {
 
     void deleteAllByLectureLectureIdList(List<Long> lectureIdList);
 
-    List<BatchNotificationDto> findAllByDate(LocalDate date);
+    List<Long> findTodayLessonIdByDate(LocalDate date);
+
+    List<BatchNotificationDto> findAllByDate(List<Long> lessonIdList);
+
+    void updateLessonProcessingByDate(List<Long> lessonIdList);
+
+    void updateLessonSentByDate(List<Long> lessonIdList);
 }
