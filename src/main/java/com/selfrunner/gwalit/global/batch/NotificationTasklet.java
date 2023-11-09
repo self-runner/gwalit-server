@@ -18,6 +18,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -35,7 +36,9 @@ public class NotificationTasklet implements Tasklet {
         log.info(chunkContext.toString());
 
         List<Message> messageList = new ArrayList<>();
-        List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(LocalDate.now());
+        List<Long> lessonIdList = lessonRepository.findTodayLessonIdByDate(LocalDate.now());
+        List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(lessonIdList);
+        lessonRepository.updateLessonProcessingByDate(lessonIdList);
         for(BatchNotificationDto notificationDto : batchNotificationDtoList) {
             String title = "오늘은 수업이 총 " + notificationDto.getLessonList().size() + "개 있어요." + "\n";
             StringBuilder body = new StringBuilder();
@@ -52,6 +55,7 @@ public class NotificationTasklet implements Tasklet {
         if(!messageList.isEmpty()) {
             fcmClient.sendAll(messageList);
         }
+        lessonRepository.updateLessonSentByDate(lessonIdList);
 
         return RepeatStatus.FINISHED;
     }

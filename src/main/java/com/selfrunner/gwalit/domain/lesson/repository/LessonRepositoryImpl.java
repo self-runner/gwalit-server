@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.StringTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
+import com.selfrunner.gwalit.domain.lesson.entity.BatchStatus;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.global.batch.dto.BatchLessonDto;
 import com.selfrunner.gwalit.global.batch.dto.BatchNotificationDto;
@@ -144,14 +145,41 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
     }
 
     @Override
-    public List<BatchNotificationDto> findAllByDate(LocalDate date) {
+    public List<Long> findTodayLessonIdByDate(LocalDate date) {
+        return queryFactory.select(lesson.lessonId)
+                .from(lesson)
+                .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
+                .leftJoin(member).on(memberAndLecture.member.memberId.eq(member.memberId))
+                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), lesson.date.eq(date), member.token.isNotNull(), memberAndLecture.isTeacher.eq(Boolean.TRUE), lesson.deliveredAt.eq(BatchStatus.READY))
+                .fetch();
+    }
+
+    @Override
+    public List<BatchNotificationDto> findAllByDate(List<Long> lessonIdList) {
         return queryFactory.selectFrom(lesson)
                 .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
                 .leftJoin(member).on(memberAndLecture.member.memberId.eq(member.memberId))
-                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), lesson.date.eq(date), member.token.isNotNull(), memberAndLecture.isTeacher.eq(Boolean.TRUE))
+                .where(lesson.lessonId.in(lessonIdList))
                 .transform(groupBy(memberAndLecture.member.memberId)
                         .list(Projections.constructor(BatchNotificationDto.class, memberAndLecture.member.memberId, member.token,
                                 list(Projections.constructor(BatchLessonDto.class, lecture.name, lesson.date, lesson.startTime, lesson.endTime)))));
+    }
+
+    @Override
+    public void updateLessonProcessingByDate(List<Long> lessonIdList) {
+        queryFactory.update(lesson)
+                .set(lesson.deliveredAt, BatchStatus.PROCESSING)
+                .where(lesson.lessonId.in(lessonIdList))
+                .execute();
+    }
+
+    @Override
+    public void updateLessonSentByDate(List<Long> lessonIdList) {
+        queryFactory.update(lesson)
+                .set(lesson.deliveredAt, BatchStatus.SENT)
+                .where(lesson.lessonId.in(lessonIdList))
+                .execute();
     }
 }
