@@ -174,4 +174,13 @@ public class HomeworkService {
         // Response
         return homeworkMainResList;
     }
+
+    public Void getStatisticsList(Long version, Member member, Long homeworkId) {
+        // Validation
+
+        // Business Logic
+
+        // Response
+        return null;
+    }
 }
