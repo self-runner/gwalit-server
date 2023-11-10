@@ -68,6 +68,10 @@ public class Lesson extends BaseTimeEntity {
     @Column(name = "endTime", columnDefinition = "time")
     private LocalTime endTime;
 
+    @Column(name = "delivered_at", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private BatchStatus deliveredAt;
+
     public void update(PutLessonReq putLessonReq) {
         this.type = LessonType.valueOf(putLessonReq.getType());
         this.participants = putLessonReq.getParticipants();
@@ -98,6 +102,6 @@ public class Lesson extends BaseTimeEntity {
         this.weekday = time.getWeekday();
         this.startTime = LocalTime.parse(time.getStartTime(), DateTimeFormatter.ofPattern("HH:mm"));
         this.endTime = LocalTime.parse(time.getEndTime(), DateTimeFormatter.ofPattern("HH:mm"));
-
+        this.deliveredAt = BatchStatus.READY;
     }
 }

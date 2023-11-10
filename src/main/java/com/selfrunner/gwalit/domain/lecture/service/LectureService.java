@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.lecture.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.firebase.messaging.Message;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.dto.request.*;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
@@ -13,6 +14,7 @@ import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
 import com.selfrunner.gwalit.domain.lecture.repository.LectureRepository;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonJdbcRepository;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
@@ -22,6 +24,7 @@ import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import com.selfrunner.gwalit.global.util.sms.SmsClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -47,8 +50,10 @@ public class LectureService {
     private final MemberRepository memberRepository;
     private final TaskRepository taskRepository;
     private final LessonRepository lessonRepository;
+    private final LessonJdbcRepository lessonJdbcRepository;
     private final HomeworkRepository homeworkRepository;
     private final SmsClient smsClient;
+    private final FCMClient fcmClient;
 
     @Transactional
     public GetLectureMetaRes register(Member member, PostLectureReq postLectureReq) {
@@ -82,7 +87,7 @@ public class LectureService {
                 }
             }
         }
-        lessonRepository.saveAll(lessonList);
+        lessonJdbcRepository.saveAll(lessonList);
 
         // Response
         List<MemberMeta> memberMetas = new ArrayList<>();
@@ -162,7 +167,7 @@ public class LectureService {
                         }
                     }
                 }
-                lessonRepository.saveAll(lessonList);
+                lessonJdbcRepository.saveAll(lessonList);
             }
             if(putLectureReq.getDeleteBefore().equals(Boolean.FALSE)) {
                 lessonRepository.deleteAllByLectureIdAndDate(lectureId, LocalDate.now(), lecture.getEndDate());
@@ -175,7 +180,7 @@ public class LectureService {
                         }
                     }
                 }
-                lessonRepository.saveAll(lessonList);
+                lessonJdbcRepository.saveAll(lessonList);
             }
         }
 
@@ -276,13 +281,19 @@ public class LectureService {
         }
 
         // Business Logic
+        String lectureName = memberAndLecture.getLecture().getName();
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
             if(check.getState().equals(MemberState.INVITE)) {
-                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(), postInviteReq, Boolean.TRUE);
+                smsClient.sendInvitation(member.getName(), lectureName, postInviteReq, Boolean.TRUE);
             }
             if(check.getState().equals(MemberState.ACTIVE)) {
-                smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(),postInviteReq, Boolean.FALSE);
+                // smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
+                String title = lectureName + "클래스 초대";
+                String body = "[과릿] " + member.getName() + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "접속하여 초대된 클래스를 확인해보세요!";
+                // FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(check.getToken(), title, body, "studentLectureMain", lectureId, null, null, null);
+                Message message = fcmClient.makeMessage(check.getToken(), title, body, "studentLectureMain", lectureId, null, null, null);
+                fcmClient.send(message);
             }
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
                     .member(check)

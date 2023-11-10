@@ -2,7 +2,7 @@ package com.selfrunner.gwalit.domain.lesson.repository;
 
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonProgressRes;
-import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.global.batch.dto.BatchNotificationDto;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -21,8 +21,6 @@ public interface LessonRepositoryCustom {
 
     Optional<LessonMetaRes> findLessonMetaByLectureIdAfterNow(Long lectureId);
 
-    Optional<List<LessonMetaRes>> findAllLessonMetaByLectureIdAndDate(Long lectureId);
-
     void deleteAllByLectureIdAndDate(Long lectureId, LocalDate startDate, LocalDate endDate);
 
     Optional<Long> findRecentLessonIdByLectureId(Long lectureId);
@@ -32,4 +30,12 @@ public interface LessonRepositoryCustom {
     List<Long> findAllLessonIdByLectureIdList(List<Long> lectureIdList);
 
     void deleteAllByLectureLectureIdList(List<Long> lectureIdList);
+
+    List<Long> findTodayLessonIdByDate(LocalDate date);
+
+    List<BatchNotificationDto> findAllByDate(List<Long> lessonIdList);
+
+    void updateLessonProcessingByDate(List<Long> lessonIdList);
+
+    void updateLessonSentByDate(List<Long> lessonIdList);
 }

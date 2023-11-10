@@ -54,7 +54,13 @@ public enum ErrorCode {
     NO_CONTENT_LINK(HttpStatus.BAD_REQUEST, 7001, "콘텐츠 링크가 존재하지 않습니다."),
 
     // Task
-    TOO_MANY_TASK(HttpStatus.BAD_REQUEST, 8000, "등록한 할 일의 수가 너무 많습니다.");
+    TOO_MANY_TASK(HttpStatus.BAD_REQUEST, 8000, "등록한 할 일의 수가 너무 많습니다."),
+
+    // FCM
+    FAILED_FCM_INIT(HttpStatus.INTERNAL_SERVER_ERROR, 9000, "FCM 초기 설정에 실패했습니다."),
+    FAILED_SEND_MESSAGE(HttpStatus.INTERNAL_SERVER_ERROR, 9001, "FCM 발송에 실패했습니다."),
+    USER_LIST_EMPTY(HttpStatus.INTERNAL_SERVER_ERROR, 9002, "FCM을 보낼 수 있는 토큰 리스트가 존재하지 않습니다.");
+
 
     private final HttpStatus httpStatus;
     private final Integer code;
