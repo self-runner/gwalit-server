@@ -24,4 +24,16 @@ public class NotificationDeepLinkReq {
     private LocalDate date;
 
     private String url;
+
+    public Notification toEntity() {
+        return Notification.builder()
+                .memberId(this.memberId)
+                .title(this.title)
+                .body(this.body)
+                .name(this.name)
+                .lectureId(this.lectureId)
+                .lessonId(this.lessonId)
+                .url(this.url)
+                .build();
+    }
 }
