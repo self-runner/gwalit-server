@@ -3,6 +3,8 @@ package com.selfrunner.gwalit.domain.notification.service;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndNotification;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.notification.dto.request.NotificationDeepLinkReq;
 import com.selfrunner.gwalit.domain.notification.dto.request.NotificationReq;
@@ -26,6 +28,7 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationRepository memberAndNotificationRepository;
     private final MemberRepository memberRepository;
     private final FCMClient fcmClient;
 
@@ -42,6 +45,13 @@ public class NotificationService {
         //FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
         Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
         fcmClient.send(message);
+        Notification notification = notificationDeepLinkReq.toEntity();
+        Notification saveNotification = notificationRepository.save(notification);
+        MemberAndNotification memberAndNotification = MemberAndNotification.builder()
+                .memberId(notificationDeepLinkReq.getMemberId())
+                .notificationId(saveNotification.getNotificationId())
+                .build();
+        memberAndNotificationRepository.save(memberAndNotification);
 
         // Response
         return null;
