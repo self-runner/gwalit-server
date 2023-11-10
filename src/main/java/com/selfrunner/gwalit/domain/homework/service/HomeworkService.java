@@ -177,6 +177,10 @@ public class HomeworkService {
 
     public Void getStatisticsList(Long version, Member member, Long homeworkId) {
         // Validation
+        Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(homework.getMemberId() != member.getMemberId()) {
+            throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
 
         // Business Logic
 
