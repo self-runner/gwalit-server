@@ -158,12 +158,12 @@ public class SmsClient {
             String regexOfEmojis = "[\uD83C-\uDBFF\uDC00-\uDFFF]+";
             //String content = "[과릿] " + name + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 및 회원가입을 통해 수업에 참여해보세요!" + "\n" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "\n" + "애플: " + "https://bit.ly/gwarit-apple";
             String content = "[과릿] 선생님으로부터 클래스 초대가 도착했습니다." + "\n" + "아래 링크를 통해 앱 설치 및 회원가입을 통해 수업에 참여해보세요!" + "\n" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "\n" + "애플: " + "https://bit.ly/gwarit-apple";
-            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), content.replaceAll(regexOfEmojis, "")));
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), content));
         }
         if(type.equals(Boolean.FALSE)) {
             String regexOfEmojis = "[\uD83C-\uDBFF\uDC00-\uDFFF]+";
             String content = "[과릿] 선생님으로부터 클래스 초대가 도착했습니다." + "\n" + "아래 링크를 클릭 후 앱 열기를 통해 수업에 참여해보세요!" + "\n" + "\n" + "안드로이드: " + "https://bit.ly/gwarit-android" + "\n" + "\n" + "애플: " + "https://bit.ly/gwarit-apple";
-            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), content.replaceAll(regexOfEmojis, "")));
+            smsMessageDtoList.add(new SmsMessageDto(postInviteReq.getPhone(), content));
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
