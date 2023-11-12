@@ -4,6 +4,7 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
+import com.selfrunner.gwalit.domain.homework.repository.HomeworkJdbcRepository;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
 import com.selfrunner.gwalit.domain.lecture.exception.LectureException;
 import com.selfrunner.gwalit.domain.lesson.dto.request.PatchLessonMetaRes;
@@ -50,6 +51,7 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final HomeworkRepository homeworkRepository;
+    private final HomeworkJdbcRepository homeworkJdbcRepository;
     private final MemberRepository memberRepository;
     private final NotificationRepository notificationRepository;
     private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
@@ -80,7 +82,7 @@ public class LessonService {
                 studentIdList.add(participant.getMemberId());
             }
         }
-        homeworkRepository.saveAll(homeworkList);
+        homeworkJdbcRepository.saveAll(homeworkList);
 
         // FCM 송신 TODO: 비동기 처리를 통한 성능 향상
         String title = "새로운 수업 등록!";
@@ -132,7 +134,7 @@ public class LessonService {
                         .collect(Collectors.toList());
                 homeworkInsertList.addAll(tempHomeworkList);
             }
-            homeworkRepository.saveAll(homeworkInsertList);
+            homeworkJdbcRepository.saveAll(homeworkInsertList);
         }
 
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
@@ -236,7 +238,7 @@ public class LessonService {
                 }
             }
 
-            homeworkRepository.saveAll(homeworkList);
+            homeworkJdbcRepository.saveAll(homeworkList);
         }
 
         // 수업 정보는 무조건 업데이트 진행되므로 조건 필요 X
