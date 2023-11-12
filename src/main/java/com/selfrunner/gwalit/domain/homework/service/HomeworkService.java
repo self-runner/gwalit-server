@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.homework.service;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.exception.HomeworkException;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
@@ -175,7 +176,7 @@ public class HomeworkService {
         return homeworkMainResList;
     }
 
-    public Void getStatisticsList(Long version, Member member, Long homeworkId) {
+    public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(homework.getMemberId() != member.getMemberId()) {
@@ -183,8 +184,9 @@ public class HomeworkService {
         }
 
         // Business Logic
+        List<HomeworkStatisticsRes> homeworkStatisticsResList = homeworkRepository.findAllByBodyAndCreatedAt(member.getMemberId(), homework.getLessonId(), homework.getBody(), homework.getDeadline(), homework.getCreatedAt());
 
         // Response
-        return null;
+        return homeworkStatisticsResList;
     }
 }
