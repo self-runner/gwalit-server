@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.homework.controller;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
 import com.selfrunner.gwalit.domain.homework.service.HomeworkService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -71,5 +72,11 @@ public class HomeworkController {
     @GetMapping({"/homework/list", "/api/v{version}/homework/list"})
     public ApplicationResponse<List<HomeworkMainRes>> getList(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @RequestParam(value = "lectureId", required = false) Long lectureId, @RequestParam("type") String type) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getList(member, lectureId, type));
+    }
+
+    @Operation(summary = "숙제별 학생들 통계 반환")
+    @GetMapping("/api/v{version}/homework/statistics/{homework_id}")
+    public ApplicationResponse<List<HomeworkStatisticsRes>> getStatisticsList(@PathVariable("version") Long version, @Auth Member member, @PathVariable("homework_id") Long homeworkId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, homeworkService.getStatisticsList(version, member, homeworkId));
     }
 }
