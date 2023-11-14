@@ -21,6 +21,7 @@ import static com.selfrunner.gwalit.domain.homework.entity.QHomework.homework;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
+import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
 @RequiredArgsConstructor
@@ -136,8 +137,9 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
     public List<HomeworkRemind> findHomeworkByIsFinish(List<Long> homeworkIdList) {
         return queryFactory.selectFrom(homework)
                 .leftJoin(lesson).on(homework.lessonId.eq(lesson.lessonId))
-                .leftJoin(lecture).on(lesson.lecture.lectureId.eq(lesson.lessonId))
-                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), homework.homeworkId.in(homeworkIdList), homework.isFinish.eq(Boolean.FALSE), member.token.isNotNull())
-                .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkRemind.class, homework.homeworkId, lecture.lectureId, lecture.name, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)));
+                .leftJoin(memberAndLecture).on(lesson.lecture.lectureId.eq(memberAndLecture.lecture.lectureId).and(homework.memberId.eq(memberAndLecture.member.memberId)))
+                .leftJoin(member).on(homework.memberId.eq(member.memberId))
+                .where(lesson.deletedAt.isNull(), memberAndLecture.deletedAt.isNull(), homework.homeworkId.in(homeworkIdList), homework.isFinish.eq(Boolean.FALSE), member.token.isNotNull())
+                .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkRemind.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.name, lesson.lessonId, homework.memberId, member.token, homework.body, homework.deadline, homework.isFinish)));
     }
 }

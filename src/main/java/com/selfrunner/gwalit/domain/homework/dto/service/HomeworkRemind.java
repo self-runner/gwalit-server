@@ -13,7 +13,7 @@ public class HomeworkRemind {
 
     private final Long lectureId;
 
-    private final Long lectureName;
+    private final String lectureName;
 
     private final Long lessonId;
 

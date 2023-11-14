@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
+import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkRemindReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
@@ -199,6 +200,7 @@ public class HomeworkService {
         return homeworkStatisticsResList;
     }
 
+    @Transactional
     public void sendHomeworkRemindNotification(Long version, Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
         // Validation
 
@@ -208,29 +210,33 @@ public class HomeworkService {
                 .collect(Collectors.toList());
         List<HomeworkRemind> homeworkRemindList = homeworkRepository.findHomeworkByIsFinish(homeworkIdList);
         if(!homeworkRemindList.isEmpty()) {
-            Notification notification = Notification.builder()
-                    .memberId(member.getMemberId())
-                    .title(homeworkRemindList.get(0).getLectureName() + " 숙제 리마인드!")
-                    .body(homeworkRemindList.get(0).getBody())
-                    .name("studentLessonReport")
-                    .lectureId(homeworkRemindList.get(0).getLectureId())
-                    .lessonId(homeworkRemindList.get(0).getLessonId())
-                    .build();
-            Notification saveNotification = notificationRepository.save(notification);
             List<String> tokenList = new ArrayList<>();
-            List<MemberAndNotification> memberAndNotificationList = homeworkRemindList.stream()
+            List<Notification> notificationList = homeworkRemindList.stream()
                     .map(homeworkRemind -> {
                         tokenList.add(homeworkRemind.getToken());
-                        return MemberAndNotification.builder()
-                                .memberId(homeworkRemind.getMemberId())
-                                .notificationId(saveNotification.getNotificationId())
+                        return Notification.builder()
+                                .memberId(member.getMemberId())
+                                .title(homeworkRemind.getLectureName() + " 숙제 리마인드!")
+                                .body(homeworkRemind.getBody())
+                                .name("studentLessonReport")
+                                .lectureId(homeworkRemind.getLectureId())
+                                .lessonId(homeworkRemind.getLessonId())
                                 .build();
                     })
                     .collect(Collectors.toList());
+            List<Notification> saveNotification = notificationRepository.saveAll(notificationList);
+            List<MemberAndNotification> memberAndNotificationList = new ArrayList<>();
+            for(int i = 0; i < notificationList.size(); i++) {
+                memberAndNotificationList.add(
+                        MemberAndNotification.builder()
+                                .memberId(homeworkRemindList.get(i).getMemberId())
+                                .notificationId(saveNotification.get(i).getNotificationId())
+                                .build()
+                );
+                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getTitle(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl());
+                fcmClient.send(message);
+            }
             memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
-
-            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
-            fcmClient.sendMulticast(tokenList, multicastMessage);
         }
 
         // Response
