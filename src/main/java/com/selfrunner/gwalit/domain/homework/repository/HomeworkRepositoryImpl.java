@@ -5,7 +5,9 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
+import com.selfrunner.gwalit.domain.homework.dto.service.HomeworkRemind;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -126,7 +128,16 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
     public List<HomeworkStatisticsRes> findAllByBodyAndCreatedAt(Long memberId, Long lessonId, String body, LocalDate deadline, LocalDateTime createdAt) {
         return queryFactory.selectFrom(homework)
                 .leftJoin(member).on(member.memberId.eq(homework.memberId))
-                .where(homework.memberId.ne(memberId), homework.lessonId.eq(lessonId), homework.body.eq(body), homework.deadline.eq(deadline), homework.createdAt.eq(createdAt), member.deletedAt.isNull())
+                .where(homework.memberId.ne(memberId), homework.lessonId.eq(lessonId), homework.body.eq(body), homework.deadline.eq(deadline), homework.createdAt.eq(createdAt), member.deletedAt.isNull(), member.state.ne(MemberState.FAKE))
                 .transform(groupBy(homework.memberId).list(Projections.constructor(HomeworkStatisticsRes.class, homework.homeworkId, homework.memberId, member.name, homework.lessonId, homework.body, homework.deadline, homework.isFinish)));
+    }
+
+    @Override
+    public List<HomeworkRemind> findHomeworkByIsFinish(List<Long> homeworkIdList) {
+        return queryFactory.selectFrom(homework)
+                .leftJoin(lesson).on(homework.lessonId.eq(lesson.lessonId))
+                .leftJoin(lecture).on(lesson.lecture.lectureId.eq(lesson.lessonId))
+                .where(lesson.deletedAt.isNull(), lecture.deletedAt.isNull(), homework.homeworkId.in(homeworkIdList), homework.isFinish.eq(Boolean.FALSE), member.token.isNotNull())
+                .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkRemind.class, homework.homeworkId, lecture.lectureId, lecture.name, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)));
     }
 }
