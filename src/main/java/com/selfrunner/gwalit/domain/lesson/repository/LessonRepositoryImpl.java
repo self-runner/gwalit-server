@@ -161,7 +161,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lecture.lectureId))
                 .leftJoin(member).on(memberAndLecture.member.memberId.eq(member.memberId))
-                .where(lesson.lessonId.in(lessonIdList))
+                .where(lesson.lessonId.in(lessonIdList), member.token.isNotNull())
                 .transform(groupBy(memberAndLecture.member.memberId)
                         .list(Projections.constructor(BatchNotificationDto.class, memberAndLecture.member.memberId, member.token,
                                 list(Projections.constructor(BatchLessonDto.class, lecture.name, lesson.date, lesson.startTime, lesson.endTime)))));
