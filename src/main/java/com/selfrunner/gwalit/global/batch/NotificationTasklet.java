@@ -46,7 +46,7 @@ public class NotificationTasklet implements Tasklet {
                 String temp = lessonDto.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ~ " + lessonDto.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " " + lessonDto.getName() + "\n";
                 body.append(temp);
             }
-            // 마지막 개행문자 제거
+            // 마지막 개행 문자 제거
             if(body.length() > 0 && body.charAt(body.length() - 1) == '\n') {
                 body.setLength(body.length() - 1);
             }
