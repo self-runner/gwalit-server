@@ -3,6 +3,7 @@ package com.selfrunner.gwalit.domain.homework.repository;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
+import com.selfrunner.gwalit.domain.homework.dto.service.HomeworkRemind;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 
 import java.time.LocalDate;
@@ -34,4 +35,5 @@ public interface HomeworkRepositoryCustom {
 
     List<HomeworkStatisticsRes> findAllByBodyAndCreatedAt(Long memberId, Long lessonId, String body, LocalDate deadline, LocalDateTime createdAt);
 
+    List<HomeworkRemind> findHomeworkByIsFinish(List<Long> homeworkIdList);
 }

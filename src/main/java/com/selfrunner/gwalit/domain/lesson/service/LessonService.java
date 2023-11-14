@@ -124,18 +124,20 @@ public class LessonService {
 
         // Business Logic: Homework 변경 여부 확인 진행
         // lesson은 무조건 업데이트 + 변경사항이 발생하면 숙제 업데이트 진행
-        lesson.update(putLessonReq);
-        if((changeParticipant(lesson, putLessonReq) || changeHomework(member, lesson, putLessonReq)) && putLessonReq.getHomeworks() != null) {
+        if((changeParticipant(lesson, putLessonReq) || changeHomework(member, lesson, putLessonReq))) {
             homeworkRepository.deleteHomeworkByLessonId(lessonId);
-            List<Homework> homeworkInsertList = new ArrayList<>();
-            for (Participant participant : putLessonReq.getParticipants()) {
-                List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
-                        .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
-                        .collect(Collectors.toList());
-                homeworkInsertList.addAll(tempHomeworkList);
+            if(putLessonReq.getHomeworks() != null) {
+                List<Homework> homeworkInsertList = new ArrayList<>();
+                for (Participant participant : putLessonReq.getParticipants()) {
+                    List<Homework> tempHomeworkList = putLessonReq.getHomeworks().stream()
+                            .map(homeworkReq -> HomeworkReq.staticToEntity(homeworkReq, participant.getMemberId(), lesson.getLessonId()))
+                            .collect(Collectors.toList());
+                    homeworkInsertList.addAll(tempHomeworkList);
+                }
+                homeworkJdbcRepository.saveAll(homeworkInsertList);
             }
-            homeworkJdbcRepository.saveAll(homeworkInsertList);
         }
+        lesson.update(putLessonReq);
 
         List<HomeworkRes> homeworkRes = homeworkRepository.findAllByMemberIdAndLessonId(member.getMemberId(), lessonId);
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lesson.getLecture().getLectureId()).orElse(null);

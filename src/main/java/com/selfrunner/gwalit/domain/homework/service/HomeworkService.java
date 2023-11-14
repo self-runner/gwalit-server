@@ -1,9 +1,12 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
+import com.google.firebase.messaging.MulticastMessage;
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkRemindReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
+import com.selfrunner.gwalit.domain.homework.dto.service.HomeworkRemind;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.exception.HomeworkException;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
@@ -11,17 +14,20 @@ import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.exception.LessonException;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndNotification;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +40,9 @@ public class HomeworkService {
     private final HomeworkRepository homeworkRepository;
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
+    private final FCMClient fcmClient;
 
     @Transactional
     public HomeworkRes register(Member member, Long lessonId, HomeworkReq homeworkReq) {
@@ -188,5 +197,42 @@ public class HomeworkService {
 
         // Response
         return homeworkStatisticsResList;
+    }
+
+    public void sendHomeworkRemindNotification(Long version, Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
+        // Validation
+
+        // Business Logic
+        List<Long> homeworkIdList = homeworkRemindReqList.stream()
+                .map(HomeworkRemindReq::getHomeworkId)
+                .collect(Collectors.toList());
+        List<HomeworkRemind> homeworkRemindList = homeworkRepository.findHomeworkByIsFinish(homeworkIdList);
+        if(!homeworkRemindList.isEmpty()) {
+            Notification notification = Notification.builder()
+                    .memberId(member.getMemberId())
+                    .title(homeworkRemindList.get(0).getLectureName() + " 숙제 리마인드!")
+                    .body(homeworkRemindList.get(0).getBody())
+                    .name("studentLessonReport")
+                    .lectureId(homeworkRemindList.get(0).getLectureId())
+                    .lessonId(homeworkRemindList.get(0).getLessonId())
+                    .build();
+            Notification saveNotification = notificationRepository.save(notification);
+            List<String> tokenList = new ArrayList<>();
+            List<MemberAndNotification> memberAndNotificationList = homeworkRemindList.stream()
+                    .map(homeworkRemind -> {
+                        tokenList.add(homeworkRemind.getToken());
+                        return MemberAndNotification.builder()
+                                .memberId(homeworkRemind.getMemberId())
+                                .notificationId(saveNotification.getNotificationId())
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+            memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
+
+            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+            fcmClient.sendMulticast(tokenList, multicastMessage);
+        }
+
+        // Response
     }
 }
