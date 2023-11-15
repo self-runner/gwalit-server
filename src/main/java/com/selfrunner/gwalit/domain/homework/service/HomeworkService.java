@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
 import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkRemindReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
@@ -31,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,7 +49,7 @@ public class HomeworkService {
     public HomeworkRes register(Member member, Long lessonId, HomeworkReq homeworkReq) {
         // Validation
         if(lessonId != null) {
-            Lesson lesson = lessonRepository.findById(Long.valueOf(lessonId)).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON)); // 해당 수업이 미존재 시, 에러 반환
+            Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new LessonException(ErrorCode.NOT_EXIST_LESSON)); // 해당 수업이 미존재 시, 에러 반환
             memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION)); // 해당 수업과 관련된 클래스에 권한 없는 경우 에러 반환
         }
 
@@ -189,7 +189,7 @@ public class HomeworkService {
     public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
-        if(homework.getMemberId() != member.getMemberId()) {
+        if(!Objects.equals(homework.getMemberId(), member.getMemberId())) {
             throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
