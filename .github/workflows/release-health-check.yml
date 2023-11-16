@@ -25,7 +25,7 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: Github Action Health Check
+          author_name: Health-Check
           fields: repo,message,commit,action,eventName,ref,workflow,job,took # 보낼 정보들
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK_URL }} # required
