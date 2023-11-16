@@ -4,6 +4,8 @@ on:
   # 매 3시간마다 수행
   schedule:
     - cron: "*/5 * * * *"
+  workflow_dispatch:
+
 
 jobs:
   healthcheck:
