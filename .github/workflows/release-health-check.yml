@@ -1,9 +1,11 @@
 name: "Release Health Check"
 
 on:
-  # 매 3시간마다 수행
+  # 매 2시간마다 수행
   schedule:
-    - cron: "0 0 */3 * *"
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
 
 jobs:
   healthcheck:
@@ -23,9 +25,9 @@ jobs:
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          author_name: Github Action Health Check
+          author_name: Health-Check
           fields: repo,message,commit,action,eventName,ref,workflow,job,took # 보낼 정보들
+          github_token: ${{ secrets.ACCESS_TOKEN_GIT }}
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }} # required
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK_URL }} # required
         if: always() # 스크립트 성공/실패 여부에 상관없이 항상 수행되도록 설정
-
