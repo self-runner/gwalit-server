@@ -1,8 +1,13 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
+import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkRemindReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
+import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
+import com.selfrunner.gwalit.domain.homework.dto.service.HomeworkRemind;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
 import com.selfrunner.gwalit.domain.homework.exception.HomeworkException;
 import com.selfrunner.gwalit.domain.homework.repository.HomeworkRepository;
@@ -10,17 +15,20 @@ import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.exception.LessonException;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndNotification;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +41,9 @@ public class HomeworkService {
     private final HomeworkRepository homeworkRepository;
     private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
+    private final FCMClient fcmClient;
 
     @Transactional
     public HomeworkRes register(Member member, Long lessonId, HomeworkReq homeworkReq) {
@@ -173,5 +184,61 @@ public class HomeworkService {
 
         // Response
         return homeworkMainResList;
+    }
+
+    public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
+        // Validation
+        Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
+        if(homework.getMemberId() != member.getMemberId()) {
+            throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
+        }
+
+        // Business Logic
+        List<HomeworkStatisticsRes> homeworkStatisticsResList = homeworkRepository.findAllByBodyAndCreatedAt(member.getMemberId(), homework.getLessonId(), homework.getBody(), homework.getDeadline(), homework.getCreatedAt());
+
+        // Response
+        return homeworkStatisticsResList;
+    }
+
+    @Transactional
+    public void sendHomeworkRemindNotification(Long version, Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
+        // Validation
+
+        // Business Logic
+        List<Long> homeworkIdList = homeworkRemindReqList.stream()
+                .map(HomeworkRemindReq::getHomeworkId)
+                .collect(Collectors.toList());
+        List<HomeworkRemind> homeworkRemindList = homeworkRepository.findHomeworkByIsFinish(homeworkIdList);
+        if(!homeworkRemindList.isEmpty()) {
+            List<String> tokenList = new ArrayList<>();
+            List<Notification> notificationList = homeworkRemindList.stream()
+                    .map(homeworkRemind -> {
+                        tokenList.add(homeworkRemind.getToken());
+                        return Notification.builder()
+                                .memberId(member.getMemberId())
+                                .title(homeworkRemind.getLectureName() + " 숙제 리마인드!")
+                                .body(homeworkRemind.getBody())
+                                .name("studentLessonReport")
+                                .lectureId(homeworkRemind.getLectureId())
+                                .lessonId(homeworkRemind.getLessonId())
+                                .build();
+                    })
+                    .collect(Collectors.toList());
+            List<Notification> saveNotification = notificationRepository.saveAll(notificationList);
+            List<MemberAndNotification> memberAndNotificationList = new ArrayList<>();
+            for(int i = 0; i < notificationList.size(); i++) {
+                memberAndNotificationList.add(
+                        MemberAndNotification.builder()
+                                .memberId(homeworkRemindList.get(i).getMemberId())
+                                .notificationId(saveNotification.get(i).getNotificationId())
+                                .build()
+                );
+                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getBody(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl());
+                fcmClient.send(message);
+            }
+            memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
+        }
+
+        // Response
     }
 }
