@@ -15,9 +15,11 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,9 +38,12 @@ public class NotificationTasklet implements Tasklet {
         log.info(chunkContext.toString());
 
         List<Message> messageList = new ArrayList<>();
+        Random random = new Random();
+        int sleepTime = random.nextInt(9) + 1;
+        Thread.sleep(sleepTime * 1000);
         List<Long> lessonIdList = lessonRepository.findTodayLessonIdByDate(LocalDate.now());
-        List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(lessonIdList);
         lessonRepository.updateLessonProcessingByDate(lessonIdList);
+        List<BatchNotificationDto> batchNotificationDtoList = lessonRepository.findAllByDate(lessonIdList);
         for(BatchNotificationDto notificationDto : batchNotificationDtoList) {
             String title = "오늘은 수업이 총 " + notificationDto.getLessonList().size() + "개 있어요." + "\n";
             StringBuilder body = new StringBuilder();
@@ -46,7 +51,8 @@ public class NotificationTasklet implements Tasklet {
                 String temp = lessonDto.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " ~ " + lessonDto.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm")) + " " + lessonDto.getName() + "\n";
                 body.append(temp);
             }
-            // 마지막 개행문자 제거
+
+            // 마지막 개행 문자 제거
             if(body.length() > 0 && body.charAt(body.length() - 1) == '\n') {
                 body.setLength(body.length() - 1);
             }
