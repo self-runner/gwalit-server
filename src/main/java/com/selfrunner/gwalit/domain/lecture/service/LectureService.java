@@ -287,7 +287,7 @@ public class LectureService {
             if(check.getState().equals(MemberState.INVITE)) {
                 smsClient.sendInvitation(member.getName(), lectureName, postInviteReq, Boolean.TRUE);
             }
-            if(check.getState().equals(MemberState.ACTIVE)) {
+            if(check.getState().equals(MemberState.ACTIVE) && check.getToken() != null) {
                 // smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
                 String title = lectureName + "클래스 초대";
                 String body = "[과릿] " + member.getName() + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "접속하여 초대된 클래스를 확인해보세요!";
