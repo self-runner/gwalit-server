@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.homework.repository;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
@@ -56,9 +57,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.selectFrom(homework)
                     .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
                     .where(homework.lessonId.in(lessonIdList), homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull())
-                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                    .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                            .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                            .otherwise(1).asc())
+                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 
@@ -67,9 +71,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
             queryFactory.selectFrom(homework)
                     .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                    .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                    .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
                     .where(homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull())
-                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                    .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                            .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                            .otherwise(1).asc())
+                    .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 
@@ -78,19 +85,25 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(homework)
                         .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
                         .where(homework.memberId.eq(member.getMemberId()), homework.isFinish.eq(type), homework.deletedAt.isNull())
-                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                        .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                                .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                                .otherwise(1).asc())
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 
     @Override
-    public HomeworkMainRes findHomeworkByHomeworkId(Long homeworkId) {
-        return queryFactory.select(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish))
+    public HomeworkMainRes findHomeworkByHomeworkId(Member member, Long homeworkId) {
+        return queryFactory.select(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish))
                 .from(homework)
                 .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
                 .where(homework.homeworkId.eq(homeworkId), homework.deletedAt.isNull())
+                .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                        .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                        .otherwise(1).asc())
                 .fetchOne();
 
     }
@@ -100,9 +113,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(homework)
                         .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
-                        .where(homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull(), lecture.lectureId.eq(lectureId))
-                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                        .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .where(homework.memberId.eq(member.getMemberId()), homework.deletedAt.isNull(), memberAndLecture.lecture.lectureId.eq(lectureId))
+                        .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                                .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                                .otherwise(1).asc())
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 
@@ -111,9 +127,12 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(homework)
                         .leftJoin(lesson).on(lesson.lessonId.eq(homework.lessonId))
-                        .leftJoin(lecture).on(lecture.lectureId.eq(lesson.lecture.lectureId))
-                        .where(homework.memberId.eq(member.getMemberId()), homework.isFinish.eq(type), homework.deletedAt.isNull(), lecture.lectureId.eq(lectureId))
-                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, lecture.lectureId, lecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
+                        .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(lesson.lecture.lectureId))
+                        .where(homework.memberId.eq(member.getMemberId()), homework.isFinish.eq(type), homework.deletedAt.isNull(), memberAndLecture.lecture.lectureId.eq(lectureId))
+                        .orderBy(homework.homeworkId.asc(), new CaseBuilder()
+                                .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
+                                .otherwise(1).asc())
+                        .transform(groupBy(homework.homeworkId).list(Projections.constructor(HomeworkMainRes.class, homework.homeworkId, memberAndLecture.lecture.lectureId, memberAndLecture.color, lesson.lessonId, homework.memberId, homework.body, homework.deadline, homework.isFinish)))
         );
     }
 

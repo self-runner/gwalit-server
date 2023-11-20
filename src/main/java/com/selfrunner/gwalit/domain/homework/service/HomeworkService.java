@@ -71,7 +71,7 @@ public class HomeworkService {
 
         // Business Logic
         homework.update(homeworkReq);
-        HomeworkMainRes homeworkMainRes = homeworkRepository.findHomeworkByHomeworkId(homeworkId);
+        HomeworkMainRes homeworkMainRes = homeworkRepository.findHomeworkByHomeworkId(member, homeworkId);
 
         // Response
         return homeworkMainRes;

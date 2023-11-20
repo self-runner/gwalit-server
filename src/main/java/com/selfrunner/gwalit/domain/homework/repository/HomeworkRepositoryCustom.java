@@ -25,7 +25,7 @@ public interface HomeworkRepositoryCustom {
 
     Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndType(Member member, Boolean type);
 
-    HomeworkMainRes findHomeworkByHomeworkId(Long homeworkId);
+    HomeworkMainRes findHomeworkByHomeworkId(Member member, Long homeworkId);
 
     Optional<List<HomeworkMainRes>> findAllHomeworkByMemberAndLectureId(Member member, Long lectureId);
 
