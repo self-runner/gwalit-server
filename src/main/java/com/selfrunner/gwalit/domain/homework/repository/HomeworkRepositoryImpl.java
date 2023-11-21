@@ -104,6 +104,7 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
                 .orderBy(homework.homeworkId.asc(), new CaseBuilder()
                         .when(memberAndLecture.member.memberId.eq(member.getMemberId())).then(0)
                         .otherwise(1).asc())
+                .limit(1)
                 .fetchOne();
 
     }
