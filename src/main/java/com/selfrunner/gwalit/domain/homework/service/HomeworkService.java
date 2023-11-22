@@ -194,7 +194,8 @@ public class HomeworkService {
         log.info("Homework Id : " +  homework.getMemberId());
         log.info("Member Id : " +  member.getMemberId());
         System.out.println(homework.getMemberId() != member.getMemberId());
-        if(homework.getMemberId() != member.getMemberId()) {
+        System.out.println(homework.getMemberId().equals(member.getMemberId()));
+        if(!homework.getMemberId().equals(member.getMemberId())) {
             throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
