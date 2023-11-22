@@ -193,6 +193,7 @@ public class HomeworkService {
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
         log.info("Homework Id : " +  homework.getMemberId());
         log.info("Member Id : " +  member.getMemberId());
+        System.out.println(homework.getMemberId() != member.getMemberId());
         if(homework.getMemberId() != member.getMemberId()) {
             throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
