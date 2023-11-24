@@ -189,7 +189,7 @@ public class HomeworkService {
     public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
-        if(homework.getMemberId() != member.getMemberId()) {
+        if(!homework.getMemberId().equals(member.getMemberId())) {
             throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
