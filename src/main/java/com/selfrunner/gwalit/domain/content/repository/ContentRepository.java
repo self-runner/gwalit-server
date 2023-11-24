@@ -12,5 +12,5 @@ public interface ContentRepository extends JpaRepository<Content, Long> {
     Boolean existsByLinkUrl(String linkUrl);
 
     // 고정된 콘텐츠들 조회
-    Optional<List<Content>> findAllByIsPinned(Boolean isPinned);
+    Optional<List<Content>> findAllByIsPinnedOrderByCreatedAtDesc(Boolean isPinned);
 }
