@@ -149,7 +149,7 @@ public class HomeworkRepositoryImpl implements HomeworkRepositoryCustom{
     public List<HomeworkStatisticsRes> findAllByBodyAndCreatedAt(Long memberId, Long lessonId, String body, LocalDate deadline, LocalDateTime createdAt) {
         return queryFactory.selectFrom(homework)
                 .leftJoin(member).on(member.memberId.eq(homework.memberId))
-                .where(homework.memberId.ne(memberId), homework.lessonId.eq(lessonId), homework.body.eq(body), homework.deadline.eq(deadline), homework.createdAt.eq(createdAt), member.deletedAt.isNull(), member.state.ne(MemberState.FAKE))
+                .where(homework.memberId.ne(memberId), homework.lessonId.eq(lessonId), homework.body.eq(body), homework.deadline.eq(deadline), homework.createdAt.eq(createdAt), member.deletedAt.isNull(), member.state.ne(MemberState.FAKE), member.state.ne(MemberState.INVITE))
                 .transform(groupBy(homework.memberId).list(Projections.constructor(HomeworkStatisticsRes.class, homework.homeworkId, homework.memberId, member.name, homework.lessonId, homework.body, homework.deadline, homework.isFinish)));
     }
 
