@@ -141,7 +141,7 @@ public class ContentService {
         // Validation
 
         // Business Logic
-        List<Content> contentList = contentRepository.findAllByIsPinned(Boolean.TRUE).orElse(null);
+        List<Content> contentList = contentRepository.findAllByIsPinnedOrderByCreatedAtDesc(Boolean.TRUE).orElse(null);
 
         // Response
         return contentList.stream()

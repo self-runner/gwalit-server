@@ -51,7 +51,7 @@ public class SubjectService {
 
             case ENGLISH:
                 getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.HIGH, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
-                getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MIDDLE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
+                //getSubjectMaterialResList.add(new GetSubjectMaterialRes(SubjectDetail.MIDDLE, Boolean.TRUE, getWorkbookTypeResList(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)));
             
                 break;
 
