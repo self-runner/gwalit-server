@@ -26,6 +26,7 @@ import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -189,6 +191,9 @@ public class HomeworkService {
     public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
+        log.info("Homework Id : " +  homework.getMemberId());
+        log.info("Member Id : " +  member.getMemberId());
+        log.info("Equal : " + homework.getMemberId().equals(member.getMemberId()));
         if(!homework.getMemberId().equals(member.getMemberId())) {
             throw new HomeworkException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
