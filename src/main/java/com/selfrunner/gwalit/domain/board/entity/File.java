@@ -21,19 +21,33 @@ public class File extends BaseTimeEntity {
     @Column(name = "file_id", columnDefinition = "bigint")
     private Long fileId;
 
+    @Column(name = "name", columnDefinition = "varchar(255)")
     private String name;
 
-    private String fileUrl;
+    @Column(name = "url", columnDefinition = "text")
+    private String url;
 
-    private Long questionId;
+    @Column(name = "size", columnDefinition = "bigint")
+    private Long size;
+
+    @Column(name = "member_id", columnDefinition = "bigint")
+    private Long memberId;
+
+    @Column(name = "lecture_id", columnDefinition = "bigint")
+    private Long lectureId;
+
+    private Long boardId;
 
     private Long replyId;
 
     @Builder
-    public File(String name, String fileUrl, Long questionId, Long replyId) {
+    public File(String name, String url, Long size, Long memberId, Long lectureId, Long boardId, Long replyId) {
         this.name = name;
-        this.fileUrl = fileUrl;
-        this.questionId = questionId;
+        this.url = url;
+        this.size = size;
+        this.memberId = memberId;
+        this.lectureId = lectureId;
+        this.boardId = boardId;
         this.replyId = replyId;
     }
 }
