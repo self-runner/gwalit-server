@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.question.enumerate;
+package com.selfrunner.gwalit.domain.board.enumerate;
 
 public enum QuestionStatus {
     // 질문 게시
