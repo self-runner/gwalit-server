@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.question.entity;
+package com.selfrunner.gwalit.domain.board.entity;
 
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
@@ -23,14 +23,14 @@ public class Reply extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name = "question_id")
-    private Question question;
+    private Board board;
 
     @Column(name = "body", columnDefinition = "text")
     private String body;
 
     @Builder
-    public Reply(Question question, String body) {
-        this.question = question;
+    public Reply(Board board, String body) {
+        this.board = board;
         this.body = body;
     }
 }

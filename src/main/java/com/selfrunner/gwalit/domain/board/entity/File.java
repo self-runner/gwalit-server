@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.question.entity;
+package com.selfrunner.gwalit.domain.board.entity;
 
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;

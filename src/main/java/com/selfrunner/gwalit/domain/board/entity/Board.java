@@ -1,6 +1,6 @@
-package com.selfrunner.gwalit.domain.question.entity;
+package com.selfrunner.gwalit.domain.board.entity;
 
-import com.selfrunner.gwalit.domain.question.enumerate.QuestionStatus;
+import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,15 +13,15 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-@Table(name = "question")
+@Table(name = "board")
 @SQLDelete(sql = "")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Question extends BaseTimeEntity {
+public class Board extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "question_id", columnDefinition = "bigint")
-    private Long questionId;
+    @Column(name = "board_id", columnDefinition = "bigint")
+    private Long boardId;
 
     @Column(name = "lecture_id", columnDefinition = "bigint")
     private Long lectureId;
@@ -46,7 +46,7 @@ public class Question extends BaseTimeEntity {
     private QuestionStatus status;
 
     @Builder
-    public Question(Long lectureId, Long memberId, Boolean isPublic, Long lessonId, String title, String body, String status) {
+    public Board(Long lectureId, Long memberId, Boolean isPublic, Long lessonId, String title, String body, String status) {
         this.lectureId = lectureId;
         this.memberId = memberId;
         this.isPublic = isPublic;
