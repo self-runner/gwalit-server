@@ -45,9 +45,9 @@ public class BoardController {
     }
 
     @Operation(summary = "질문 삭제")
-    @DeleteMapping("")
-    public ApplicationResponse<Void> deleteBoard() {
-        boardService.deleteBoard();
+    @DeleteMapping("/{board_id}")
+    public ApplicationResponse<Void> deleteBoard(@Auth Member member, @PathVariable(value = "board_id") Long boardId) {
+        boardService.deleteBoard(member, boardId);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
@@ -64,9 +64,9 @@ public class BoardController {
     }
 
     @Operation(summary = "질문 페이지네이션")
-    @GetMapping("/list")
-    public ApplicationResponse<Slice<BoardMetaRes>> getBoardPagination(@Auth Member member, @RequestParam(name = "category") String category, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 15)Pageable pageable) {
-        return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getBoardPagination(member, category, cursor, pageable));
+    @GetMapping("/list/{lecture_id}")
+    public ApplicationResponse<Slice<BoardMetaRes>> getBoardPagination(@Auth Member member, @PathVariable(value = "lecture_id") Long lectureId, @RequestParam(name = "category") String category, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 15)Pageable pageable) {
+        return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getBoardPagination(member, lectureId, category, cursor, pageable));
     }
 
     @Operation(summary = "질문 게시 상태만 가져오기 (메인 페이지용)")

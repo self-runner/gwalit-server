@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.board.entity;
 
+import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -21,16 +22,21 @@ public class Reply extends BaseTimeEntity {
     @Column(name = "reply_id", columnDefinition = "bigint")
     private Long replyId;
 
-    @ManyToOne
-    @JoinColumn(name = "question_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
     private Board board;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "body", columnDefinition = "text")
     private String body;
 
     @Builder
-    public Reply(Board board, String body) {
+    public Reply(Board board, Member member, String body) {
         this.board = board;
+        this.member = member;
         this.body = body;
     }
 }

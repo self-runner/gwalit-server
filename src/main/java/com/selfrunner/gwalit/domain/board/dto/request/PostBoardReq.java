@@ -1,6 +1,8 @@
 package com.selfrunner.gwalit.domain.board.dto.request;
 
 import com.selfrunner.gwalit.domain.board.entity.Board;
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.member.entity.Member;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;
@@ -25,10 +27,10 @@ public class PostBoardReq {
     @NotNull
     private String status;
 
-    public Board toEntity(Long memberId) {
+    public Board toEntity(Lecture lecture, Member member) {
         return Board.builder()
-                .lectureId(this.lectureId)
-                .memberId(memberId)
+                .lecture(lecture)
+                .member(member)
                 .isPublic(this.isPublic)
                 .lessonId(this.lessonId)
                 .title(this.title)

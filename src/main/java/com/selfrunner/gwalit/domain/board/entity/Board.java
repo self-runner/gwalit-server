@@ -1,6 +1,9 @@
 package com.selfrunner.gwalit.domain.board.entity;
 
+import com.selfrunner.gwalit.domain.board.dto.request.PutBoardReq;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
+import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,11 +26,13 @@ public class Board extends BaseTimeEntity {
     @Column(name = "board_id", columnDefinition = "bigint")
     private Long boardId;
 
-    @Column(name = "lecture_id", columnDefinition = "bigint")
-    private Long lectureId;
+    @ManyToOne(fetch =  FetchType.LAZY)
+    @JoinColumn(name = "lecture_id")
+    private Lecture lecture;
 
-    @Column(name = "member_id", columnDefinition = "bigint")
-    private Long memberId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
 
     @Column(name = "is_public", columnDefinition = "tinyint(1)")
     private Boolean isPublic;
@@ -45,10 +50,17 @@ public class Board extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
 
+    public void update(PutBoardReq putBoardReq) {
+        this.lessonId = putBoardReq.getLessonId();
+        this.title = putBoardReq.getTitle();
+        this.body = putBoardReq.getBody();
+        this.status = QuestionStatus.valueOf(putBoardReq.getStatus());
+    }
+
     @Builder
-    public Board(Long lectureId, Long memberId, Boolean isPublic, Long lessonId, String title, String body, String status) {
-        this.lectureId = lectureId;
-        this.memberId = memberId;
+    public Board(Lecture lecture, Member member, Boolean isPublic, Long lessonId, String title, String body, String status) {
+        this.lecture = lecture;
+        this.member = member;
         this.isPublic = isPublic;
         this.lessonId = lessonId;
         this.title = title;
