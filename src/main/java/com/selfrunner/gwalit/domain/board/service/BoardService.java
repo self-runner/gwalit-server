@@ -7,6 +7,7 @@ import com.selfrunner.gwalit.domain.board.dto.response.*;
 import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.board.entity.File;
 import com.selfrunner.gwalit.domain.board.entity.Reply;
+import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.exception.BoardException;
 import com.selfrunner.gwalit.domain.board.repository.BoardRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileJdbcRepository;
@@ -15,6 +16,7 @@ import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
 import com.selfrunner.gwalit.global.util.jwt.Auth;
@@ -25,8 +27,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,6 +66,7 @@ public class BoardService {
 
     public BoardRes updateBoard(Member member, Long boardId, List<MultipartFile> multipartFileList, PutBoardReq putBoardReq) {
         // Validation
+        // TODO: 파일 용량 확인 로직 필요 (1. 각 파일당 5MB 이하인지 2.삭제 후 남은 용량에서 해당 파일들 넣을 수 있는 용량이 남아있는지)
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(!board.getMember().getMemberId().equals(member.getMemberId())) {
             throw new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION);
@@ -119,13 +124,15 @@ public class BoardService {
 
     public Slice<BoardMetaRes> getBoardPagination(Member member, Long lectureId, String category, Long cursor, Pageable pageable) {
         // Validation
-        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Slice<BoardMetaRes> boardMetaResSlice = boardRepository.findBoardPaginationByCategory(category, cursor, pageable)
+        Optional<Board> board = boardRepository.findById(cursor);
+        LocalDateTime cursorCreatedAt = board.map(BaseTimeEntity::getCreatedAt).orElse(null);
+        Slice<BoardMetaRes> boardMetaResSlice = boardRepository.findBoardPaginationByCategory(member.getMemberId(), BoardCategory.valueOf(category), cursor, cursorCreatedAt, pageable);
 
         // Response
-        return null;
+        return boardMetaResSlice;
     }
 
     public List<BoardRes> getOpenQuestion(Member member) {
@@ -176,12 +183,15 @@ public class BoardService {
 
     public Slice<ReplyRes> getReplyPagination(Member member, Long boardId, Long cursor, Pageable pageable) {
         // Validation
+        // TODO: 요청자가 해당 게시글을 포함한 클래스에 소속된 사람인지 검증 필요
 
         // Business Logic
-        //Slice<ReplyRes> replyResSlice = replyRepository.
+        Optional<Reply> reply = replyRepository.findById(cursor);
+        LocalDateTime cursorCreatedAt = reply.map(BaseTimeEntity::getCreatedAt).orElse(null);
+        Slice<ReplyRes> replyResSlice = replyRepository.findReplyPaginationByBoardId(boardId, cursor, cursorCreatedAt, pageable);
 
         // Response
-        return null;
+        return replyResSlice;
     }
 
     /**
