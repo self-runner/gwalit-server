@@ -34,7 +34,7 @@ public class BoardMetaRes {
 
     private final QuestionStatus status;
 
-    private final Integer replyCount;
+    private final Long replyCount;
 
     private final LocalDateTime createdAt;
 
