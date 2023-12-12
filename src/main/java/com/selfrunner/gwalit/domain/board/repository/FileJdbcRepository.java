@@ -34,7 +34,14 @@ public class FileJdbcRepository {
                         ps.setLong(4, file.getMemberId());
                         ps.setLong(5, file.getLectureId());
                         ps.setLong(6, file.getBoardId());
-                        ps.setLong(7, file.getReplyId());
+
+                        Long replyId = file.getReplyId();
+                        if(replyId != null) {
+                            ps.setLong(7, file.getReplyId());
+                        }
+                        else {
+                            ps.setObject(7, null);
+                        }
                     }
 
                     @Override

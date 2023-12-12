@@ -251,6 +251,7 @@ public class BoardService {
                     }
                 }
         );
+
         fileJdbcRepository.saveAll(fileList);
 
         return fileUrlList;
@@ -276,12 +277,15 @@ public class BoardService {
 
     private boolean checkFileCapacity(Long lectureId, List<MultipartFile> inputFileList, List<String> deleteFileUrlList) {
         Long capacity = fileRepository.findCapacityByLectureId(lectureId);
+        // 한 번도 파일을 등록한 적이 없을 경우에 대한 처리
+        if(capacity == null) {
+            capacity = 0L;
+        }
 
         // 삭제될 파일들이 존재한다면, 해당 파일들의 용량을 조회해서 capacity에서 제거
         if(deleteFileUrlList != null) {
             Long deleteCapacity = fileRepository.findDeleteCapacityByUrlList(deleteFileUrlList);
             capacity -= deleteCapacity;
-
         }
 
         // 추가될 파일 각각의 용량 확인 및 전체 용량 제한을 위반하는지 확인

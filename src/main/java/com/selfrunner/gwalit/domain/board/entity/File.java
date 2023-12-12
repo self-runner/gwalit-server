@@ -36,8 +36,10 @@ public class File extends BaseTimeEntity {
     @Column(name = "lecture_id", columnDefinition = "bigint")
     private Long lectureId;
 
+    @Column(name = "board_id", columnDefinition = "bigint")
     private Long boardId;
 
+    @Column(name = "reply_id", columnDefinition = "bigint")
     private Long replyId;
 
     @Builder

@@ -37,8 +37,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public Long findCapacityByLectureId(Long lectureId) {
         return queryFactory.select(file.size.sum())
                 .from(file)
-                .leftJoin(board).on(board.boardId.eq(file.boardId))
-                .where(board.lecture.lectureId.eq(lectureId))
+                .where(file.lectureId.eq(lectureId))
                 .fetchFirst();
     }
 

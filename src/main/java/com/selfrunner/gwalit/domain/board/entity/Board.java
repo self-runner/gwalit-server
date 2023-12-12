@@ -34,7 +34,7 @@ public class Board extends BaseTimeEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "is_public", columnDefinition = "tinyint(1)")
+    @Column(name = "is_public")
     private Boolean isPublic;
 
     @Column(name = "lesson_id", columnDefinition = "bigint")
