@@ -32,7 +32,7 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
     public Integer findReplyCountByBoardId(Long boardId) {
         return queryFactory.select(reply.count())
                 .from(reply)
-                .where(reply.board.boardId.eq(boardId))
+                .where(reply.board.boardId.eq(boardId), reply.deletedAt.isNull())
                 .fetchFirst().intValue();
     }
 
@@ -43,7 +43,8 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
                     .leftJoin(board).on(reply.board.boardId.eq(board.boardId))
                     .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
                     .leftJoin(file).on(file.replyId.eq(reply.replyId))
-                    .where()
+                    .where(reply.board.boardId.eq(boardId), reply.deletedAt.isNull())
+                    .orderBy(reply.createdAt.desc())
                     .limit(10)
                     .transform(groupBy(reply.replyId).list(Projections.constructor(ReplyRes.class, reply.replyId, board.boardId, member.memberId, member.type, member.name, reply.body,
                             list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt)))
@@ -51,12 +52,12 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
     }
 
     public Slice<ReplyRes> findReplyPaginationByBoardId(Long boardId, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
-        List<ReplyRes> content = queryFactory.select(Projections.constructor(ReplyRes.class, reply.replyId, board.boardId, member.memberId, member.type, member.name, reply.body,
-                        list(Projections.constructor(FileRes.class, file.name, file.url, file.size))))
+        List<ReplyRes> content = queryFactory.select(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
+                        list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt))
                 .from(reply)
                 .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
                 .leftJoin(file).on(reply.replyId.eq(file.replyId))
-                .where(reply.board.boardId.eq(boardId), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt))
+                .where(reply.board.boardId.eq(boardId), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt), reply.deletedAt.isNull())
                 .orderBy(reply.createdAt.desc(), reply.replyId.asc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();

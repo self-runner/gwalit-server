@@ -62,7 +62,7 @@ public class BoardController {
 
     @Operation(summary = "질문 페이지네이션")
     @GetMapping("/list/{lecture_id}")
-    public ApplicationResponse<Slice<BoardMetaRes>> getBoardPagination(@Auth Member member, @PathVariable(value = "lecture_id") Long lectureId, @RequestParam(name = "category") String category, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 15)Pageable pageable) {
+    public ApplicationResponse<Slice<BoardMetaRes>> getBoardPagination(@Auth Member member, @PathVariable(value = "lecture_id") Long lectureId, @RequestParam(name = "category") String category, @RequestParam(name = "cursor", required = false) Long cursor, @PageableDefault(size = 15)Pageable pageable) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getBoardPagination(member, lectureId, category, cursor, pageable));
     }
 
@@ -86,8 +86,8 @@ public class BoardController {
     }
 
     @Operation(summary = "댓글 페이지네이션")
-    @PostMapping("/{board_id}/reply/list")
-    public ApplicationResponse<Slice<ReplyRes>> getReplyPagination(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 15) Pageable pageable) {
+    @GetMapping("/{board_id}/reply/list")
+    public ApplicationResponse<Slice<ReplyRes>> getReplyPagination(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @RequestParam(name = "cursor", required = false) Long cursor, @PageableDefault(size = 15) Pageable pageable) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getReplyPagination(member, boardId, cursor, pageable));
     }
 

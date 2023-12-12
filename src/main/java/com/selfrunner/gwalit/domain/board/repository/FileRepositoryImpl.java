@@ -22,7 +22,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public List<String> findUrlListByBoardId(Long boardId) {
         return queryFactory.select(file.url)
                 .from(file)
-                .where(file.boardId.eq(boardId))
+                .where(file.boardId.eq(boardId), file.deletedAt.isNull())
                 .fetch();
     }
 
@@ -30,7 +30,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public List<String> findUrlListByReplyId(Long replyId) {
         return queryFactory.select(file.url)
                 .from(file)
-                .where(file.replyId.eq(replyId))
+                .where(file.replyId.eq(replyId), file.deletedAt.isNull())
                 .fetch();
     }
 
@@ -38,7 +38,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public Optional<List<FileRes>> findAllByBoardId(Long boardId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(file)
-                        .where(file.boardId.eq(boardId))
+                        .where(file.boardId.eq(boardId), file.deletedAt.isNull())
                         .transform(groupBy(file.url).list(Projections.constructor(FileRes.class, file.name, file.url, file.size)))
         );
     }
@@ -55,7 +55,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public Long findDeleteCapacityByUrlList(List<String> urlList) {
         return queryFactory.select(file.size.sum())
                 .from(file)
-                .where(file.url.in(urlList))
+                .where(file.url.in(urlList), file.deletedAt.isNull())
                 .fetchFirst();
     }
 }

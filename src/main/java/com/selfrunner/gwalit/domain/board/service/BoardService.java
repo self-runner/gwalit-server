@@ -31,7 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -150,8 +149,7 @@ public class BoardService {
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Optional<Board> board = boardRepository.findById(cursor);
-        LocalDateTime cursorCreatedAt = board.map(BaseTimeEntity::getCreatedAt).orElse(null);
+        LocalDateTime cursorCreatedAt = (cursor != null) ? boardRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
         return boardRepository.findBoardPaginationByCategory(member.getMemberId(), BoardCategory.valueOf(category), cursor, cursorCreatedAt, pageable);
@@ -208,8 +206,7 @@ public class BoardService {
         boardRepository.findBoardByMemberIdAndBoardId(member.getMemberId(), boardId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Optional<Reply> reply = replyRepository.findById(cursor);
-        LocalDateTime cursorCreatedAt = reply.map(BaseTimeEntity::getCreatedAt).orElse(null);
+        LocalDateTime cursorCreatedAt = (cursor != null) ? replyRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
         return replyRepository.findReplyPaginationByBoardId(boardId, cursor, cursorCreatedAt, pageable);

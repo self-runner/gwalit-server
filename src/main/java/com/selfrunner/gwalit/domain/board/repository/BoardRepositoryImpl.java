@@ -36,7 +36,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                 .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                 .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                .where(eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(true).or(checkWriter(memberId)))
+                .where(eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(true).or(checkWriter(memberId)), board.category.eq(category), board.deletedAt.isNull())
                 .orderBy(board.createdAt.desc(), board.boardId.asc())
                 .groupBy(board.boardId)
                 .limit(pageable.getPageSize() + 1)
@@ -57,7 +57,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
         return Optional.ofNullable(
             queryFactory.selectFrom(board)
                     .leftJoin(memberAndLecture).on(board.lecture.lectureId.eq(memberAndLecture.lecture.lectureId))
-                    .where(memberAndLecture.member.memberId.eq(memberId))
+                    .where(memberAndLecture.member.memberId.eq(memberId), board.deletedAt.isNull())
                     .fetchFirst()
         );
     }
@@ -69,6 +69,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
                 .where(memberAndLecture.member.memberId.eq(memberId), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNull())
                 .groupBy(board.boardId)
+                .orderBy(board.createdAt.desc())
                 .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, memberAndLecture.lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.board.boardId.count(), board.createdAt, board.modifiedAt)));
     }
 
