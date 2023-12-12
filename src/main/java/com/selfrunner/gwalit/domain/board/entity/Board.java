@@ -17,7 +17,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name = "board")
-@SQLDelete(sql = "")
+@SQLDelete(sql = "UPDATE board SET deleted_at = NOW() where board_id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Board extends BaseTimeEntity {
 
@@ -55,6 +55,15 @@ public class Board extends BaseTimeEntity {
         this.title = putBoardReq.getTitle();
         this.body = putBoardReq.getBody();
         this.status = QuestionStatus.valueOf(putBoardReq.getStatus());
+    }
+
+    public void changeQuestionStatus() {
+        if(this.status.equals(QuestionStatus.SOLVED)) {
+            this.status = QuestionStatus.UNSOLVED;
+        }
+        else {
+            this.status = QuestionStatus.SOLVED;
+        }
     }
 
     @Builder

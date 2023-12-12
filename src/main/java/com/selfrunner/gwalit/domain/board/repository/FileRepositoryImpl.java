@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
+import static com.selfrunner.gwalit.domain.board.entity.QBoard.board;
 import static com.selfrunner.gwalit.domain.board.entity.QFile.file;
 
 @Repository
@@ -30,5 +31,22 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
                         .where(file.boardId.eq(boardId))
                         .transform(groupBy(file.url).list(Projections.constructor(FileRes.class, file.name, file.url, file.size)))
         );
+    }
+
+    @Override
+    public Long findCapacityByLectureId(Long lectureId) {
+        return queryFactory.select(file.size.sum())
+                .from(file)
+                .leftJoin(board).on(board.boardId.eq(file.boardId))
+                .where(board.lecture.lectureId.eq(lectureId))
+                .fetchFirst();
+    }
+
+    @Override
+    public Long findDeleteCapacityByUrlList(List<String> urlList) {
+        return queryFactory.select(file.size.sum())
+                .from(file)
+                .where(file.url.in(urlList))
+                .fetchFirst();
     }
 }

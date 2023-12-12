@@ -4,7 +4,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.board.dto.response.BoardMetaRes;
+import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
+import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -13,12 +15,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.selfrunner.gwalit.domain.board.entity.QBoard.board;
 import static com.selfrunner.gwalit.domain.board.entity.QReply.reply;
 import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
+import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,6 +51,27 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         return new SliceImpl<>(content, pageable, hasNext);
     }
+
+    @Override
+    public Optional<Board> findBoardByMemberIdAndBoardId(Long memberId, Long boardId) {
+        return Optional.ofNullable(
+            queryFactory.selectFrom(board)
+                    .leftJoin(memberAndLecture).on(board.lecture.lectureId.eq(memberAndLecture.lecture.lectureId))
+                    .where(memberAndLecture.member.memberId.eq(memberId))
+                    .fetchFirst()
+        );
+    }
+
+    public List<BoardMetaRes> findUnsolvedBoardResByMemberId(Long memberId) {
+        return queryFactory.selectFrom(board)
+                .leftJoin(reply).on(reply.board.boardId.eq(board.boardId))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(board.boardId))
+                .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
+                .where(memberAndLecture.member.memberId.eq(memberId), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNotNull())
+                .groupBy(board.boardId)
+                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+    }
+
 
     // 커서기반 페이지네이션에서 커서 뒤인지 확인하는 메소드
     private BooleanExpression eqCursorAndCursorCreatedAt(Long cursor, LocalDateTime cursorCreatedAt) {

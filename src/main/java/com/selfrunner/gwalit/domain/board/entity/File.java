@@ -12,7 +12,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name = "file")
-@SQLDelete(sql = "")
+@SQLDelete(sql = "UPDATE file SET deleted_at = NOW() where file_id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class File extends BaseTimeEntity {
 

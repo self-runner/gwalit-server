@@ -13,7 +13,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Table(name = "reply")
-@SQLDelete(sql = "")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Reply extends BaseTimeEntity {
 

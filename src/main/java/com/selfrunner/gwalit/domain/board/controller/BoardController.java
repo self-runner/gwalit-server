@@ -3,10 +3,7 @@ package com.selfrunner.gwalit.domain.board.controller;
 import com.selfrunner.gwalit.domain.board.dto.request.PostBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.PutBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.ReplyReq;
-import com.selfrunner.gwalit.domain.board.dto.response.BoardMetaRes;
-import com.selfrunner.gwalit.domain.board.dto.response.BoardReplyRes;
-import com.selfrunner.gwalit.domain.board.dto.response.BoardRes;
-import com.selfrunner.gwalit.domain.board.dto.response.ReplyRes;
+import com.selfrunner.gwalit.domain.board.dto.response.*;
 import com.selfrunner.gwalit.domain.board.service.BoardService;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.global.common.ApplicationResponse;
@@ -71,7 +68,7 @@ public class BoardController {
 
     @Operation(summary = "질문 게시 상태만 가져오기 (메인 페이지용)")
     @GetMapping("/main")
-    public ApplicationResponse<List<BoardRes>> getOpenQuestion(@Auth Member member) {
+    public ApplicationResponse<List<BoardMetaRes>> getOpenQuestion(@Auth Member member) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getOpenQuestion(member));
     }
 
@@ -92,5 +89,11 @@ public class BoardController {
     @PostMapping("/{board_id}/reply/list")
     public ApplicationResponse<Slice<ReplyRes>> getReplyPagination(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @RequestParam(name = "cursor") Long cursor, @PageableDefault(size = 15) Pageable pageable) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.getReplyPagination(member, boardId, cursor, pageable));
+    }
+
+    @Operation(summary = "파일 용량 조회")
+    @GetMapping("/{board_id}/file/size")
+    public ApplicationResponse<BoardFileRes> getFileCapacity(@Auth Member member, @PathVariable(value = "board_id") Long boardId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, boardService.getFileCapacity(member, boardId));
     }
 }

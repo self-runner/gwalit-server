@@ -29,6 +29,14 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
+    public Integer findReplyCountByBoardId(Long boardId) {
+        return queryFactory.select(reply.count())
+                .from(reply)
+                .where(reply.board.boardId.eq(boardId))
+                .fetchFirst().intValue();
+    }
+
+    @Override
     public Optional<List<ReplyRes>> findRecentReplyByBoardId(Long boardId) {
         return Optional.ofNullable(
             queryFactory.selectFrom(reply)
