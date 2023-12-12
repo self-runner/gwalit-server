@@ -46,7 +46,7 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
                     .where()
                     .limit(10)
                     .transform(groupBy(reply.replyId).list(Projections.constructor(ReplyRes.class, reply.replyId, board.boardId, member.memberId, member.type, member.name, reply.body,
-                            list(Projections.constructor(FileRes.class, file.name, file.url, file.size)))))
+                            list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt)))
         );
     }
 

@@ -79,7 +79,7 @@ public class BoardController {
     }
 
     @Operation(summary = "댓글 삭제")
-    @PostMapping("/{board_id}/reply/{reply_id}")
+    @DeleteMapping("/{board_id}/reply/{reply_id}")
     public ApplicationResponse<Void> deleteReply(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @PathVariable(value = "reply_id") Long replyId) {
         boardService.deleteReply(member, boardId, replyId);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
@@ -92,8 +92,8 @@ public class BoardController {
     }
 
     @Operation(summary = "파일 용량 조회")
-    @GetMapping("/{board_id}/file/size")
-    public ApplicationResponse<BoardFileRes> getFileCapacity(@Auth Member member, @PathVariable(value = "board_id") Long boardId) {
-        return ApplicationResponse.ok(ErrorCode.SUCCESS, boardService.getFileCapacity(member, boardId));
+    @GetMapping("/capacity/{lecture_id}")
+    public ApplicationResponse<BoardFileRes> getFileCapacity(@Auth Member member, @PathVariable(value = "lecture_id") Long lectureId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, boardService.getFileCapacity(member, lectureId));
     }
 }

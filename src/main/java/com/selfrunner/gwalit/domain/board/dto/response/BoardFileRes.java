@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public class BoardFileRes {
 
-    private Long boardId;
+    private Long lectureId;
 
     private Long fileCapacity;
 }

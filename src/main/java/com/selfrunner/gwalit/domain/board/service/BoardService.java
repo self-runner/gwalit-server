@@ -96,7 +96,6 @@ public class BoardService {
 
         // Business Logic (file 버켓에서 삭제 + DB에서 삭제)
         List<String> fileUrlList = fileRepository.findUrlListByBoardId(boardId);
-        System.out.println(fileUrlList != null);
         deleteFileList(fileUrlList);
         replyRepository.deleteAllByBoardBoardId(boardId);
         boardRepository.delete(board);
@@ -197,7 +196,7 @@ public class BoardService {
 
         // Business Logic (댓글 및 연관 파일 삭제)
         replyRepository.delete(reply);
-        List<String> fileUrlList = fileRepository.findUrlListByBoardId(replyId);
+        List<String> fileUrlList = fileRepository.findUrlListByReplyId(replyId);
         deleteFileList(fileUrlList);
 
         // Response
@@ -216,14 +215,14 @@ public class BoardService {
         return replyRepository.findReplyPaginationByBoardId(boardId, cursor, cursorCreatedAt, pageable);
     }
 
-    public BoardFileRes getFileCapacity(Member member, Long boardId) {
+    public BoardFileRes getFileCapacity(Member member, Long lectureId) {
         // Validation
-        boardRepository.findBoardByMemberIdAndBoardId(member.getMemberId(), boardId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
         // Business Logic
-        Long fileCapacity = fileRepository.findCapacityByLectureId(boardId);
+        Long fileCapacity = fileRepository.findCapacityByLectureId(lectureId);
 
-        return new BoardFileRes(boardId, fileCapacity);
+        return new BoardFileRes(lectureId, fileCapacity);
     }
 
     /**
@@ -269,7 +268,6 @@ public class BoardService {
      * @param fileUrlList - 파일링크리스트(String)
      */
     private void deleteFileList(List<String> fileUrlList) {
-        System.out.println("test");
         fileUrlList.forEach(
                 fileUrl -> {
                     try {
@@ -279,7 +277,6 @@ public class BoardService {
                     }
                 }
         );
-        System.out.println("test2");
 
         fileRepository.deleteAllByUrlIn(fileUrlList);
     }

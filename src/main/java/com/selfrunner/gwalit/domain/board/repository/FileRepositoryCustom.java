@@ -9,6 +9,8 @@ public interface FileRepositoryCustom {
 
     List<String> findUrlListByBoardId(Long boardId);
 
+    List<String> findUrlListByReplyId(Long replyId);
+
     Optional<List<FileRes>> findAllByBoardId(Long boardId);
 
     // 클래스별 파일 사용용량 조회 쿼리
