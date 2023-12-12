@@ -50,7 +50,7 @@ public class BoardService {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postBoardReq.getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         // TODO: 클래스당 용량 검사 로직 추가 필요
-        if(checkFileCapacity(memberAndLecture.getLecture().getLectureId(), multipartFileList, null)) {
+        if(multipartFileList != null && checkFileCapacity(memberAndLecture.getLecture().getLectureId(), multipartFileList, null)) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
         }
 
@@ -58,12 +58,13 @@ public class BoardService {
         Board board = postBoardReq.toEntity(memberAndLecture.getLecture(), member);
         Board saveBoard = boardRepository.save(board);
         // File이 존재하면 S3 업로드 진행
-        List<FileRes> fileUrlList = (!multipartFileList.isEmpty()) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), saveBoard.getBoardId(), null): null;
+        List<FileRes> fileUrlList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), saveBoard.getBoardId(), null): null;
 
         // Response
         return new BoardRes(saveBoard, member, fileUrlList);
     }
 
+    @Transactional
     public BoardRes updateBoard(Member member, Long boardId, List<MultipartFile> multipartFileList, PutBoardReq putBoardReq) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -85,6 +86,7 @@ public class BoardService {
         return new BoardRes(updateBoard, member, fileResList);
     }
 
+    @Transactional
     public void deleteBoard(Member member, Long boardId) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -94,6 +96,7 @@ public class BoardService {
 
         // Business Logic (file 버켓에서 삭제 + DB에서 삭제)
         List<String> fileUrlList = fileRepository.findUrlListByBoardId(boardId);
+        System.out.println(fileUrlList != null);
         deleteFileList(fileUrlList);
         replyRepository.deleteAllByBoardBoardId(boardId);
         boardRepository.delete(board);
@@ -101,6 +104,7 @@ public class BoardService {
         // Response
     }
 
+    @Transactional
     public BoardRes changeQuestionStatus(Member member, Long boardId) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -116,6 +120,7 @@ public class BoardService {
 
         // Business Logic
         board.changeQuestionStatus();
+        System.out.println(board.getStatus());
         Board updateBoard = boardRepository.save(board);
         List<FileRes> fileList = fileRepository.findAllByBoardId(boardId).orElse(null);
 
@@ -160,6 +165,7 @@ public class BoardService {
         return boardRepository.findUnsolvedBoardResByMemberId(member.getMemberId());
     }
 
+    @Transactional
     public ReplyRes registerReply(Member member, Long boardId, List<MultipartFile> multipartFileList, ReplyReq replyReq) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -180,6 +186,7 @@ public class BoardService {
         return new ReplyRes(saveReply, saveReply.getMember(), fileUrlList);
     }
 
+    @Transactional
     public void deleteReply(Member member, Long boardId, Long replyId) {
         // Validation
         Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
@@ -262,6 +269,7 @@ public class BoardService {
      * @param fileUrlList - 파일링크리스트(String)
      */
     private void deleteFileList(List<String> fileUrlList) {
+        System.out.println("test");
         fileUrlList.forEach(
                 fileUrl -> {
                     try {
@@ -271,6 +279,7 @@ public class BoardService {
                     }
                 }
         );
+        System.out.println("test2");
 
         fileRepository.deleteAllByUrlIn(fileUrlList);
     }

@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.selfrunner.gwalit.domain.board.entity.Board;
+import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
@@ -34,6 +35,8 @@ public class BoardRes {
 
     private final String body;
 
+    private final BoardCategory category;
+
     private final QuestionStatus status;
 
     private final List<FileRes> fileList;
@@ -52,6 +55,7 @@ public class BoardRes {
         this.lessonId = board.getLessonId();
         this.title = board.getTitle();
         this.body = board.getBody();
+        this.category = board.getCategory();
         this.status =  board.getStatus();
         this.fileList = fileList;
         this.createdAt = board.getCreatedAt();

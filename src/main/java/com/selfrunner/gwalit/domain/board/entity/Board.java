@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.board.entity;
 
 import com.selfrunner.gwalit.domain.board.dto.request.PutBoardReq;
+import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
@@ -46,6 +47,10 @@ public class Board extends BaseTimeEntity {
     @Column(name = "body", columnDefinition = "text")
     private String body;
 
+    @Column(name = "category", columnDefinition = "varchar(255)")
+    @Enumerated(EnumType.STRING)
+    private BoardCategory category;
+
     @Column(name = "status", columnDefinition = "varchar(255)")
     @Enumerated(EnumType.STRING)
     private QuestionStatus status;
@@ -61,19 +66,20 @@ public class Board extends BaseTimeEntity {
         if(this.status.equals(QuestionStatus.SOLVED)) {
             this.status = QuestionStatus.UNSOLVED;
         }
-        else {
+        else if(this.status.equals(QuestionStatus.UNSOLVED)) {
             this.status = QuestionStatus.SOLVED;
         }
     }
 
     @Builder
-    public Board(Lecture lecture, Member member, Boolean isPublic, Long lessonId, String title, String body, String status) {
+    public Board(Lecture lecture, Member member, Boolean isPublic, Long lessonId, String title, String body, String category, String status) {
         this.lecture = lecture;
         this.member = member;
         this.isPublic = isPublic;
         this.lessonId = lessonId;
         this.title = title;
         this.body = body;
+        this.category = BoardCategory.valueOf(category);
         this.status = QuestionStatus.valueOf(status);
     }
 }

@@ -1,6 +1,7 @@
 package com.selfrunner.gwalit.domain.board.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import lombok.Getter;
@@ -28,6 +29,8 @@ public class BoardMetaRes {
     private final String title;
 
     private final String body;
+
+    private final BoardCategory category;
 
     private final QuestionStatus status;
 

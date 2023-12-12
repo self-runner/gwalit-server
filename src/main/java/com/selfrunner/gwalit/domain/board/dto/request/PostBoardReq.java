@@ -25,6 +25,9 @@ public class PostBoardReq {
     private String body;
 
     @NotNull
+    private String category;
+
+    @NotNull
     private String status;
 
     public Board toEntity(Lecture lecture, Member member) {
@@ -35,6 +38,7 @@ public class PostBoardReq {
                 .lessonId(this.lessonId)
                 .title(this.title)
                 .body(this.body)
+                .category(this.category)
                 .status(this.status)
                 .build();
     }

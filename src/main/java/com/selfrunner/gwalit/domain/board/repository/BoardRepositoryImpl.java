@@ -40,7 +40,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .orderBy(board.createdAt.desc(), board.boardId.asc())
                 .groupBy(board.boardId)
                 .limit(pageable.getPageSize() + 1)
-                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
 
         // 다음 페이지 존재 여부 계산
         boolean hasNext = false;
@@ -69,7 +69,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
                 .where(memberAndLecture.member.memberId.eq(memberId), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNotNull())
                 .groupBy(board.boardId)
-                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
     }
 
 

@@ -21,7 +21,10 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
 
     @Override
     public List<String> findUrlListByBoardId(Long boardId) {
-        return null;
+        return queryFactory.select(file.url)
+                .from(file)
+                .where(file.boardId.eq(boardId))
+                .fetch();
     }
 
     @Override
