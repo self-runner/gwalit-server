@@ -36,7 +36,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                 .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                 .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                .where(eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(true).or(checkWriter(memberId)), board.category.eq(category), board.deletedAt.isNull())
+                .where(eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(true).or(checkWriter(memberId)), checkCategory(category), board.deletedAt.isNull())
                 .orderBy(board.createdAt.desc(), board.boardId.asc())
                 .groupBy(board.boardId)
                 .limit(pageable.getPageSize() + 1)
@@ -92,5 +92,13 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
      */
     private BooleanExpression checkWriter(Long memberId) {
         return board.member.memberId.eq(memberId);
+    }
+
+    private BooleanExpression checkCategory(BoardCategory category) {
+        if(category != null) {
+            return board.category.eq(category);
+        }
+
+        return null;
     }
 }
