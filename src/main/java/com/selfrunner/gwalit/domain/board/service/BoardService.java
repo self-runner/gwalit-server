@@ -152,7 +152,7 @@ public class BoardService {
         LocalDateTime cursorCreatedAt = (cursor != null) ? boardRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
-        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), BoardCategory.valueOf(category), cursor, cursorCreatedAt, pageable);
+        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), lectureId, (!category.equals("all")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
     }
 
     public List<BoardMetaRes> getOpenQuestion(Member member) {
@@ -278,6 +278,13 @@ public class BoardService {
         fileRepository.deleteAllByUrlIn(fileUrlList);
     }
 
+    /**
+     * 특정 클래스의 사용되고 있는 자료실 용량 확인하여 추가 등록이 가능한지를 확인하는 메소드
+     * @param lectureId - 클래스 ID
+     * @param inputFileList - 추가될 파일리스트
+     * @param deleteFileUrlList - 삭제될 파일리스트
+     * @return - 자료실 용량 여유분 존재 시 true, 미존재시 false
+     */
     private boolean checkFileCapacity(Long lectureId, List<MultipartFile> inputFileList, List<String> deleteFileUrlList) {
         Long capacity = fileRepository.findCapacityByLectureId(lectureId);
         // 한 번도 파일을 등록한 적이 없을 경우에 대한 처리
