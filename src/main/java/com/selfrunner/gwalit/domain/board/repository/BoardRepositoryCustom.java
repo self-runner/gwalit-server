@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface BoardRepositoryCustom {
 
     // 카테고리별 게시글 페이지네이션
-    Slice<BoardMetaRes> findBoardPaginationByCategory(Long memberId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable);
+    Slice<BoardMetaRes> findBoardPaginationByCategory(Long memberId, Long lectureId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable);
 
     // 해당 게시글을 작성한 클래스에 소속되어 있는지를 확인하고 게시글 정보를 반환
     Optional<Board> findBoardByMemberIdAndBoardId(Long memberId, Long boardId);

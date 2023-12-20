@@ -152,7 +152,7 @@ public class BoardService {
         LocalDateTime cursorCreatedAt = (cursor != null) ? boardRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
-        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), (!category.equals("all")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
+        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), lectureId, (!category.equals("all")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
     }
 
     public List<BoardMetaRes> getOpenQuestion(Member member) {
