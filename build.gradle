@@ -88,6 +88,12 @@ dependencies {
 
     // FCM
 	implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+	// GCP
+	implementation 'org.springframework.cloud:spring-cloud-gcp-starter:1.2.8.RELEASE'
+	implementation 'com.google.cloud:google-cloud-storage:2.30.1'
+
+
 }
 
 tasks.named('test') {
