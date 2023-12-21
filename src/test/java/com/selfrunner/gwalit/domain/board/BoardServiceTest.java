@@ -12,8 +12,11 @@ import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import com.selfrunner.gwalit.util.LectureTestUtil;
 import com.selfrunner.gwalit.util.MemberAndLectureTestUtil;
 import com.selfrunner.gwalit.util.MemberTestUtil;
@@ -21,9 +24,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,14 +50,26 @@ public class BoardServiceTest {
     private FileJdbcRepository fileJdbcRepository;
 
     @Mock
+    private MemberRepository memberRepository;
+
+    @Mock
     private MemberAndLectureRepository memberAndLectureRepository;
+
+    @Mock
+    private NotificationRepository notificationRepository;
+
+    @Mock
+    private MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
 
     @Mock
     private S3Client s3Client;
 
+    @Mock
+    private FCMClient fcmClient;
+
     @BeforeEach
     void beforeEach() {
-        boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberAndLectureRepository, s3Client);
+        boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberRepository, memberAndLectureRepository, notificationRepository, memberAndNotificationJdbcRepository, s3Client, fcmClient);
     }
 
     @Test
@@ -66,6 +82,7 @@ public class BoardServiceTest {
         PostBoardReq postBoardReq = PostBoardReq.builder().build();
         Board board = postBoardReq.toEntity(lecture, member);
         given(boardRepository.save(any(Board.class))).willReturn(board);
+        given(memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(any(Member.class), any(Long.class))).willReturn(Optional.ofNullable(memberAndLecture));
 
         // when
         BoardRes boardRes = boardService.registerBoard(member, null, postBoardReq);

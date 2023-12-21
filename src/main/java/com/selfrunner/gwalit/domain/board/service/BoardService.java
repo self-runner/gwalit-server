@@ -1,5 +1,6 @@
 package com.selfrunner.gwalit.domain.board.service;
 
+import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.board.dto.request.PostBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.PutBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.ReplyReq;
@@ -16,10 +17,16 @@ import com.selfrunner.gwalit.domain.board.repository.FileRepository;
 import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.MemberAndNotification;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import com.selfrunner.gwalit.global.util.jwt.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,8 +49,12 @@ public class BoardService {
     private final ReplyRepository replyRepository;
     private final FileRepository fileRepository;
     private final FileJdbcRepository fileJdbcRepository;
+    private final MemberRepository memberRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
     private final S3Client s3Client;
+    private final FCMClient fcmClient;
 
     @Transactional
     public BoardRes registerBoard(Member member, List<MultipartFile> multipartFileList, PostBoardReq postBoardReq) {
@@ -58,6 +70,8 @@ public class BoardService {
         Board saveBoard = boardRepository.save(board);
         // File이 존재하면 S3 업로드 진행
         List<FileRes> fileUrlList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), saveBoard.getBoardId(), null): null;
+        // FCM 알림 전송
+        sendBoardNotification(member, memberAndLecture, board);
 
         // Response
         return new BoardRes(saveBoard, member, fileUrlList);
@@ -308,5 +322,46 @@ public class BoardService {
 
         // 500MB 초과 여부 조건 반환
         return capacity > 524288000;
+    }
+
+    /**
+     * Baord의 등록/수정이 일어났을 때 알림 전송
+     * @param member
+     * @param memberAndLecture
+     * @param board
+     */
+    private void sendBoardNotification(Member member, MemberAndLecture memberAndLecture, Board board) {
+        // FCM 알림 전송 로직 도입
+        String title = "새로운 수업 등록!";
+        String body = member.getName() + " 선생님이 수업을 등록했어요! 숙제를 확인해보세요!";
+        Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
+                .title(title)
+                .body(body)
+                .name("studentLessonReport")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+//        List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+//                .map(studentId -> MemberAndNotification.builder()
+//                        .memberId(studentId)
+//                        .notificationId(saveNotification.getNotificationId())
+//                        .build())
+//                .collect(Collectors.toList());
+//        memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
+//        List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
+//        if(!tokenList.isEmpty()) {
+//            MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+//            fcmClient.sendMulticast(tokenList, multicastMessage);
+//        }
+    }
+
+    /**
+     * Reply의 등록이 일어났을 때 알림 전송
+     * @param board - 댓글이 작성된 게시글 정보
+     * @param reply - 작성된 댓글 정보
+     */
+    private void sendReplyNotification(Board board, Reply reply) {
+
     }
 }
