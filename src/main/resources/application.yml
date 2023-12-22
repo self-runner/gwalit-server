@@ -41,11 +41,34 @@ spring:
       initialize-schema: never
     job:
       enabled: false
+  cloud:
+    gcp:
+      storage:
+        credentials:
+          encoded-key: {
+            "type": "service_account",
+            "project_id": "starlit-fire-408511",
+            "private_key_id": "98df9bcb2f7db74e7c163f08177775cfcda740e6",
+            "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQD0wPnwS+omiA0+\nYhqKdC3WRi9kM019Us+v14PBfL+pRzTzSdzHR8mAwnkvq95laFQsLiRZUSL+vSej\nHyhZ2NrFsRrALf92oNmLFAPv+9WiQg9s+9arNi3///HlMgN27i9Ge/LOXUO3CXFS\nl1vHtQFCJBe7Otb0ws5mlF0RgkqGsQPbHIrtVPwLw0Z60vN2H53jkOTU8uBCmkI1\nX5doAQRQGjv54C+QdmxRmPDQRBnw5K8nYMB3buK8slTBorv9PT2BfB9ilsdYQnEG\nZXhyCYKmCzHBR8dW7aV07LwI+SuqUfBmvBkg2n0z1JdVIy62XalSdAAPQ7YbKLzc\nxq62m4dpAgMBAAECggEAO/U5VWVXgWRzcBya2V+gKf2MFw0dVs3uXGqcl43+qtKr\nlUz7JaN/qMgbZXMCWo/ODPupwmqmusZuWx7jJO2DnInoHnu2OSKq4FABLe1g1qy9\nuCpSmqM9bhkOcmIH6L7tPGRZZTYCRGjvBrdXD8uW+RO77404wwGlDAqc6RDkvm1M\ntCYXxL7pnSLeJpvyPixFb0aO6Ry7MME/GjZhzubWkPV5RRH/uM4+HOxv+vznKmnd\n25rPfuG+1lZgque+DPY00diYGhtlaT6KWPb3Uea/jbEV6E0kHlUjkivnYSdUSY5+\nU1w199DulnP+KLoLNURay1M0gC8F59VLU8U7g628HQKBgQD/l0K8QUfg2/ThILjs\na3VL7jJjr/f9DZ5QtsZDXK/X4QilcYSS9NHPJIBuzsY9q7WHeJDsWxeaJrxQp9YE\np1mzXJcn4DjJkA9aSTfNWJH38HHokGFs/hpOAbzYQk+I/D9nzkRUZr0+sRDnADSp\nz6v7AxeqNv+DvpaTA7nRzaIphQKBgQD1JUZSQaLtgqCLUYN1BPj6Lp0HDS/qzyZN\n/qIQ6dNJ8bJzLUsNPuSZrnPI99vExQSsCtqre48sO8UqxqI56+AfcL6F8VDGuWQZ\ngmkUm8q62oSpstahynn+La9vvXuS850rR/6gMQyBylifEkGyEM0M3hilT4aizZrf\nAL/bnav5lQKBgDZdgkBw0k0t/CR2xV7kbIq+G9HAeEtHPkmE1x808+JDZ4dpYf2w\nPYCGDxuCuAAeKfqq1oivx5Fuc9fkG03aGuZf53b/5pRZJCrcMBZppILMji4dp9t7\nITU+gWCumiRVI1d9NGOPhuly2FmKXalRFw/JVJtMH4VyYKzcugW6a6fRAoGAEmdR\n+CrlSF9eHhdofwh4iI+nSjg7OK2EeqZ7FDn5mruCYhMsZzopf0ARgSzaWtNPnnrS\nH72O6gsyqhtvYlnK4ZFdPED5h3Gziha4PMvVVGHDQ9ohMtQ4hFR5rzHSbR3M1sr4\n2p3UCopeTNLaC7wnKKgjwYVO3joBPmyX+qzDlGECgYEA7qg5ijr+1MEbNMqJi6Gg\n7IvVewqpmLMquV8gyHrnEVBfg//bvNuI9aTjiAPXrPHWCsanPiG2N7eMqAWcJdma\nJwuOnOLL34ASvvK8jHgx/SCClBmnGjGaC91/4aLxTN/nHyRPK7EE2hzK9kt46zLo\nIyu4aMoP0mtRaRteYJtxGDY=\n-----END PRIVATE KEY-----\n",
+            "client_email": "168192489168-compute@developer.gserviceaccount.com",
+            "client_id": "108949335834233739666",
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+            "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+            "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/168192489168-compute%40developer.gserviceaccount.com",
+            "universe_domain": "googleapis.com"
+          }
+        project-id: starlit-fire-408511
+        bucket: gwarit-storage
+        base-url: https://storage.googleapis.com/gwarit-storage
+
 
 firebase:
   # config: firebase/firebase-dev-admin.json
   scope: ENC(TvK32/6aBLSdr0KU74LEfETuNCh5DAAdh9zNcIlc9YKIiLKzKX5/6Fe38hm7sA1Z/oUcVuxPkoc=)
   config-file: ENC(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)
+
+
 
 jasypt:
   encryptor:
