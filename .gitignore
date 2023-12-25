@@ -44,3 +44,6 @@ docker-compose.yml
 ### FCM ###
 firebase-dev-admin.json
 firebase-release-admin.json
+
+### GCS ###
+starlit-fire-408511-434704594f35.json

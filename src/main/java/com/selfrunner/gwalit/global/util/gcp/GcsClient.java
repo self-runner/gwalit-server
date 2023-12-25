@@ -10,70 +10,61 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Component
 public class GcsClient {
 
-    @Value("${spring.cloud.gcp.storage.bucket}")
+    @Value("${gcp.bucket}")
     private String bucket;
 
-    @Value("${spring.cloud.gcp.storage.base-url}")
+    @Value("${gcp.project-id}")
+    private String projectId;
+
+    @Value("${gcp.base-url}")
     private String baseUrl;
 
-    public String upload(MultipartFile multipartFile, String dirName) throws IOException {
+    public String upload(MultipartFile multipartFile, String dirName) {
         // Validation
         Storage storage = StorageOptions.getDefaultInstance().getService();
 
         // Business Logic
         String now = getDate();
-        String originalName = multipartFile.getOriginalFilename();
         String ext = multipartFile.getContentType();
         String uuid = UUID.randomUUID().toString();
-        String imagUrl = dirName + "/" + now + "_" + uuid + "_" + multipartFile.getOriginalFilename();
+        String imageUrl = dirName + "/" + now + "_" + uuid + "_" + multipartFile.getOriginalFilename();
 
-        // BUCKET_NAME = GCS에 등록된 버킷 이름
-        // 파일은 https://storage.googleapis.com/{버킷_이름}/{UUID}를 통해 조회할 수 있음
-        BlobInfo imageInfo = BlobInfo.newBuilder(bucket, uuid)
-                .setContentType(ext)
-                .build();
-
-        BlobInfo blobInfo = null;
         try {
-            blobInfo = storage.create(
-                    imageInfo, multipartFile.getInputStream()
-            );
+            BlobInfo imageInfo = BlobInfo.newBuilder(bucket, imageUrl)
+                    .setContentType(ext)
+                    .build();
 
-        } catch (IOException e) {
-            e.printStackTrace();
+            storage.createFrom(imageInfo, multipartFile.getInputStream());
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.FAILED_UPLOAD_FILE);
         }
 
         // Response
-        return null;
+        return baseUrl + imageUrl;
     }
 
     public void delete(String imgUrl) {
         // Validation
 
         // Business Logic
+        String fileLocation = imgUrl.substring(baseUrl.length());
         try {
-            String projectId = "프로젝트_ID";
+            Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
+            Blob blob = storage.get(bucket, fileLocation);
+            if (blob == null) {
+                throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+            }
 
-        String bucketName = "Bucket_이름";
-        String objectName = "삭제할 파일 이름";
+            Storage.BlobSourceOption precondition =
+                    Storage.BlobSourceOption.generationMatch(blob.getGeneration());
 
-        Storage storage = StorageOptions.newBuilder().setProjectId(projectId).build().getService();
-        Blob blob = storage.get(bucketName, objectName);
-        if (blob == null) {
-            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
-        }
-
-        Storage.BlobSourceOption precondition =
-                Storage.BlobSourceOption.generationMatch(blob.getGeneration());
-
-        storage.delete(bucketName, objectName, precondition);
+            storage.delete(bucket, imgUrl, precondition);
         } catch (Exception e) {
             throw new ApplicationException(ErrorCode.FAILED_DELETE_FILE);
         }

@@ -20,6 +20,7 @@ import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
+import com.selfrunner.gwalit.global.util.gcp.GcsClient;
 import com.selfrunner.gwalit.global.util.jwt.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,7 @@ public class BoardService {
     private final FileJdbcRepository fileJdbcRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final S3Client s3Client;
+    private final GcsClient gcsClient;
 
     @Transactional
     public BoardRes registerBoard(Member member, List<MultipartFile> multipartFileList, PostBoardReq postBoardReq) {
@@ -237,7 +239,7 @@ public class BoardService {
         multipartFileList.forEach(
                 multipartFile -> {
                     try {
-                        String url = s3Client.upload(multipartFile, "board/" + lectureId);
+                        String url = gcsClient.upload(multipartFile, "board/" + lectureId);
                         File file = File.builder()
                                 .name(multipartFile.getOriginalFilename())
                                 .url(url)
@@ -268,7 +270,7 @@ public class BoardService {
         fileUrlList.forEach(
                 fileUrl -> {
                     try {
-                        s3Client.delete(fileUrl);
+                        gcsClient.delete(fileUrl);
                     } catch (Exception e) {
                         throw new BoardException(ErrorCode.INTERNAL_SERVER_EXCEPTION);
                     }
