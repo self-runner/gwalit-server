@@ -43,13 +43,11 @@ public class BoardReplyRes {
 
     private Integer replyCount;
 
-    private List<ReplyRes> replyList;
-
     private final LocalDateTime createdAt;
 
     private final LocalDateTime modifiedAt;
 
-    public BoardReplyRes(Board board, Member member, Integer replyCount, List<FileRes> fileList, List<ReplyRes> replyList) {
+    public BoardReplyRes(Board board, Member member, Integer replyCount, List<FileRes> fileList) {
         this.boardId = board.getBoardId();
         this.lectureId = board.getLecture().getLectureId();
         this.memberId = member.getMemberId();
@@ -63,7 +61,6 @@ public class BoardReplyRes {
         this.status = board.getStatus();
         this.fileList = fileList;
         this.replyCount = replyCount;
-        this.replyList = replyList;
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }

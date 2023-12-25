@@ -150,11 +150,10 @@ public class BoardService {
 
         // Business Logic
         List<FileRes> fileList = fileRepository.findAllByBoardId(boardId).orElse(null);
-        List<ReplyRes> replyList = replyRepository.findRecentReplyByBoardId(boardId).orElse(null);
         Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
 
         // Response
-        return new BoardReplyRes(board, board.getMember(), replyCount, fileList, replyList);
+        return new BoardReplyRes(board, board.getMember(), replyCount, fileList);
     }
 
     public Slice<BoardMetaRes> getBoardPagination(Member member, Long lectureId, String category, Long cursor, Pageable pageable) {
