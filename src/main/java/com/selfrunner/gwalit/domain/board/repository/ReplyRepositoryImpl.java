@@ -36,21 +36,6 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
                 .fetchFirst().intValue();
     }
 
-    @Override
-    public Optional<List<ReplyRes>> findRecentReplyByBoardId(Long boardId) {
-        return Optional.ofNullable(
-            queryFactory.selectFrom(reply)
-                    .leftJoin(board).on(reply.board.boardId.eq(board.boardId))
-                    .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
-                    .leftJoin(file).on(file.replyId.eq(reply.replyId))
-                    .where(reply.board.boardId.eq(boardId), reply.deletedAt.isNull())
-                    .orderBy(reply.createdAt.desc())
-                    .limit(10)
-                    .transform(groupBy(reply.replyId).list(Projections.constructor(ReplyRes.class, reply.replyId, board.boardId, member.memberId, member.type, member.name, reply.body,
-                            list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt)))
-        );
-    }
-
     public Slice<ReplyRes> findReplyPaginationByBoardId(Long boardId, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
         List<ReplyRes> content = queryFactory.select(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
                         list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt))
