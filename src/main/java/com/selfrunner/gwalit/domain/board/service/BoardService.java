@@ -1,5 +1,7 @@
 package com.selfrunner.gwalit.domain.board.service;
 
+import com.google.firebase.messaging.Message;
+import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.board.dto.request.PostBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.PutBoardReq;
 import com.selfrunner.gwalit.domain.board.dto.request.ReplyReq;
@@ -14,12 +16,16 @@ import com.selfrunner.gwalit.domain.board.repository.BoardRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileJdbcRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileRepository;
 import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
-import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
+import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
+import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
+import com.selfrunner.gwalit.domain.notification.entity.Notification;
+import com.selfrunner.gwalit.domain.notification.repository.NotificationRepository;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.aws.S3Client;
+import com.selfrunner.gwalit.global.util.fcm.FCMClient;
 import com.selfrunner.gwalit.global.util.jwt.Auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -41,8 +48,12 @@ public class BoardService {
     private final ReplyRepository replyRepository;
     private final FileRepository fileRepository;
     private final FileJdbcRepository fileJdbcRepository;
+    private final MemberRepository memberRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
+    private final NotificationRepository notificationRepository;
+    private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
     private final S3Client s3Client;
+    private final FCMClient fcmClient;
 
     @Transactional
     public BoardRes registerBoard(Member member, List<MultipartFile> multipartFileList, PostBoardReq postBoardReq) {
@@ -58,6 +69,8 @@ public class BoardService {
         Board saveBoard = boardRepository.save(board);
         // File이 존재하면 S3 업로드 진행
         List<FileRes> fileUrlList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), saveBoard.getBoardId(), null): null;
+        // FCM 알림 전송
+        sendBoardNotification(member, memberAndLecture, board);
 
         // Response
         return new BoardRes(saveBoard, member, fileUrlList);
@@ -71,7 +84,7 @@ public class BoardService {
             throw new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
         // 파일 용량 확인 로직 필요 (1. 각 파일당 5MB 이하인지 2.삭제 후 남은 용량에서 해당 파일들 넣을 수 있는 용량이 남아있는지)
-        if(checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, putBoardReq.getDeleteFileList())) {
+        if(multipartFileList != null && checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, putBoardReq.getDeleteFileList())) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
         }
 
@@ -79,7 +92,7 @@ public class BoardService {
         deleteFileList(putBoardReq.getDeleteFileList());
         board.update(putBoardReq);
         Board updateBoard = boardRepository.save(board);
-        List<FileRes> fileResList = uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null);
+        List<FileRes> fileResList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null) : null;
 
         // Response
         return new BoardRes(updateBoard, member, fileResList);
@@ -169,7 +182,7 @@ public class BoardService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, board.getLecture().getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         // TODO: 공개 비공개 여부에 따른 검증 로직 추가 필요
         // 클래스당 용량 검사 로직 추가
-        if(checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, null)) {
+        if(multipartFileList != null && checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, null)) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
         }
 
@@ -177,7 +190,11 @@ public class BoardService {
         Reply reply = replyReq.toEntity(board, member);
         Reply saveReply = replyRepository.save(reply);
         // File이 존재하면 S3 업로드
-        List<FileRes> fileUrlList = (!multipartFileList.isEmpty()) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), boardId, saveReply.getReplyId()): null;
+        List<FileRes> fileUrlList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), boardId, saveReply.getReplyId()): null;
+        // 게시글 작성자와 댓글 작성자가 다르면 알림 발송
+        if(!board.getMember().getMemberId().equals(member.getMemberId())) {
+            sendReplyNotification(member, memberAndLecture, board, reply);
+        }
 
         // Response
         return new ReplyRes(saveReply, saveReply.getMember(), fileUrlList);
@@ -308,5 +325,81 @@ public class BoardService {
 
         // 500MB 초과 여부 조건 반환
         return capacity > 524288000;
+    }
+
+    /**
+     * Baord의 등록/수정이 일어났을 때 알림 전송
+     * @param member - 게시글 작성자 정보
+     * @param memberAndLecture - 게시글 작성자가 속해있는 클래스 관련 정보
+     * @param board - 작성한 게시글 정보
+     */
+    private void sendBoardNotification(Member member, MemberAndLecture memberAndLecture, Board board) {
+        // FCM 알림 전송 로직 도입
+        String title = "새로운 게시글 등록!";
+        String body = member.getName() + "님이 게시물을 등록했어요! 내용을 확인해보세요!";
+        Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
+                .title(title)
+                .body(body)
+                .name("studentPost")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .boardId(board.getBoardId())
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+
+        List<MemberMeta> memberMetaList = memberAndLectureRepository.findMemberMetaByLectureLectureId(memberAndLecture.getLecture().getLectureId()).orElse(null);
+        if(memberMetaList != null) {
+            List<Long> studentIdList = memberMetaList.stream()
+                    .map(MemberMeta::getMemberId)
+                    .filter(memberId -> !memberId.equals(member.getMemberId()))
+                    .collect(Collectors.toList());
+            List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
+                    .map(studentId -> MemberAndNotification.builder()
+                            .memberId(studentId)
+                            .notificationId(saveNotification.getNotificationId())
+                            .build())
+                    .collect(Collectors.toList());
+            memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
+            List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
+            System.out.println(tokenList.isEmpty());
+            if (!tokenList.isEmpty()) {
+                MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+                fcmClient.sendMulticast(tokenList, multicastMessage);
+            }
+        }
+    }
+
+    /**
+     * Reply의 등록이 일어났을 때 알림 전송
+     * @param board - 댓글이 작성된 게시글 정보
+     * @param reply - 작성된 댓글 정보
+     */
+    private void sendReplyNotification(Member member, MemberAndLecture memberAndLecture, Board board, Reply reply) {
+        // FCM 알림 전송 로직 도입
+        Member writer = board.getMember();
+        String title = "새로운 댓글 등록!";
+        String body = member.getName() + "님이 댓글을 등록했어요! 내용을 확인해보세요!";
+
+        Notification notification = Notification.builder()
+                .memberId(member.getMemberId())
+                .title(title)
+                .body(body)
+                .name((writer.getType().equals(MemberType.TEACHER)) ? "teacherPost" : "studentLessonReport")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .boardId(reply.getBoard().getBoardId())
+                .build();
+        Notification saveNotification = notificationRepository.save(notification);
+
+        List<MemberAndNotification> memberAndNotificationList = new ArrayList<>();
+        memberAndNotificationList.add(MemberAndNotification.builder()
+                .memberId(writer.getMemberId())
+                .notificationId(saveNotification.getNotificationId())
+                .build());
+        memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
+
+        if(writer.getToken() != null) {
+            Message message = fcmClient.makeMessage(writer.getToken(), notification.getTitle(), notification.getBody(), notification.getName(), notification.getLectureId(), notification.getLessonId(), notification.getDate(), notification.getUrl(), notification.getBoardId());
+            fcmClient.send(message);
+        }
     }
 }

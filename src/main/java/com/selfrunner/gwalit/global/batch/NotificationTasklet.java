@@ -56,7 +56,7 @@ public class NotificationTasklet implements Tasklet {
             if(body.length() > 0 && body.charAt(body.length() - 1) == '\n') {
                 body.setLength(body.length() - 1);
             }
-            messageList.add(fcmClient.makeMessage(notificationDto.getToken(), title, body.toString(), "teacherScheduleManagement", null, null, LocalDate.now(), null));
+            messageList.add(fcmClient.makeMessage(notificationDto.getToken(), title, body.toString(), "teacherScheduleManagement", null, null, LocalDate.now(), null, null));
         }
         if(!messageList.isEmpty()) {
             fcmClient.sendAll(messageList);
