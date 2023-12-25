@@ -238,7 +238,7 @@ public class HomeworkService {
                                 .notificationId(saveNotification.get(i).getNotificationId())
                                 .build()
                 );
-                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getBody(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl());
+                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getBody(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl(), null);
                 fcmClient.send(message);
             }
             memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);

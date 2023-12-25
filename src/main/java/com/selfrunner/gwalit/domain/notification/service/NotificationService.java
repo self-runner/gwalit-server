@@ -43,7 +43,7 @@ public class NotificationService {
             throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
         //FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
-        Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
+        Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl(), null);
         fcmClient.send(message);
         Notification notification = notificationDeepLinkReq.toEntity();
         Notification saveNotification = notificationRepository.save(notification);
