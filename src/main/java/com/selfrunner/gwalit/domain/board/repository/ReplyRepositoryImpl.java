@@ -58,7 +58,7 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
                 .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
                 .leftJoin(file).on(reply.replyId.eq(file.replyId))
                 .where(reply.board.boardId.eq(boardId), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt), reply.deletedAt.isNull())
-                .orderBy(reply.createdAt.desc(), reply.replyId.asc())
+                .orderBy(reply.createdAt.asc(), reply.replyId.asc())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();
 
@@ -78,7 +78,7 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
             return null;
         }
 
-        return reply.createdAt.lt(cursorCreatedAt)
+        return reply.createdAt.gt(cursorCreatedAt)
                 .or(reply.replyId.gt(cursor)
                         .and(reply.createdAt.eq(cursorCreatedAt)));
     }
