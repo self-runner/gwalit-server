@@ -182,4 +182,14 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                 .where(lesson.lessonId.in(lessonIdList))
                 .execute();
     }
+
+    @Override
+    public Optional<LocalDate> findLessonDateByLessonId(Long lessonId) {
+        return Optional.ofNullable(
+                queryFactory.select(lesson.date)
+                        .from(lesson)
+                        .where(lesson.lessonId.in(lessonId), lesson.deletedAt.isNull())
+                        .fetchFirst()
+        );
+    }
 }

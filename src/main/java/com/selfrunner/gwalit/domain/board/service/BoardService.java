@@ -16,6 +16,7 @@ import com.selfrunner.gwalit.domain.board.repository.BoardRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileJdbcRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileRepository;
 import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +51,7 @@ public class BoardService {
     private final FileRepository fileRepository;
     private final FileJdbcRepository fileJdbcRepository;
     private final MemberRepository memberRepository;
+    private final LessonRepository lessonRepository;
     private final MemberAndLectureRepository memberAndLectureRepository;
     private final NotificationRepository notificationRepository;
     private final MemberAndNotificationJdbcRepository memberAndNotificationJdbcRepository;
@@ -67,13 +70,14 @@ public class BoardService {
         // Business Logic
         Board board = postBoardReq.toEntity(memberAndLecture.getLecture(), member);
         Board saveBoard = boardRepository.save(board);
+        LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
         // File이 존재하면 S3 업로드 진행
         List<FileRes> fileUrlList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), memberAndLecture.getLecture().getLectureId(), saveBoard.getBoardId(), null): null;
         // FCM 알림 전송
         sendBoardNotification(member, memberAndLecture, board);
 
         // Response
-        return new BoardRes(saveBoard, member, fileUrlList);
+        return new BoardRes(saveBoard, member, lessonDate, fileUrlList);
     }
 
     @Transactional
@@ -92,10 +96,11 @@ public class BoardService {
         deleteFileList(putBoardReq.getDeleteFileList());
         board.update(putBoardReq);
         Board updateBoard = boardRepository.save(board);
+        LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
         List<FileRes> fileResList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null) : null;
 
         // Response
-        return new BoardRes(updateBoard, member, fileResList);
+        return new BoardRes(updateBoard, member, lessonDate, fileResList);
     }
 
     @Transactional
@@ -131,12 +136,12 @@ public class BoardService {
 
         // Business Logic
         board.changeQuestionStatus();
-        System.out.println(board.getStatus());
         Board updateBoard = boardRepository.save(board);
+        LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
         List<FileRes> fileList = fileRepository.findAllByBoardId(boardId).orElse(null);
 
         // Response
-        return new BoardRes(updateBoard, updateBoard.getMember(), fileList);
+        return new BoardRes(updateBoard, updateBoard.getMember(), lessonDate, fileList);
     }
 
     public BoardReplyRes getOneBoard(@Auth Member member, Long boardId) {
@@ -149,12 +154,12 @@ public class BoardService {
         }
 
         // Business Logic
+        LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
         List<FileRes> fileList = fileRepository.findAllByBoardId(boardId).orElse(null);
-        List<ReplyRes> replyList = replyRepository.findRecentReplyByBoardId(boardId).orElse(null);
         Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
 
         // Response
-        return new BoardReplyRes(board, board.getMember(), replyCount, fileList, replyList);
+        return new BoardReplyRes(board, board.getMember(), lessonDate, replyCount, fileList);
     }
 
     public Slice<BoardMetaRes> getBoardPagination(Member member, Long lectureId, String category, Long cursor, Pageable pageable) {

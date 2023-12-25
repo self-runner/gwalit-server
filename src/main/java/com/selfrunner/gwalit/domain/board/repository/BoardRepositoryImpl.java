@@ -67,7 +67,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(reply).on(reply.board.boardId.eq(board.boardId))
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(board.lecture.lectureId))
                 .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
-                .where(memberAndLecture.member.memberId.eq(memberId), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNull())
+                .where(memberAndLecture.member.memberId.eq(memberId), board.category.eq(BoardCategory.QUESTION), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNull())
                 .groupBy(board.boardId)
                 .orderBy(board.createdAt.desc())
                 .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, memberAndLecture.lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.board.boardId.count(), board.createdAt, board.modifiedAt)));
