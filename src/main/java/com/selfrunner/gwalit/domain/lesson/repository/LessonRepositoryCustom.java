@@ -38,4 +38,6 @@ public interface LessonRepositoryCustom {
     void updateLessonProcessingByDate(List<Long> lessonIdList);
 
     void updateLessonSentByDate(List<Long> lessonIdList);
+
+    Optional<LocalDate> findLessonDateByLessonId(Long lessonId);
 }
