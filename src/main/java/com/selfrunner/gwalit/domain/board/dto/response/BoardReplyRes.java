@@ -9,6 +9,7 @@ import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,6 +32,8 @@ public class BoardReplyRes {
 
     private Long lessonId;
 
+    private LocalDate lessonDate;
+
     private final String title;
 
     private String body;
@@ -47,7 +50,7 @@ public class BoardReplyRes {
 
     private final LocalDateTime modifiedAt;
 
-    public BoardReplyRes(Board board, Member member, Integer replyCount, List<FileRes> fileList) {
+    public BoardReplyRes(Board board, Member member, LocalDate lessonDate, Integer replyCount, List<FileRes> fileList) {
         this.boardId = board.getBoardId();
         this.lectureId = board.getLecture().getLectureId();
         this.memberId = member.getMemberId();
@@ -55,6 +58,7 @@ public class BoardReplyRes {
         this.memberName = member.getName();
         this.isPublic = board.getIsPublic();
         this.lessonId = board.getLessonId();
+        this.lessonDate = lessonDate;
         this.title = board.getTitle();
         this.body = board.getBody();
         this.category = board.getCategory();

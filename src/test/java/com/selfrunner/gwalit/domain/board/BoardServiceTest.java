@@ -9,6 +9,7 @@ import com.selfrunner.gwalit.domain.board.repository.FileRepository;
 import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
 import com.selfrunner.gwalit.domain.board.service.BoardService;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
+import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
@@ -53,6 +54,9 @@ public class BoardServiceTest {
     private MemberRepository memberRepository;
 
     @Mock
+    private LessonRepository lessonRepository;
+
+    @Mock
     private MemberAndLectureRepository memberAndLectureRepository;
 
     @Mock
@@ -69,7 +73,7 @@ public class BoardServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberRepository, memberAndLectureRepository, notificationRepository, memberAndNotificationJdbcRepository, s3Client, fcmClient);
+        boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberRepository, lessonRepository, memberAndLectureRepository, notificationRepository, memberAndNotificationJdbcRepository, s3Client, fcmClient);
     }
 
     @Test
