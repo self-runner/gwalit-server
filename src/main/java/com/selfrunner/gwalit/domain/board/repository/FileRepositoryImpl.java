@@ -38,7 +38,7 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
     public Optional<List<FileRes>> findAllByBoardId(Long boardId) {
         return Optional.ofNullable(
                 queryFactory.selectFrom(file)
-                        .where(file.boardId.eq(boardId), file.deletedAt.isNull())
+                        .where(file.boardId.eq(boardId), file.replyId.isNull(), file.deletedAt.isNull())
                         .transform(groupBy(file.url).list(Projections.constructor(FileRes.class, file.name, file.url, file.size)))
         );
     }
