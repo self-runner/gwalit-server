@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Getter
-@Builder
+//@Builder
 public class PostBoardReq {
 
     @NotNull
