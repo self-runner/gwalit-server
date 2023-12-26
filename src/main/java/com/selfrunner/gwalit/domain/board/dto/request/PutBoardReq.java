@@ -19,5 +19,6 @@ public class PutBoardReq {
     @NotNull
     private String status;
 
+    @NotNull
     private List<String> deleteFileList;
 }

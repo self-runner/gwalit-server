@@ -18,4 +18,7 @@ public interface FileRepositoryCustom {
 
     // 삭제될 파일용량들 조회 쿼리
     Long findDeleteCapacityByUrlList(List<String> urlList);
+
+    // 게시글에 해당하는 파일 개수 조회 쿼리
+    Long findCountByBoardId(Long boardId);
 }

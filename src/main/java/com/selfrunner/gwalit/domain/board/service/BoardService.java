@@ -61,9 +61,12 @@ public class BoardService {
     public BoardRes registerBoard(Member member, List<MultipartFile> multipartFileList, PostBoardReq postBoardReq) {
         // Validation
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, postBoardReq.getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
-        // TODO: 클래스당 용량 검사 로직 추가 필요
+        // 파일 개수 최대 5개 제한 로직 && 클래스당 용량 검사 로직 추가 필요
         if(multipartFileList != null && checkFileCapacity(memberAndLecture.getLecture().getLectureId(), multipartFileList, null)) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
+        }
+        if(multipartFileList != null && multipartFileList.size() > 5) {
+            throw new BoardException(ErrorCode.TOTAL_FILE_EXCEED);
         }
 
         // Business Logic
@@ -89,6 +92,9 @@ public class BoardService {
         // 파일 용량 확인 로직 필요 (1. 각 파일당 5MB 이하인지 2.삭제 후 남은 용량에서 해당 파일들 넣을 수 있는 용량이 남아있는지)
         if(multipartFileList != null && checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, putBoardReq.getDeleteFileList())) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
+        }
+        if(multipartFileList != null && (multipartFileList.size() > 5 || (multipartFileList.size() - putBoardReq.getDeleteFileList().size() + fileRepository.findCountByBoardId(boardId) > 5))) {
+            throw new BoardException(ErrorCode.TOTAL_FILE_EXCEED);
         }
 
         // Business Logic (삭제되는 파일 지우고, 업로드할 파일 만들기)
@@ -188,6 +194,9 @@ public class BoardService {
         // 클래스당 용량 검사 로직 추가
         if(multipartFileList != null && checkFileCapacity(board.getLecture().getLectureId(), multipartFileList, null)) {
             throw new BoardException(ErrorCode.TOTAL_SIZE_EXCEED);
+        }
+        if(multipartFileList != null && multipartFileList.size() > 5) {
+            throw new BoardException(ErrorCode.TOTAL_FILE_EXCEED);
         }
 
         // Business Logic
