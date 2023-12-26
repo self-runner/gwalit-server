@@ -64,7 +64,8 @@ public enum ErrorCode {
     // Board
     FILE_SIZE_EXCEED(HttpStatus.BAD_REQUEST, 10000, "파일 용량을 초과했습니다."),
     TOTAL_SIZE_EXCEED(HttpStatus.BAD_REQUEST, 10001, "전체 용량을 초과했습니다."),
-    NOT_QUESTION_STATUS(HttpStatus.BAD_REQUEST, 10002, "질문이 아닌 게시글입니다.");
+    NOT_QUESTION_STATUS(HttpStatus.BAD_REQUEST, 10002, "질문이 아닌 게시글입니다."),
+    TOTAL_FILE_EXCEED(HttpStatus.BAD_REQUEST, 10003, "첨부파일의 개수를 초과했습니다.");
 
     private final HttpStatus httpStatus;
     private final Integer code;

@@ -58,4 +58,12 @@ public class FileRepositoryImpl implements FileRepositoryCustom{
                 .where(file.url.in(urlList), file.deletedAt.isNull())
                 .fetchFirst();
     }
+
+    @Override
+    public Long findCountByBoardId(Long boardId) {
+        return queryFactory.select(file.count())
+                .from(file)
+                .where(file.boardId.eq(boardId), file.replyId.isNull(), file.deletedAt.isNull())
+                .fetchFirst();
+    }
 }
