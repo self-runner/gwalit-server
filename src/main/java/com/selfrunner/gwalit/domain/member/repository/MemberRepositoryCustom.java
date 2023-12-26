@@ -21,4 +21,6 @@ public interface MemberRepositoryCustom {
     List<String> findTokenList();
 
     List<String> findTokenListByMemberIdList(List<Long> memberId);
+
+    List<Member> findMemberListByLectureId(Long lectureId);
 }

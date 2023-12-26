@@ -39,7 +39,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -170,7 +169,7 @@ public class BoardService {
         LocalDateTime cursorCreatedAt = (cursor != null) ? boardRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
-        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), lectureId, (!category.equals("all")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
+        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), lectureId, (!category.equals("ALL")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
     }
 
     public List<BoardMetaRes> getOpenQuestion(Member member) {
@@ -315,7 +314,7 @@ public class BoardService {
         }
 
         // 삭제될 파일들이 존재한다면, 해당 파일들의 용량을 조회해서 capacity에서 제거
-        if(deleteFileUrlList != null) {
+        if(!deleteFileUrlList.isEmpty()) {
             Long deleteCapacity = fileRepository.findDeleteCapacityByUrlList(deleteFileUrlList);
             capacity -= deleteCapacity;
         }
@@ -342,7 +341,17 @@ public class BoardService {
         // FCM 알림 전송 로직 도입
         String title = "새로운 게시글 등록!";
         String body = member.getName() + "님이 게시물을 등록했어요! 내용을 확인해보세요!";
-        Notification notification = Notification.builder()
+
+        // 선생님&학생들에게 알림 전송하기 로직
+        Notification teacherNotification = Notification.builder()
+                .memberId(member.getMemberId())
+                .title(title)
+                .body(body)
+                .name("teacherPost")
+                .lectureId(memberAndLecture.getLecture().getLectureId())
+                .boardId(board.getBoardId())
+                .build();
+        Notification studentNotification = Notification.builder()
                 .memberId(member.getMemberId())
                 .title(title)
                 .body(body)
@@ -350,25 +359,45 @@ public class BoardService {
                 .lectureId(memberAndLecture.getLecture().getLectureId())
                 .boardId(board.getBoardId())
                 .build();
-        Notification saveNotification = notificationRepository.save(notification);
+        Notification saveStudentNotification = notificationRepository.save(studentNotification);
 
-        List<MemberMeta> memberMetaList = memberAndLectureRepository.findMemberMetaByLectureLectureId(memberAndLecture.getLecture().getLectureId()).orElse(null);
-        if(memberMetaList != null) {
-            List<Long> studentIdList = memberMetaList.stream()
-                    .map(MemberMeta::getMemberId)
-                    .filter(memberId -> !memberId.equals(member.getMemberId()))
-                    .collect(Collectors.toList());
-            List<MemberAndNotification> memberAndNotificationList = studentIdList.stream()
-                    .map(studentId -> MemberAndNotification.builder()
-                            .memberId(studentId)
-                            .notificationId(saveNotification.getNotificationId())
-                            .build())
-                    .collect(Collectors.toList());
+        // 선생님은 별도로 알림 전송 & 학생은 모아서 전송
+        List<Member> memberList = memberRepository.findMemberListByLectureId(memberAndLecture.getLecture().getLectureId());
+        List<MemberAndNotification> memberAndNotificationList = new ArrayList<>();
+        List<String> tokenList = new ArrayList<>();
+        if(!memberList.isEmpty()) {
+            memberList.forEach(m -> {
+                if(m.getType().equals(MemberType.TEACHER)) {
+                    Notification saveTeacherNotification = notificationRepository.save(teacherNotification);
+                    memberAndNotificationList.add(
+                            MemberAndNotification.builder()
+                                    .memberId(m.getMemberId())
+                                    .notificationId(saveTeacherNotification.getNotificationId())
+                                    .build()
+                    );
+
+                    // 선생님은 한 명이므로, 바로 전송될 수 있도록 함
+                    if(m.getToken() != null) {
+                        Message message = fcmClient.makeMessage(m.getToken(), saveTeacherNotification.getTitle(), saveTeacherNotification.getBody(), saveTeacherNotification.getName(), saveTeacherNotification.getLectureId(), saveTeacherNotification.getLessonId(), saveTeacherNotification.getDate(), saveTeacherNotification.getUrl(), saveTeacherNotification.getBoardId());
+                        fcmClient.send(message);
+                    }
+                }
+                else if(!m.getMemberId().equals(member.getMemberId()) && m.getType().equals(MemberType.STUDENT)){
+                    if(m.getToken() != null) {
+                        tokenList.add(m.getToken());
+                    }
+                    memberAndNotificationList.add(
+                            MemberAndNotification.builder()
+                                    .memberId(m.getMemberId())
+                                    .notificationId(saveStudentNotification.getNotificationId())
+                                    .build()
+                    );
+                }
+            });
             memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
-            List<String> tokenList = memberRepository.findTokenListByMemberIdList(studentIdList);
-            System.out.println(tokenList.isEmpty());
+
             if (!tokenList.isEmpty()) {
-                MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveNotification);
+                MulticastMessage multicastMessage = fcmClient.makeMulticastMessage(tokenList, saveStudentNotification);
                 fcmClient.sendMulticast(tokenList, multicastMessage);
             }
         }
