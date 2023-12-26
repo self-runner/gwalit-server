@@ -16,6 +16,7 @@ import com.selfrunner.gwalit.domain.board.repository.BoardRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileJdbcRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileRepository;
 import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
+import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
@@ -250,6 +251,15 @@ public class BoardService {
         Long fileCapacity = fileRepository.findCapacityByLectureId(lectureId);
 
         return new BoardFileRes(lectureId, fileCapacity);
+    }
+
+    public List<BoardMetaRes> getBoardMetaList(Member member, Long lessonId) {
+        // Validation
+        Lesson lesson = lessonRepository.findById(lessonId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
+        memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lesson.getLecture().getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+
+        // Business Logic && Response
+        return boardRepository.findBoardMetaListByLessonId(lessonId);
     }
 
     /**

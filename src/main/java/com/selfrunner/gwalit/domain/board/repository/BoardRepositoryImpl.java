@@ -73,6 +73,17 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, memberAndLecture.lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.board.boardId.count(), board.createdAt, board.modifiedAt)));
     }
 
+    public List<BoardMetaRes> findBoardMetaListByLessonId(Long lessonId) {
+        return queryFactory.selectFrom(board)
+                .leftJoin(reply).on(reply.board.boardId.eq(board.boardId))
+                .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(board.lecture.lectureId))
+                .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
+                .where(board.deletedAt.isNull(), board.lessonId.eq(lessonId))
+                .groupBy(board.boardId)
+                .orderBy(board.boardId.asc())
+                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, memberAndLecture.lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.board.boardId.count(), board.createdAt, board.modifiedAt)));
+    }
+
 
     // 커서기반 페이지네이션에서 커서 뒤인지 확인하는 메소드
     private BooleanExpression eqCursorAndCursorCreatedAt(Long cursor, LocalDateTime cursorCreatedAt) {

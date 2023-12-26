@@ -96,4 +96,10 @@ public class BoardController {
     public ApplicationResponse<BoardFileRes> getFileCapacity(@Auth Member member, @PathVariable(value = "lecture_id") Long lectureId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, boardService.getFileCapacity(member, lectureId));
     }
+
+    @Operation(summary = "특정 수업 리포트와 연결된 게시글들 반환")
+    @GetMapping("/lesson/{lesson_id}")
+    public ApplicationResponse<List<BoardMetaRes>> getBoardMetaList(@Auth Member member, @PathVariable(value = "lesson_id") Long lessonId) {
+        return ApplicationResponse.ok(ErrorCode.SUCCESS, boardService.getBoardMetaList(member, lessonId));
+    }
 }
