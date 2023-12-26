@@ -73,7 +73,7 @@ public class BoardServiceTest {
 
     @BeforeEach
     void beforeEach() {
-        boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberRepository, lessonRepository, memberAndLectureRepository, notificationRepository, memberAndNotificationJdbcRepository, s3Client, fcmClient);
+        //boardService = new BoardService(boardRepository, replyRepository, fileRepository, fileJdbcRepository, memberRepository, lessonRepository, memberAndLectureRepository, notificationRepository, memberAndNotificationJdbcRepository, s3Client, fcmClient);
     }
 
     @Test
