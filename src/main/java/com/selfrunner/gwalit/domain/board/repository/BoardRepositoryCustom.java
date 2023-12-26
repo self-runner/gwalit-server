@@ -21,4 +21,6 @@ public interface BoardRepositoryCustom {
 
     // 메인 페이지에서 미해결 질문 리스트 반환하는 API 개발
     List<BoardMetaRes> findUnsolvedBoardResByMemberId(Long memberId);
+
+    List<BoardMetaRes> findBoardMetaListByLessonId(Long lessonId);
 }
