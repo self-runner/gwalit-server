@@ -37,7 +37,7 @@ public class BoardController {
 
     @Operation(summary = "질문 수정")
     @PutMapping("/{board_id}")
-    public ApplicationResponse<BoardRes> updateBoard(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFileList, @Valid @RequestPart(value = "data") PutBoardReq putBoardReq) {
+    public ApplicationResponse<BoardReplyRes> updateBoard(@Auth Member member, @PathVariable(value = "board_id") Long boardId, @RequestPart(value = "file", required = false) List<MultipartFile> multipartFileList, @Valid @RequestPart(value = "data") PutBoardReq putBoardReq) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.updateBoard(member, boardId, multipartFileList, putBoardReq));
     }
 
@@ -50,7 +50,7 @@ public class BoardController {
 
     @Operation(summary = "질문 상태 변경")
     @PatchMapping("/{board_id}")
-    public ApplicationResponse<BoardRes> changeQuestionStatus(@Auth Member member, @PathVariable(value = "board_id") Long boardId) {
+    public ApplicationResponse<BoardReplyRes> changeQuestionStatus(@Auth Member member, @PathVariable(value = "board_id") Long boardId) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, boardService.changeQuestionStatus(member, boardId));
     }
 

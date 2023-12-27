@@ -84,7 +84,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardRes updateBoard(Member member, Long boardId, List<MultipartFile> multipartFileList, PutBoardReq putBoardReq) {
+    public BoardReplyRes updateBoard(Member member, Long boardId, List<MultipartFile> multipartFileList, PutBoardReq putBoardReq) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
         if(!board.getMember().getMemberId().equals(member.getMemberId())) {
@@ -104,9 +104,10 @@ public class BoardService {
         Board updateBoard = boardRepository.save(board);
         LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
         List<FileRes> fileResList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null) : null;
+        Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
 
         // Response
-        return new BoardRes(updateBoard, member, lessonDate, fileResList);
+        return new BoardReplyRes(updateBoard, updateBoard.getMember(), lessonDate, replyCount, fileResList);
     }
 
     @Transactional
@@ -127,7 +128,7 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardRes changeQuestionStatus(Member member, Long boardId) {
+    public BoardReplyRes changeQuestionStatus(Member member, Long boardId) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
         // 질문 형태의 게시글이 아닌 경우
@@ -144,10 +145,12 @@ public class BoardService {
         board.changeQuestionStatus();
         Board updateBoard = boardRepository.save(board);
         LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
+        Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
         List<FileRes> fileList = fileRepository.findAllByBoardId(boardId).orElse(null);
 
+
         // Response
-        return new BoardRes(updateBoard, updateBoard.getMember(), lessonDate, fileList);
+        return new BoardReplyRes(updateBoard, updateBoard.getMember(), lessonDate, replyCount, fileList);
     }
 
     public BoardReplyRes getOneBoard(@Auth Member member, Long boardId) {
