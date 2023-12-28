@@ -23,11 +23,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public MemberRes getProfile(Member member) {
-        // Business Logic
-        MemberRes memberRes = new MemberRes().toDto(member);
-
-        // Response
-        return memberRes;
+        // Business Logic & Response
+        return new MemberRes().toDto(member);
     }
 
     @Transactional
@@ -45,8 +42,7 @@ public class MemberService {
         change.update(putMemberReq);
 
         // Response
-        MemberRes memberRes = new MemberRes().toDto(change);
-        return memberRes;
+        return new MemberRes().toDto(change);
     }
 
     @Transactional
@@ -73,7 +69,7 @@ public class MemberService {
     }
 
     @Transactional
-    public TokenRes saveToken(Long version, Member member, TokenReq tokenReq) {
+    public TokenRes saveToken(Member member, TokenReq tokenReq) {
         // Validation
 
         // Business Logic
