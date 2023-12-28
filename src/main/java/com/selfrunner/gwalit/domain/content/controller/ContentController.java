@@ -19,36 +19,36 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api/v1/content")
 @Tag(name = "Content", description = "교육 콘텐츠 관련")
 public class ContentController {
 
     private final ContentService contentService;
 
-    @PostMapping({"/content", "/api/v{version}/content"})
-    public ApplicationResponse<ContentRes> register(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @Valid @RequestPart(value = "data") ContentReq contentReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage) {
+    @PostMapping("")
+    public ApplicationResponse<ContentRes> register(@Auth Member member, @Valid @RequestPart(value = "data") ContentReq contentReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage) {
         return ApplicationResponse.create(ErrorCode.SUCCESS, contentService.register(member, contentReq, thumbnailImage));
     }
 
-    @PutMapping({"/content/{content_id}", "/api/v{version}/content/{content_id}"})
-    public ApplicationResponse<ContentRes> update(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("content_id") Long contentId, @Valid @RequestPart(value = "data") ContentReq contentReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage) {
+    @PutMapping("/{content_id}")
+    public ApplicationResponse<ContentRes> update(@Auth Member member, @PathVariable("content_id") Long contentId, @Valid @RequestPart(value = "data") ContentReq contentReq, @RequestPart(value = "thumbnail", required = false) MultipartFile thumbnailImage) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.update(member, contentId, contentReq, thumbnailImage));
     }
 
-    @PatchMapping({"/content/{content_id}", "/api/v{version}/content/{content_id}"})
-    public ApplicationResponse<ContentRes> updateIsPinned(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("content_id") Long contentId) {
+    @PatchMapping("/{content_id}")
+    public ApplicationResponse<ContentRes> updateIsPinned(@Auth Member member, @PathVariable("content_id") Long contentId) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.updateIsPinned(member, contentId));
     }
 
-    @DeleteMapping({"/content/{content_id}", "/api/v{version}/content/{content_id}"})
-    public ApplicationResponse<Void> delete(@PathVariable(name = "version", required = false) Long version, @Auth Member member, @PathVariable("content_id") Long contentId) {
+    @DeleteMapping("/{content_id}")
+    public ApplicationResponse<Void> delete(@Auth Member member, @PathVariable("content_id") Long contentId) {
         contentService.delete(member, contentId);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(description = "고정 설정이 된 칼럼만 반환")
-    @GetMapping({"/content", "/api/v{version}/content"})
-    public ApplicationResponse<List<ContentRes>> getAll(@PathVariable(name = "version", required = false) Long version) {
+    @GetMapping("")
+    public ApplicationResponse<List<ContentRes>> getAll() {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, contentService.getAll());
     }
 

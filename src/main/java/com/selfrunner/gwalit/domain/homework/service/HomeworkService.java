@@ -188,7 +188,7 @@ public class HomeworkService {
         return homeworkMainResList;
     }
 
-    public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
+    public List<HomeworkStatisticsRes> getStatisticsList(Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
         log.info("Homework Id : " +  homework.getMemberId());
@@ -206,7 +206,7 @@ public class HomeworkService {
     }
 
     @Transactional
-    public void sendHomeworkRemindNotification(Long version, Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
+    public void sendHomeworkRemindNotification(Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
         // Validation
 
         // Business Logic

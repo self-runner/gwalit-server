@@ -23,7 +23,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/board")
+@RequestMapping("/api/v1/board")
 @Tag(name = "board", description = "질문 게시판 기능 API")
 public class BoardController {
 
