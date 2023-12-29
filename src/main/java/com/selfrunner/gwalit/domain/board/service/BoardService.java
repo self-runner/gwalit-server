@@ -336,7 +336,7 @@ public class BoardService {
         }
 
         // 삭제될 파일들이 존재한다면, 해당 파일들의 용량을 조회해서 capacity에서 제거
-        if(!deleteFileUrlList.isEmpty()) {
+        if(deleteFileUrlList != null && !deleteFileUrlList.isEmpty()) {
             Long deleteCapacity = fileRepository.findDeleteCapacityByUrlList(deleteFileUrlList);
             capacity -= deleteCapacity;
         }
