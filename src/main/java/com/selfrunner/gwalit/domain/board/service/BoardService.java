@@ -103,7 +103,10 @@ public class BoardService {
         board.update(putBoardReq);
         Board updateBoard = boardRepository.save(board);
         LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
-        List<FileRes> fileResList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null) : null;
+        if(multipartFileList != null) {
+            uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null);
+        }
+        List<FileRes> fileResList = fileRepository.findAllByBoardId(boardId).orElse(null);
         Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
 
         // Response
