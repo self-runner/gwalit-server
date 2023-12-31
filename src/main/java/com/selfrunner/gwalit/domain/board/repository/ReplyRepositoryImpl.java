@@ -13,11 +13,9 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.querydsl.core.types.Projections.list;
-import static com.selfrunner.gwalit.domain.board.entity.QBoard.board;
 import static com.selfrunner.gwalit.domain.board.entity.QFile.file;
 import static com.selfrunner.gwalit.domain.board.entity.QReply.reply;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
@@ -37,15 +35,14 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
     }
 
     public Slice<ReplyRes> findReplyPaginationByBoardId(Long boardId, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
-        List<ReplyRes> content = queryFactory.select(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
-                        list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt))
-                .from(reply)
+        List<ReplyRes> content = queryFactory.selectFrom(reply)
                 .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
                 .leftJoin(file).on(reply.replyId.eq(file.replyId))
                 .where(reply.board.boardId.eq(boardId), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt), reply.deletedAt.isNull())
                 .orderBy(reply.createdAt.asc(), reply.replyId.asc())
                 .limit(pageable.getPageSize() + 1)
-                .fetch();
+                .transform(groupBy(reply.replyId).list(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
+                        list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt)));
 
         // 다음 페이지 존재 여부 확인
         boolean hasNext = false;
