@@ -7,6 +7,8 @@ import com.selfrunner.gwalit.domain.board.dto.response.BoardMetaRes;
 import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
+import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.MemberType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -31,16 +33,32 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<BoardMetaRes> findBoardPaginationByCategory(Long memberId, Long lectureId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
-        List<BoardMetaRes> content = queryFactory.selectFrom(board)
-                .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
-                .leftJoin(member).on(board.member.memberId.eq(member.memberId))
-                .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(true).or(checkWriter(memberId)), checkCategory(category), board.deletedAt.isNull())
-                .orderBy(board.createdAt.desc(), board.boardId.asc())
-                .groupBy(board.boardId)
-                .limit(pageable.getPageSize() + 1)
-                .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+    public Slice<BoardMetaRes> findBoardPaginationByCategory(Member m, Long lectureId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
+        List<BoardMetaRes> content;
+        if (m.getType().equals(MemberType.TEACHER)) {
+            content = queryFactory.selectFrom(board)
+                    .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
+                    .leftJoin(member).on(board.member.memberId.eq(member.memberId))
+                    .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
+                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), checkCategory(category), board.deletedAt.isNull())
+                    .orderBy(board.createdAt.desc(), board.boardId.asc())
+                    .groupBy(board.boardId)
+                    .limit(pageable.getPageSize() + 1)
+                    .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+
+        }
+        else {
+            content = queryFactory.selectFrom(board)
+                    .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
+                    .leftJoin(member).on(board.member.memberId.eq(member.memberId))
+                    .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
+                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(Boolean.TRUE).or(checkWriter(m.getMemberId())), checkCategory(category), board.deletedAt.isNull())
+                    .orderBy(board.createdAt.desc(), board.boardId.asc())
+                    .groupBy(board.boardId)
+                    .limit(pageable.getPageSize() + 1)
+                    .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+        }
+
 
         // 다음 페이지 존재 여부 계산
         boolean hasNext = false;
@@ -97,7 +115,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     }
 
     /**
-     * 작성자 본인일 경우는 페이지네이션에서 포함되어야 함. 이를 확인하기 위한 메소드
+     * 작성자 본인일 경우는 페이지네이션에서 포함되어야 함.
      * @param memberId - 요청한 사용자 id
      * @return 작성자 본인이 될 경우, true 아니면 false 반환
      */

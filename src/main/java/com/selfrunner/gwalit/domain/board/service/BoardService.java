@@ -103,7 +103,10 @@ public class BoardService {
         board.update(putBoardReq);
         Board updateBoard = boardRepository.save(board);
         LocalDate lessonDate = (board.getLessonId() != null) ? lessonRepository.findLessonDateByLessonId(board.getLessonId()).orElse(null) : null;
-        List<FileRes> fileResList = (multipartFileList != null) ? uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null) : null;
+        if(multipartFileList != null) {
+            uploadFileList(multipartFileList, member.getMemberId(), board.getLecture().getLectureId(), boardId, null);
+        }
+        List<FileRes> fileResList = fileRepository.findAllByBoardId(boardId).orElse(null);
         Integer replyCount = replyRepository.findReplyCountByBoardId(boardId);
 
         // Response
@@ -171,6 +174,15 @@ public class BoardService {
         return new BoardReplyRes(board, board.getMember(), lessonDate, replyCount, fileList);
     }
 
+    /**
+     * 게시글 페이지네이션 (선생님일 때는 isPublic이 True와 False가 상관이 없음. / 학생일 때는, isPublic이 True이거나 false이면서 자신이 작성한 글이 보여야 함
+     * @param member - API 요청 사용자
+     * @param lectureId - 게시글이 포함되는 lectureId
+     * @param category - 게시글 분류
+     * @param cursor - 현재 커서
+     * @param pageable - 페이지네이션 객체
+     * @return 커서 기반 페이지네이션 결과값 (Slice 형태)
+     */
     public Slice<BoardMetaRes> getBoardPagination(Member member, Long lectureId, String category, Long cursor, Pageable pageable) {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
@@ -179,7 +191,7 @@ public class BoardService {
         LocalDateTime cursorCreatedAt = (cursor != null) ? boardRepository.findById(cursor).map(BaseTimeEntity::getCreatedAt).orElse(null) : null;
 
         // Response
-        return boardRepository.findBoardPaginationByCategory(member.getMemberId(), lectureId, (!category.equals("ALL")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
+        return boardRepository.findBoardPaginationByCategory(member, lectureId, (!category.equals("ALL")) ? BoardCategory.valueOf(category) : null, cursor, cursorCreatedAt, pageable);
     }
 
     public List<BoardMetaRes> getOpenQuestion(Member member) {
