@@ -401,31 +401,33 @@ public class BoardService {
         List<String> tokenList = new ArrayList<>();
         if(!memberList.isEmpty()) {
             memberList.forEach(m -> {
-                if(m.getType().equals(MemberType.TEACHER)) {
-                    Notification saveTeacherNotification = notificationRepository.save(teacherNotification);
-                    memberAndNotificationList.add(
-                            MemberAndNotification.builder()
-                                    .memberId(m.getMemberId())
-                                    .notificationId(saveTeacherNotification.getNotificationId())
-                                    .build()
-                    );
+                if(!m.getMemberId().equals(member.getMemberId())) {
+                    if(m.getType().equals(MemberType.TEACHER)) {
+                        Notification saveTeacherNotification = notificationRepository.save(teacherNotification);
+                        memberAndNotificationList.add(
+                                MemberAndNotification.builder()
+                                        .memberId(m.getMemberId())
+                                        .notificationId(saveTeacherNotification.getNotificationId())
+                                        .build()
+                        );
 
-                    // 선생님은 한 명이므로, 바로 전송될 수 있도록 함
-                    if(m.getToken() != null) {
-                        Message message = fcmClient.makeMessage(m.getToken(), saveTeacherNotification.getTitle(), saveTeacherNotification.getBody(), saveTeacherNotification.getName(), saveTeacherNotification.getLectureId(), saveTeacherNotification.getLessonId(), saveTeacherNotification.getDate(), saveTeacherNotification.getUrl(), saveTeacherNotification.getBoardId());
-                        fcmClient.send(message);
+                        // 선생님은 한 명이므로, 바로 전송될 수 있도록 함
+                        if(m.getToken() != null) {
+                            Message message = fcmClient.makeMessage(m.getToken(), saveTeacherNotification.getTitle(), saveTeacherNotification.getBody(), saveTeacherNotification.getName(), saveTeacherNotification.getLectureId(), saveTeacherNotification.getLessonId(), saveTeacherNotification.getDate(), saveTeacherNotification.getUrl(), saveTeacherNotification.getBoardId());
+                            fcmClient.send(message);
+                        }
                     }
-                }
-                else if(!m.getMemberId().equals(member.getMemberId()) && m.getType().equals(MemberType.STUDENT)){
-                    if(m.getToken() != null) {
-                        tokenList.add(m.getToken());
+                    else if(m.getType().equals(MemberType.STUDENT)){
+                        if(m.getToken() != null) {
+                            tokenList.add(m.getToken());
+                        }
+                        memberAndNotificationList.add(
+                                MemberAndNotification.builder()
+                                        .memberId(m.getMemberId())
+                                        .notificationId(saveStudentNotification.getNotificationId())
+                                        .build()
+                        );
                     }
-                    memberAndNotificationList.add(
-                            MemberAndNotification.builder()
-                                    .memberId(m.getMemberId())
-                                    .notificationId(saveStudentNotification.getNotificationId())
-                                    .build()
-                    );
                 }
             });
             memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);
