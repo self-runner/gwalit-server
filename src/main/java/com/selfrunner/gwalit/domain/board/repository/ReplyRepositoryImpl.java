@@ -39,9 +39,10 @@ public class ReplyRepositoryImpl implements ReplyRepositoryCustom{
                 .leftJoin(member).on(reply.member.memberId.eq(member.memberId))
                 .leftJoin(file).on(reply.replyId.eq(file.replyId))
                 .where(reply.board.boardId.eq(boardId), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt), reply.deletedAt.isNull())
-                .orderBy(reply.createdAt.asc(), reply.replyId.asc())
+                .orderBy(reply.createdAt.asc(), reply.replyId.asc(), file.fileId.asc())
                 .limit(pageable.getPageSize() + 1)
-                .transform(groupBy(reply.replyId).list(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
+                .transform(groupBy(reply.replyId, file.replyId)
+                    .list(Projections.constructor(ReplyRes.class, reply.replyId, reply.board.boardId, member.memberId, member.type, member.name, reply.body,
                         list(Projections.constructor(FileRes.class, file.name, file.url, file.size)), reply.createdAt, reply.modifiedAt)));
 
         // 다음 페이지 존재 여부 확인
