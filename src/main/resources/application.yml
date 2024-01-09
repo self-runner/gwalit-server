@@ -10,13 +10,6 @@ spring:
     username: ENC(23VtkEODP7NFAlIXh6iu3w==)
     url: ENC(xcpdNBbgA3cWXKlrjVOVHiQCCIWuZWy7JKD5qIxMnkBLZsDV2UOzYFr57bZZhEXj)
     password: ENC(Z3bshepqUUYRmo/xDJI/tsLRQ54VFjbS)
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    open-in-view: false
   redis:
     host: ENC(w9qDnaEabKQ4NbweCUEcxoMp+an+TBDU)
     port: 6378
@@ -32,6 +25,8 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+      open-in-view: false
   servlet:
     multipart:
       max-file-size: 10MB

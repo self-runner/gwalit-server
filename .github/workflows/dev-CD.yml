@@ -35,12 +35,19 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # yml 반영
+      # secret.yml 반영
       - name: Make application-secret.yml
         run: |
           cd ./src/main/resources
           touch ./application-secret.yml
           echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
+        shell: bash
+
+      # dev.yml 반영
+      - name: Make application-dev.yml
+        run: |
+         cd ./src/main/resources
+         echo "${{ secrets.APPLICATION_DEV}}" > ./application-dev.yml
         shell: bash
 
       # Gradle BootJar
