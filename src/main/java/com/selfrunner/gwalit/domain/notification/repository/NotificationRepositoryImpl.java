@@ -24,7 +24,7 @@ public class NotificationRepositoryImpl implements NotificationRepositoryCustom 
 
     @Override
     public Slice<NotificationRes> findNotificationPageableBy(Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable, Long memberId) {
-        List<NotificationRes> content = queryFactory.select(Projections.constructor(NotificationRes.class, notification.notificationId, notification.memberId, notification.title, notification.body, notification.name, notification.lectureId, notification.lessonId, notification.url, notification.createdAt ))
+        List<NotificationRes> content = queryFactory.select(Projections.constructor(NotificationRes.class, notification.notificationId, notification.memberId, notification.title, notification.body, notification.name, notification.lectureId, notification.lessonId, notification.url, notification.boardId, notification.createdAt ))
                 .from(notification)
                 .leftJoin(memberAndNotification).on(memberAndNotification.notificationId.eq(notification.notificationId))
                 .where(notification.deletedAt.isNull().and(notification.memberId.isNull().or(memberAndNotification.memberId.eq(memberId))), eqCursorIdAndCursorCreatedAt(cursor, cursorCreatedAt))
