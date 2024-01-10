@@ -26,6 +26,8 @@ public class NotificationRes {
 
     private final String url;
 
+    private final Long boardId;
+
     private final LocalDateTime createdAt;
 
     public NotificationRes(Notification notification) {
@@ -37,6 +39,7 @@ public class NotificationRes {
         this.lectureId = notification.getLectureId();
         this.lessonId = notification.getLessonId();
         this.url = notification.getUrl();
+        this.boardId = notification.getBoardId();
         this.createdAt = notification.getCreatedAt();
     }
 }
