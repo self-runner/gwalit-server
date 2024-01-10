@@ -27,63 +27,63 @@ import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api/v1/auth")
 @Tag(name = "Auth", description = "토큰, 전화번호 인증 관련")
 public class AuthController {
 
     private final AuthService authService;
 
     @Operation(summary = "인증번호 전송 요청")
-    @PostMapping({"/auth/phone", "/api/v{version}/auth/phone"})
-    public ApplicationResponse<Void> sendAuthorizationCode(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    @PostMapping("/phone")
+    public ApplicationResponse<Void> sendAuthorizationCode(@Valid @RequestBody PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         authService.sendAuthorizationCode(postAuthPhoneReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "인증번호 확인 요청")
-    @PostMapping({"/auth/authorization", "/api/v{version}/auth/authorization"})
-    public ApplicationResponse<Void> checkAuthorizationCode(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostAuthCodeReq postauthCodeReq) {
+    @PostMapping("/authorization")
+    public ApplicationResponse<Void> checkAuthorizationCode(@Valid @RequestBody PostAuthCodeReq postauthCodeReq) {
         authService.checkAuthorizationCode(postauthCodeReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "임시 비밀번호 발급")
-    @PostMapping({"/auth/password", "/api/v{version}/auth/password"})
-    public ApplicationResponse<Void> sendTemporaryPassword(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+    @PostMapping("/password")
+    public ApplicationResponse<Void> sendTemporaryPassword(@Valid @RequestBody PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         authService.sendTemporaryPassword(postAuthCodeReq);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "일반 회원가입")
-    @PostMapping({"/auth/register", "/api/v{version}/auth/register"})
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostMemberReq postMemberReq) {
+    public ApplicationResponse<Void> register(@Valid @RequestBody PostMemberReq postMemberReq) {
         authService.register(postMemberReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "일반 로그인")
-    @PostMapping({"/auth/login", "/api/v{version}/auth/login"})
-    public ApplicationResponse<PostLoginRes> login(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody PostLoginReq postLoginReq) {
+    @PostMapping("/login")
+    public ApplicationResponse<PostLoginRes> login(@Valid @RequestBody PostLoginReq postLoginReq) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.login(postLoginReq));
     }
 
     @Operation(summary = "로그아웃")
-    @PostMapping({"/auth/logout", "/api/v{version}/auth/logout"})
-    public ApplicationResponse<Void> logout(@PathVariable(name = "version", required = false) Long version, HttpServletRequest httpServletRequest, @Auth Member member) {
+    @PostMapping("/logout")
+    public ApplicationResponse<Void> logout(HttpServletRequest httpServletRequest, @Auth Member member) {
         authService.logout(httpServletRequest.getHeader("Authorization"), member);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }
 
     @Operation(summary = "토큰 재발급")
-    @GetMapping({"/auth/reissue", "/api/v{version}/auth/reissue"})
-    public ApplicationResponse<GetRefreshRes> reissue(@PathVariable(name = "version", required = false) Long version, HttpServletRequest httpServletRequest) {
+    @GetMapping("/reissue")
+    public ApplicationResponse<GetRefreshRes> reissue(HttpServletRequest httpServletRequest) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, authService.reissue(httpServletRequest));
     }
 
     @Operation(summary = "회원탈퇴")
-    @PostMapping({"/auth/withdrawal", "/api/v{version}/auth/withdrawal"})
-    public ApplicationResponse<Void> withdrawal(@PathVariable(name = "version", required = false) Long version, @Auth Member member) {
+    @PostMapping("/withdrawal")
+    public ApplicationResponse<Void> withdrawal(@Auth Member member) {
         authService.withdrawal(member);
         return ApplicationResponse.ok(ErrorCode.SUCCESS);
     }

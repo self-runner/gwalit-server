@@ -86,7 +86,7 @@ public class FCMClient {
         }
     }
 
-    public Message makeMessage(String token, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url) {
+    public Message makeMessage(String token, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url, Long boardId) {
         // 딥링크용 정보가 없을 경우
         if(name == null) {
             return Message.builder()
@@ -113,6 +113,7 @@ public class FCMClient {
                 .putData("lessonId", (lessonId != null) ? lessonId.toString() : "")
                 .putData("date", (date != null) ? date.format(DateTimeFormatter.ofPattern("%y-%M-%d")) : "")
                 .putData("url", (url != null) ? url : "")
+                .putData("boardId", (boardId != null) ? boardId.toString() : "")
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)
                         .build()) // Priority High 설정
@@ -142,6 +143,7 @@ public class FCMClient {
                 .putData("lessonId", (notification.getLessonId() != null) ? notification.getLessonId().toString() : "")
                 .putData("date", (notification.getDate() != null) ? notification.getDate().format(DateTimeFormatter.ofPattern("%y-%M-%d")) : "")
                 .putData("url", (notification.getUrl() != null) ? notification.getUrl() : "")
+                .putData("boardId", (notification.getBoardId() != null) ? notification.getBoardId().toString() : "")
                 .addAllTokens(tokenList)
                 .setAndroidConfig(AndroidConfig.builder()
                         .setPriority(AndroidConfig.Priority.HIGH)

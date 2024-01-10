@@ -33,7 +33,7 @@ public class NotificationService {
     private final FCMClient fcmClient;
 
     @Transactional
-    public NotificationRes sendTo(Long version, Member member, NotificationDeepLinkReq notificationDeepLinkReq) {
+    public NotificationRes sendTo(Member member, NotificationDeepLinkReq notificationDeepLinkReq) {
         // Validation
         // TODO: 관리자 권한 확인 필요
 
@@ -43,7 +43,7 @@ public class NotificationService {
             throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
         }
         //FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
-        Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl());
+        Message message = fcmClient.makeMessage(m.getToken(), notificationDeepLinkReq.getTitle(), notificationDeepLinkReq.getBody(), notificationDeepLinkReq.getName(), notificationDeepLinkReq.getLectureId(), notificationDeepLinkReq.getLessonId(), notificationDeepLinkReq.getDate(), notificationDeepLinkReq.getUrl(), null);
         fcmClient.send(message);
         Notification notification = notificationDeepLinkReq.toEntity();
         Notification saveNotification = notificationRepository.save(notification);
@@ -58,7 +58,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public NotificationRes sendMulticast(Long version, Member member, NotificationReq notificationReq) {
+    public NotificationRes sendMulticast(Member member, NotificationReq notificationReq) {
         // Validation
         // TODO: 관리자 권한 확인 필요
 
@@ -79,7 +79,7 @@ public class NotificationService {
         return new NotificationRes(saveNotification);
     }
 
-    public Slice<NotificationRes> getNotificationList(Long version, Member member, Long cursor, Pageable pageable) {
+    public Slice<NotificationRes> getNotificationList(Member member, Long cursor, Pageable pageable) {
         // Validation
 
         // Business Logic

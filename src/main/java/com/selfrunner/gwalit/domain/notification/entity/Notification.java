@@ -49,8 +49,11 @@ public class Notification extends BaseTimeEntity {
     @Column(name = "url", columnDefinition = "text")
     private String url;
 
+    @Column(name = "board_id", columnDefinition = "bigint")
+    private Long boardId;
+
     @Builder
-    public Notification(Long memberId, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url) {
+    public Notification(Long memberId, String title, String body, String name, Long lectureId, Long lessonId, LocalDate date, String url, Long boardId) {
         this.memberId = memberId;
         this.title = title;
         this.body = body;
@@ -59,5 +62,6 @@ public class Notification extends BaseTimeEntity {
         this.lessonId = lessonId;
         this.date = date;
         this.url = url;
+        this.boardId = boardId;
     }
 }

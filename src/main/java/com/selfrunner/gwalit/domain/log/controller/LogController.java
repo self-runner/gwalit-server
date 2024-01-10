@@ -14,15 +14,15 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api/v1/log")
 @Tag(name = "Log", description = "API 로깅")
 public class LogController {
 
     private final LogService logService;
 
     @Operation(description = "로그 등록")
-    @PostMapping({"/log", "/api/v{version}/log"})
-    public ApplicationResponse<Void> register(@PathVariable(name = "version", required = false) Long version, @Valid @RequestBody LogReq logReq ) {
+    @PostMapping("")
+    public ApplicationResponse<Void> register(@Valid @RequestBody LogReq logReq ) {
         logService.register(logReq);
         return ApplicationResponse.create(ErrorCode.SUCCESS);
     }

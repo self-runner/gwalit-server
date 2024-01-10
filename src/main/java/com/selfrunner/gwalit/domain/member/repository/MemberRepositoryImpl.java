@@ -4,7 +4,6 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberState;
 import com.selfrunner.gwalit.domain.member.entity.MemberType;
-import com.selfrunner.gwalit.domain.member.entity.QMember;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
+import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;
 
 @Repository
 @RequiredArgsConstructor
@@ -68,6 +68,14 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
         return queryFactory.select(member.token)
                 .from(member)
                 .where(member.memberId.in(memberId), member.token.isNotNull())
+                .fetch();
+    }
+
+    @Override
+    public List<Member> findMemberListByLectureId(Long lectureId) {
+        return  queryFactory.selectFrom(member)
+                .leftJoin(memberAndLecture).on(memberAndLecture.member.memberId.eq(member.memberId))
+                .where(memberAndLecture.lecture.lectureId.eq(lectureId))
                 .fetch();
     }
 }

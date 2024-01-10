@@ -52,9 +52,7 @@ public class S3Client {
 
 
         // Response
-        String linkUrl = baseUrl + imageUrl;
-
-        return linkUrl;
+        return baseUrl + imageUrl;
     }
 
     public void delete(String imageUrl) {
@@ -76,7 +74,6 @@ public class S3Client {
     public String getDate() {
         LocalDate now = LocalDate.now();
 
-        String str = now.toString().replace("-", "/");
-        return str;
+        return now.toString().replace("-", "/");
     }
 }
