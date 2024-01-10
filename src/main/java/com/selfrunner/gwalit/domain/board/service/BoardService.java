@@ -264,6 +264,9 @@ public class BoardService {
 
         // Business Logic
         Long fileCapacity = fileRepository.findCapacityByLectureId(lectureId);
+        if(fileCapacity == null) {
+            fileCapacity = 0L;
+        }
 
         return new BoardFileRes(lectureId, fileCapacity);
     }
