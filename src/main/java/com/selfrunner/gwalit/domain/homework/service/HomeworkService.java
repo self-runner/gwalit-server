@@ -188,7 +188,7 @@ public class HomeworkService {
         return homeworkMainResList;
     }
 
-    public List<HomeworkStatisticsRes> getStatisticsList(Long version, Member member, Long homeworkId) {
+    public List<HomeworkStatisticsRes> getStatisticsList(Member member, Long homeworkId) {
         // Validation
         Homework homework = homeworkRepository.findById(homeworkId).orElseThrow(() -> new HomeworkException(ErrorCode.NOT_FOUND_EXCEPTION));
         log.info("Homework Id : " +  homework.getMemberId());
@@ -206,7 +206,7 @@ public class HomeworkService {
     }
 
     @Transactional
-    public void sendHomeworkRemindNotification(Long version, Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
+    public void sendHomeworkRemindNotification(Member member, List<HomeworkRemindReq> homeworkRemindReqList) {
         // Validation
 
         // Business Logic
@@ -238,7 +238,7 @@ public class HomeworkService {
                                 .notificationId(saveNotification.get(i).getNotificationId())
                                 .build()
                 );
-                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getBody(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl());
+                Message message = fcmClient.makeMessage(tokenList.get(i), notificationList.get(i).getTitle(), notificationList.get(i).getBody(), notificationList.get(i).getName(), notificationList.get(i).getLectureId(), notificationList.get(i).getLessonId(), notificationList.get(i).getDate(), notificationList.get(i).getUrl(), null);
                 fcmClient.send(message);
             }
             memberAndNotificationJdbcRepository.saveAll(memberAndNotificationList);

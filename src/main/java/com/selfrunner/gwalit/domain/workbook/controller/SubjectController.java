@@ -14,21 +14,21 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("")
+@RequestMapping("/api/v1/subject")
 @Tag(name = "Subject", description = "콘텐츠 페이지 뷰용 API")
 public class SubjectController {
 
     private final SubjectService subjectService;
 
     @Operation(summary = "콘텐츠 페이지 과목 정보 반환")
-    @GetMapping({"/subject", "/api/v{version}/subject"})
-    public ApplicationResponse<List<GetSubjectRes>> getSubjectList(@PathVariable(name = "version", required = false) Long version) {
+    @GetMapping("")
+    public ApplicationResponse<List<GetSubjectRes>> getSubjectList() {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, subjectService.getSubjectList());
     }
 
     @Operation(summary = "문제집 페이지 네비게이션 바 정보 반환")
-    @GetMapping({"/subject/material", "/api/v{version}/subject/material"})
-    public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@PathVariable(name = "version", required = false) Long version, @RequestParam("subject") String subject) {
+    @GetMapping("/material")
+    public ApplicationResponse<List<GetSubjectMaterialRes>> getSubjectDetailList(@RequestParam("subject") String subject) {
         return ApplicationResponse.ok(ErrorCode.SUCCESS, subjectService.getSubjectMaterialList(subject));
     }
 }

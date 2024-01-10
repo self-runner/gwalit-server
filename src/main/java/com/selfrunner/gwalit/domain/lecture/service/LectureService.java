@@ -292,7 +292,7 @@ public class LectureService {
                 String title = lectureName + "클래스 초대";
                 String body = "[과릿] " + member.getName() + " 선생님으로부터 " + lectureName + " 클래스 초대가 도착했습니다." + "\n" + "접속하여 초대된 클래스를 확인해보세요!";
                 // FCMMessageDto fcmMessageDto = FCMMessageDto.toDto(check.getToken(), title, body, "studentLectureMain", lectureId, null, null, null);
-                Message message = fcmClient.makeMessage(check.getToken(), title, body, "studentLectureMain", lectureId, null, null, null);
+                Message message = fcmClient.makeMessage(check.getToken(), title, body, "studentLectureMain", lectureId, null, null, null, null);
                 fcmClient.send(message);
             }
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()
