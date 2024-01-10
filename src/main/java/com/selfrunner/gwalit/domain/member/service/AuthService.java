@@ -51,10 +51,14 @@ public class AuthService {
     private final TaskRepository taskRepository;
 
     public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
-        // Business Logic
-        String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
+        // Business Logic - 테스트계정은 문자 발송이 되지 않도록 수정
+        if(!postAuthPhoneReq.getPhone().equals("01011111111")) {
+            System.out.println("test");
+            String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
-        redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
+            redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
+        }
+
 
         // Response
     }
