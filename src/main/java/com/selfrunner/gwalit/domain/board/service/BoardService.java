@@ -117,7 +117,8 @@ public class BoardService {
     public void deleteBoard(Member member, Long boardId) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
-        if(!board.getMember().getMemberId().equals(member.getMemberId())) {
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, board.getLecture().getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        if(!board.getMember().getMemberId().equals(member.getMemberId()) && !memberAndLecture.getIsTeacher()) {
             throw new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
@@ -233,8 +234,9 @@ public class BoardService {
     public void deleteReply(Member member, Long boardId, Long replyId) {
         // Validation
         Reply reply = replyRepository.findById(replyId).orElseThrow(() -> new BoardException(ErrorCode.NOT_FOUND_EXCEPTION));
+        MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, reply.getBoard().getLecture().getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         // 댓글 작성자가 아니거나 다른 게시글 ID로 요청했는지 확인하는 조건문
-        if(!reply.getMember().getMemberId().equals(member.getMemberId()) || !reply.getBoard().getBoardId().equals(boardId)) {
+        if((!reply.getMember().getMemberId().equals(member.getMemberId()) && !memberAndLecture.getIsTeacher()) || !reply.getBoard().getBoardId().equals(boardId)) {
             throw new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
 
