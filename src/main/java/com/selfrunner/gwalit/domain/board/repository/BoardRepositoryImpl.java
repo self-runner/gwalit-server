@@ -40,7 +40,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                     .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                     .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                     .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), checkCategory(category), board.deletedAt.isNull())
+                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), checkCategory(category), board.deletedAt.isNull(), reply.deletedAt.isNull())
                     .orderBy(board.createdAt.desc(), board.boardId.asc())
                     .groupBy(board.boardId)
                     .limit(pageable.getPageSize() + 1)
