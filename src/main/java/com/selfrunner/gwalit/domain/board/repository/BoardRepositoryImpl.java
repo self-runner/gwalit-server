@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.selfrunner.gwalit.domain.board.entity.QBoard.board;
