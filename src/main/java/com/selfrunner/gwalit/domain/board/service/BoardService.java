@@ -160,6 +160,10 @@ public class BoardService {
     public BoardReplyRes getOneBoard(@Auth Member member, Long boardId) {
         // Validation
         Board board = boardRepository.findById(boardId).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
+        // 게시글 논리적 삭제 체킹
+        if(board.getDeletedAt() != null) {
+            throw new BoardException(ErrorCode.NOT_FOUND_EXCEPTION);
+        }
         // 게시글 공개 여부와 권한 여부 확인
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, board.getLecture().getLectureId()).orElseThrow(() -> new BoardException(ErrorCode.UNAUTHORIZED_EXCEPTION));
         if(board.getIsPublic().equals(Boolean.FALSE) && !board.getMember().getMemberId().equals(member.getMemberId()) && memberAndLecture.getIsTeacher().equals(Boolean.FALSE)) {

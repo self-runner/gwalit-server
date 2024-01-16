@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.selfrunner.gwalit.domain.board.entity.QBoard.board;
@@ -34,9 +35,9 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
     @Override
     public Slice<BoardMetaRes> findBoardPaginationByCategory(Member m, Long lectureId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
-        List<BoardMetaRes> content;
+        List<BoardMetaRes> boardMetaResList;
         if (m.getType().equals(MemberType.TEACHER)) {
-            content = queryFactory.selectFrom(board)
+            boardMetaResList = queryFactory.selectFrom(board)
                     .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                     .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                     .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
@@ -48,7 +49,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
 
         }
         else {
-            content = queryFactory.selectFrom(board)
+            boardMetaResList = queryFactory.selectFrom(board)
                     .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                     .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                     .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
@@ -59,6 +60,15 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                     .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
         }
 
+        List<BoardMetaRes> content = boardMetaResList.stream()
+                .map(boardMetaRes -> {
+                    Long replyCount = queryFactory.select(reply.count())
+                            .from(reply)
+                            .where(reply.board.boardId.eq(boardMetaRes.getBoardId()), reply.deletedAt.isNull())
+                            .fetchFirst();
+                    return new BoardMetaRes(boardMetaRes.getBoardId(), boardMetaRes.getLectureId(), boardMetaRes.getMemberId(), boardMetaRes.getMemberType(), boardMetaRes.getMemberName(), boardMetaRes.getLessonId(), boardMetaRes.getTitle(), boardMetaRes.getBody(), boardMetaRes.getCategory(), boardMetaRes.getStatus(), replyCount, boardMetaRes.getCreatedAt(), boardMetaRes.getModifiedAt());
+                })
+                .collect(Collectors.toList());
 
         // 다음 페이지 존재 여부 계산
         boolean hasNext = false;
@@ -85,7 +95,7 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                 .leftJoin(reply).on(reply.board.boardId.eq(board.boardId))
                 .leftJoin(memberAndLecture).on(memberAndLecture.lecture.lectureId.eq(board.lecture.lectureId))
                 .leftJoin(member).on(member.memberId.eq(memberAndLecture.member.memberId))
-                .where(memberAndLecture.member.memberId.eq(memberId), board.category.eq(BoardCategory.QUESTION), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNull())
+                .where(memberAndLecture.member.memberId.eq(memberId), board.category.eq(BoardCategory.QUESTION), board.status.eq(QuestionStatus.UNSOLVED), board.deletedAt.isNull(), reply.deletedAt.isNull())
                 .groupBy(board.boardId)
                 .orderBy(board.createdAt.desc())
                 .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, memberAndLecture.lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.board.boardId.count(), board.createdAt, board.modifiedAt)));
