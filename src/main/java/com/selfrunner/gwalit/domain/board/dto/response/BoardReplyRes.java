@@ -64,7 +64,7 @@ public class BoardReplyRes {
         this.category = board.getCategory();
         this.status = board.getStatus();
         this.fileList = fileList;
-        this.replyCount = replyCount;
+        this.replyCount = (replyCount != null) ? replyCount : 0;
         this.createdAt = board.getCreatedAt();
         this.modifiedAt = board.getModifiedAt();
     }
