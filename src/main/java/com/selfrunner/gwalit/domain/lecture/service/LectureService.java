@@ -25,7 +25,7 @@ import com.selfrunner.gwalit.global.common.Day;
 import com.selfrunner.gwalit.global.common.Schedule;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.fcm.FCMClient;
-import com.selfrunner.gwalit.global.util.sms.SmsClient;
+import com.selfrunner.gwalit.global.util.sms.CoolSMSClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +52,7 @@ public class LectureService {
     private final LessonRepository lessonRepository;
     private final LessonJdbcRepository lessonJdbcRepository;
     private final HomeworkRepository homeworkRepository;
-    private final SmsClient smsClient;
+    private final CoolSMSClient smsClient;
     private final FCMClient fcmClient;
 
     @Transactional
@@ -285,7 +285,7 @@ public class LectureService {
         Member check = memberRepository.findNotFakeByPhoneAndType(postInviteReq.getPhone(), MemberType.STUDENT).orElse(null);
         if(check != null) {
             if(check.getState().equals(MemberState.INVITE)) {
-                smsClient.sendInvitation(member.getName(), lectureName, postInviteReq, Boolean.TRUE);
+                smsClient.sendInvitation(postInviteReq, Boolean.TRUE);
             }
             if(check.getState().equals(MemberState.ACTIVE) && check.getToken() != null) {
                 // smsClient.sendInvitation(member.getName(), lectureName,postInviteReq, Boolean.FALSE);
@@ -302,7 +302,7 @@ public class LectureService {
             memberAndLectureRepository.save(studentAndLecture);
         }
         if(check == null) {
-            smsClient.sendInvitation(member.getName(), memberAndLecture.getLecture().getName(),postInviteReq, Boolean.TRUE);
+            smsClient.sendInvitation(postInviteReq, Boolean.TRUE);
             Member student = postInviteReq.toEntity();
             memberRepository.save(student);
             MemberAndLecture studentAndLecture = MemberAndLecture.builder()

@@ -22,7 +22,7 @@ import com.selfrunner.gwalit.global.util.SHA256;
 import com.selfrunner.gwalit.global.util.jwt.TokenDto;
 import com.selfrunner.gwalit.global.util.jwt.TokenProvider;
 import com.selfrunner.gwalit.global.util.redis.RedisClient;
-import com.selfrunner.gwalit.global.util.sms.SmsClient;
+import com.selfrunner.gwalit.global.util.sms.CoolSMSClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +40,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final SmsClient smsClient;
+    private final CoolSMSClient smsClient;
     private final RedisClient redisClient;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
@@ -53,12 +53,10 @@ public class AuthService {
     public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic - 테스트계정은 문자 발송이 되지 않도록 수정
         if(!postAuthPhoneReq.getPhone().equals("01011111111")) {
-            System.out.println("test");
             String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
             redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
         }
-
 
         // Response
     }
