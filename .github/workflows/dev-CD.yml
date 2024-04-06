@@ -84,10 +84,10 @@ jobs:
 
       - name: Pull image from Amazon ECR and restart container
         run: |
-          docker-compose stop ${{ secrets.DOCKER_SERVICE_NAME }}
-          docker-compose rm -f ${{ secrets.DOCKER_SERVICE_NAME }}
           docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.DOCKER_IMAGE_NAME }}
+#          docker-compose stop ${{ secrets.DOCKER_SERVICE_NAME }}
+#          docker-compose rm -f ${{ secrets.DOCKER_SERVICE_NAME }}
           docker-compose up -d
 
 #name: Beanstalk Deploy
