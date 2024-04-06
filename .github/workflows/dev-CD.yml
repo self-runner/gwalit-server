@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+env:
+  aws_region: ap-northeast-2
+  ecr_repository: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
   build:
@@ -46,20 +49,37 @@ jobs:
       # dev.yml 반영
       - name: Make application-dev.yml
         run: |
-         cd ./src/main/resources
-         echo "${{ secrets.APPLICATION_DEV}}" > ./application-dev.yml
+          cd ./src/main/resources
+          echo "${{ secrets.APPLICATION_DEV}}" > ./application-dev.yml
         shell: bash
 
       # Gradle BootJar
       - name: BootJar with Gradle
         run: ./gradlew clean bootJar -Dspring.profiles.active=dev
 
-      # Docker Image Push
+      # Docker Image Push to ECR
       - name: Docker Image push
         run: |
           docker login -u ${{ secrets.DEV_DOCKERHUB_USERNAME }} -p ${{ secrets.DEV_DOCKERHUB_PASSWORD }}
           docker build -t ${{ secrets.DEV_DOCKERHUB_USERNAME}}/${{ secrets.DEV_DOCKERHUB_REPOSITORY}} ./
           docker push ${{ secrets.DEV_DOCKERHUB_USERNAME }}/${{ secrets.DEV_DOCKERHUB_REPOSITORY}}
+
+      # Docker Compose
+      - name: Docker Compose
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.GCP_SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          envs: GITHUB_SHA
+          script: |
+            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+            sudo docker-compose stop ${{ secrets.DOCKER_SERVICE_NAME }}
+            sudo docker-compose rm -f ${{ secrets.DOCKER_SERVICE_NAME }}
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY}}
+            sudo docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY}} ${{ secrets.DOCKER_IMAGE_NAME }}
+            sudo docker-compose up -d
 
 #name: Beanstalk Deploy
 #
