@@ -1,4 +1,4 @@
-name: DEV Dockerhub Push
+name: Push Image to Amazon ECR
 
 on:
   push:
@@ -7,6 +7,7 @@ on:
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+  GITHUB_SHA: ${{ github.sha }}
 
 jobs:
   build:
@@ -70,20 +71,31 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # Docker Image Push to ECR
+      # Docker Image Push to ECR and Run container with Image pull from ECR
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: ${{ env.GITHUB_SHA }}
         run: |
           # Build a docker container and push it to ECR so that it can be deployed to ECS.
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      - name: Pull image from Amazon ECR and restart container
-        run: |
-          docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ${{ secrets.DOCKER_IMAGE_NAME }}
-          docker-compose up -d
+      # Docker Compose
+      # docker-compose stop ${{ secrets.DOCKER_SERVICE_NAME }}
+      # docker-compose rm -f ${{ secrets.DOCKER_SERVICE_NAME }}
+      - name: Docker Compose
+        uses: appleboy/ssh-action@master
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ env.GITHUB_SHA }}
+        with:
+          host: ${{ secrets.AWS_SERVER_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY}}
+            docker tag ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY}} ${{ secrets.DOCKER_IMAGE_NAME }}
+            docker-compose up -d
