@@ -85,7 +85,6 @@ jobs:
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
       # Docker Compose
-       }
       - name: Docker Compose
         uses: appleboy/ssh-action@master
         env:
