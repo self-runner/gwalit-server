@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+env:
+  aws_region: ap-northeast-2
+  ecr_repository: ${{ secrets.ECR_REPOSITORY }}
 
 jobs:
   build:
@@ -40,26 +43,42 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application-secret.yml
-          echo "${{ secrets.APPLICATION_SECRET}}" > ./application-secret.yml
+          echo "${{ secrets.APPLICATION_SECRET }}" > ./application-secret.yml
         shell: bash
 
       # dev.yml 반영
       - name: Make application-dev.yml
         run: |
-         cd ./src/main/resources
-         echo "${{ secrets.APPLICATION_DEV}}" > ./application-dev.yml
+          cd ./src/main/resources
+          echo "${{ secrets.APPLICATION_DEV }}" > ./application-dev.yml
         shell: bash
 
       # Gradle BootJar
       - name: BootJar with Gradle
         run: ./gradlew clean bootJar -Dspring.profiles.active=dev
 
-      # Docker Image Push
-      - name: Docker Image push
+      # Docker Image Push to ECR
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}          # 나의 ECR 정보
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker login -u ${{ secrets.DEV_DOCKERHUB_USERNAME }} -p ${{ secrets.DEV_DOCKERHUB_PASSWORD }}
-          docker build -t ${{ secrets.DEV_DOCKERHUB_USERNAME}}/${{ secrets.DEV_DOCKERHUB_REPOSITORY}} ./
-          docker push ${{ secrets.DEV_DOCKERHUB_USERNAME }}/${{ secrets.DEV_DOCKERHUB_REPOSITORY}}
+          # Build a docker container and push it to ECR so that it can be deployed to ECS.
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
 #name: Beanstalk Deploy
 #
