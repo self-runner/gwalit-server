@@ -41,11 +41,6 @@ spring:
     job:
       enabled: false
 
-logging:
-  level:
-    org.springframework.jdbc: DEBUG
-    com.zaxxer.hikari: DEBUG
-
 firebase:
   # config: firebase/firebase-dev-admin.json
   scope: ENC(TvK32/6aBLSdr0KU74LEfETuNCh5DAAdh9zNcIlc9YKIiLKzKX5/6Fe38hm7sA1Z/oUcVuxPkoc=)
