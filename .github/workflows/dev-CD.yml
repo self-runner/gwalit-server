@@ -51,7 +51,7 @@ jobs:
       - name: Make application-dev.yml
         run: |
           cd ./src/main/resources
-          echo "${{ secrets.APPLICATION_DEV }}" > ./application-dev.yml
+          echo "${{ secrets.APPLICATION_DEV }}" > ./application-release.yml
         shell: bash
 
       # Gradle BootJar
