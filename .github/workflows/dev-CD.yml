@@ -83,15 +83,11 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      # Check Data
-      - name: Print Secret Value
-        run: echo "${{ secrets.AWS_SERVER_IP }}, ${{ secrets.SSH_USERNAME }}, ${{ secrets.SSH_PRIVATE_KEY }}"
-
       # Docker Compose
       # docker-compose stop ${{ secrets.DOCKER_SERVICE_NAME }}
       # docker-compose rm -f ${{ secrets.DOCKER_SERVICE_NAME }}
       - name: Docker Compose
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
 #        env:
 #          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
 #          IMAGE_TAG: ${{ env.GITHUB_SHA }}
@@ -99,7 +95,6 @@ jobs:
           host: ${{ secrets.AWS_SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          envs: GITHUB_SHA
           script: |
             aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}
             docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ env.GITHUB_SHA_FIX }}
