@@ -10,6 +10,10 @@ spring:
     username: ENC(23VtkEODP7NFAlIXh6iu3w==)
     url: ENC(xcpdNBbgA3cWXKlrjVOVHiQCCIWuZWy7JKD5qIxMnkBLZsDV2UOzYFr57bZZhEXj)
     password: ENC(Z3bshepqUUYRmo/xDJI/tsLRQ54VFjbS)
+#    url: ENC(cjE9nt26Kyi+TPxF8pPD0RXLenxNaoiIVGzsUxPa3xSwYIxY387damK4Zf7xN8J/p9XO2QWE2lVdkb3LjQSuapA0PEXLPtGf7uHKND0pOultghs/78YfaKv37bR3I8uA)
+#    username: ENC(WEGH/622uWGO/MqSOC6Uw7Vcbb+Ivy+7)
+#    password: ENC(11L+R8sQN5HBKnXMxFpfAm55jSn+gekH)
+
   redis:
     host: ENC(w9qDnaEabKQ4NbweCUEcxoMp+an+TBDU)
     port: 6378
@@ -36,6 +40,11 @@ spring:
       initialize-schema: never
     job:
       enabled: false
+
+logging:
+  level:
+    org.springframework.jdbc: DEBUG
+    com.zaxxer.hikari: DEBUG
 
 firebase:
   # config: firebase/firebase-dev-admin.json
