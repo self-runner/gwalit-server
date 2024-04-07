@@ -83,6 +83,10 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
+      # Check Data
+      - name: Print Secret Value
+        run: echo "${{ secrets.AWS_SERVER_IP }}, ${{ secrets.SSH_USERNAME }}, ${{ secrets.SSH_PRIVATE_KEY }}"
+
       # Docker Compose
       - name: Docker Compose
         uses: appleboy/ssh-action@v1.0.3
