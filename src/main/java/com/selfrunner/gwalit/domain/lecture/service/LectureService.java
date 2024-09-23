@@ -61,7 +61,7 @@ public class LectureService {
         if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
-        if(memberAndLectureRepository.findCountByMember(member) > 7) {
+        if(memberAndLectureRepository.findCountByMember(member) > 15) { // Class 생성 제한 개수 16개
             throw new LectureException(ErrorCode.FAILED_MAKE_CLASS);
         }
         if(postLectureReq.getEndDate().isAfter(postLectureReq.getStartDate().plusYears(1).minusDays(1))) {
