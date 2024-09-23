@@ -339,7 +339,7 @@ public class LectureService {
 
         // Business Logic
         List<Long> memberIdList = postStudentIdReqList.stream()
-                .map(postStudentIdReq -> postStudentIdReq.getMemberId())
+                .map(PostStudentIdReq::getMemberId)
                 .collect(Collectors.toList());
         memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(lectureId, memberIdList);
         memberRepository.deleteMemberByMemberIdList(memberIdList);
@@ -351,11 +351,8 @@ public class LectureService {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Business Logic
-        List<GetStudentRes> getStudentResList = memberAndLectureRepository.findStudentByMemberAndLectureId(member, lectureId).orElse(null);
-
-        // Response
-        return getStudentResList;
+        // Business Logic && Response
+        return memberAndLectureRepository.findStudentByMemberAndLectureId(member, lectureId).orElse(null);
     }
 
 
