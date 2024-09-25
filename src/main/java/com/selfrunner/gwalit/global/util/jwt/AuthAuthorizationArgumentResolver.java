@@ -55,7 +55,9 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         // MySQL 블랙리스트 조회
         else {
             blacklistRepository.findBlacklistByToken(authorization).ifPresent(blacklist -> {
-                throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+                if(tokenProvider.getExpiration(authorization) > blacklist.getExpiredAt()) {
+                    throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+                }
             });
         }
 
