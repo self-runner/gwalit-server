@@ -2,6 +2,7 @@ package com.selfrunner.gwalit.global.util.jwt;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
+import com.selfrunner.gwalit.domain.member.repository.BlacklistRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -25,6 +26,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
     private final RedisClient redisClient;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final BlacklistRepository blacklistRepository;
 
     // @Auth 어노테이션 존재 여부 확인
     @Override
@@ -43,10 +45,21 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         }
 
         // 토큰 유효 여부 확인
-        String value = redisClient.getValue(authorization);
-        if(value != null && value.equals("logout")) {
-            throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+        if(redisClient.isRedisAvailable()) {
+            // Redis 블랙리스트 조회
+            String value = redisClient.getValue(authorization);
+            if(value != null && value.equals("logout")) {
+                throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+            }
         }
+        // MySQL 블랙리스트 조회
+        else {
+            blacklistRepository.findBlacklistByToken(authorization).ifPresent(blacklist -> {
+                throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+            });
+        }
+
+        // 토큰 유효성 검사
         tokenProvider.validateToken(authorization);
 
         // 토큰에서 사용자 정보 추출

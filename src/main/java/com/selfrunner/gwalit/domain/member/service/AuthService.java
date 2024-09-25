@@ -11,6 +11,7 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.AuthorizationCode;
+import com.selfrunner.gwalit.domain.member.entity.Blacklist;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.*;
@@ -181,8 +182,19 @@ public class AuthService {
     public void logout(String atk, Member member) {
         // Business Logic
         String key = member.getType() + member.getPhone();
-        redisClient.deleteValue(key);
-        redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
+        // Redis 블랙리스트 등록
+        if(redisClient.isRedisAvailable()) {
+            redisClient.deleteValue(key);
+            redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
+        }
+
+        // MySQL 블랙리스트 등록
+        refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+        Blacklist blacklist = Blacklist.builder()
+                .token(atk)
+                .expiredAt(tokenProvider.getExpiration(atk))
+                .build();
+        blacklistRepository.save(blacklist);
 
         // FCM 토큰 정보 삭제
         member.deleteToken();
