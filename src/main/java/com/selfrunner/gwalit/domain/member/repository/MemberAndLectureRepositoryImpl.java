@@ -4,6 +4,9 @@ import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
 import com.selfrunner.gwalit.domain.member.entity.*;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

@@ -11,7 +11,7 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;

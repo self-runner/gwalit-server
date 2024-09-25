@@ -1,6 +1,5 @@
-package com.selfrunner.gwalit.domain.member.entity;
+package com.selfrunner.gwalit.domain.member.vo;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

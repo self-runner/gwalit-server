@@ -2,6 +2,9 @@ package com.selfrunner.gwalit.domain.member.entity;
 
 import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PutMemberReq;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberGrade;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.global.common.BaseTimeEntity;
 import com.selfrunner.gwalit.global.util.SHA256;
 import lombok.AccessLevel;

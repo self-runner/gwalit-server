@@ -6,7 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMainRes;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetLectureMetaRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
