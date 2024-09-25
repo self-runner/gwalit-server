@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.homework.service;
 
 import com.google.firebase.messaging.Message;
-import com.google.firebase.messaging.MulticastMessage;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkRemindReq;
 import com.selfrunner.gwalit.domain.homework.dto.request.HomeworkReq;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkMainRes;
@@ -16,7 +15,7 @@ import com.selfrunner.gwalit.domain.lesson.exception.LessonException;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndNotification;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;

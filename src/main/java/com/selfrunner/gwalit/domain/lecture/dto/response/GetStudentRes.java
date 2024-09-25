@@ -1,8 +1,8 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
-import com.selfrunner.gwalit.domain.member.entity.MemberGrade;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberGrade;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

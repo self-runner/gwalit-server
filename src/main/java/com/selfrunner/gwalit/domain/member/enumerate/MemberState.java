@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.member.entity;
+package com.selfrunner.gwalit.domain.member.enumerate;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

@@ -8,7 +8,7 @@ import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.board.enumerate.BoardCategory;
 import com.selfrunner.gwalit.domain.board.enumerate.QuestionStatus;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

@@ -1,4 +1,4 @@
-package com.selfrunner.gwalit.domain.member.entity;
+package com.selfrunner.gwalit.domain.member.enumerate;
 
 public enum MemberGrade {
     // 초등학생
