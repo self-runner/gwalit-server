@@ -10,11 +10,11 @@ import com.selfrunner.gwalit.domain.member.dto.request.PostLoginReq;
 import com.selfrunner.gwalit.domain.member.dto.request.PostMemberReq;
 import com.selfrunner.gwalit.domain.member.dto.response.GetRefreshRes;
 import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
+import com.selfrunner.gwalit.domain.member.entity.AuthorizationCode;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
-import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
+import com.selfrunner.gwalit.domain.member.repository.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
-import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.domain.task.repository.TaskRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
@@ -49,20 +49,37 @@ public class AuthService {
     private final LessonRepository lessonRepository;
     private final HomeworkRepository homeworkRepository;
     private final TaskRepository taskRepository;
+    private final AuthorizationCodeRepository authorizationCodeRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistRepository blacklistRepository;
 
     public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic - 테스트계정은 문자 발송이 되지 않도록 수정
         if(!postAuthPhoneReq.getPhone().equals("01011111111")) {
-            String authorizationCode = smsClient.sendAuthorizationCode(postAuthPhoneReq);
+            String code = smsClient.sendAuthorizationCode(postAuthPhoneReq);
 
-            redisClient.setValue(postAuthPhoneReq.getPhone(), authorizationCode, 300L);
+            if (redisClient.isRedisAvailable()) {
+                redisClient.setValue(postAuthPhoneReq.getPhone(), code, 300L);
+            }
+
+            // RDB 저장 (계정당 가장 최신의 요청 하나만 가지고 있어야 하므로 DELETE 후 INSERT)
+            authorizationCodeRepository.deleteAllByPhone(postAuthPhoneReq.getPhone());
+            AuthorizationCode authorizationCode = AuthorizationCode.builder()
+                    .phone(postAuthPhoneReq.getPhone())
+                    .authorizationCode(code)
+                    .build();
+            authorizationCodeRepository.save(authorizationCode);
+
         }
 
         // Response
     }
     public void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
-        boolean result = redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode());
+        boolean result = (redisClient.isRedisAvailable())
+                ? redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())
+//                : authorizationCodeRepository;
+
 
         if(!result) {
             throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);

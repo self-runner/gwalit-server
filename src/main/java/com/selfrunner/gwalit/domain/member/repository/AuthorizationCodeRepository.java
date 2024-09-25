@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthorizationCodeRepository extends JpaRepository<AuthorizationCode, Long> {
 
+    void deleteAllByPhone(String phone);
 }

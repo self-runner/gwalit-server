@@ -1,6 +1,5 @@
 package com.selfrunner.gwalit.domain.member.entity;
 
-import com.selfrunner.gwalit.domain.member.enumerate.AuthorizationType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,16 +31,11 @@ public class AuthorizationCode {
     @Column(name = "expired_at", nullable = false)
     private Long expiredAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "authorization_type", columnDefinition = "varchar(20)", nullable = false)
-    private AuthorizationType authorizationType;
-
     @Builder
-    public AuthorizationCode(String phone, String authorizationCode, AuthorizationType authorizationType, Long expiredAt) {
+    public AuthorizationCode(String phone, String authorizationCode, Long expiredAt) {
         this.phone = phone;
         this.authorizationCode = authorizationCode;
         this.sentAt = LocalDateTime.now();
-        this.authorizationType = authorizationType;
         this.expiredAt = expiredAt;
     }
 }
