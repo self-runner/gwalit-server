@@ -32,6 +32,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -76,12 +77,26 @@ public class AuthService {
     }
     public void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
         // Business Logic
-        boolean result = (redisClient.isRedisAvailable())
-                ? redisClient.getValue(postAuthCodeReq.getPhone()).equals(postAuthCodeReq.getAuthorizationCode())
-//                : authorizationCodeRepository;
+        // Redis - 인증코드 조회 및 확인
+        if(redisClient.isRedisAvailable()) {
+            String code = redisClient.getValue(postAuthCodeReq.getPhone());
+            if(code != null && code.equals(postAuthCodeReq.getAuthorizationCode())) {
+                return ;
+            }
+        }
 
-
-        if(!result) {
+        // MySQL - 인증코드 조회 및 확인 (Redis 장애 또는 Redis 데이터가 없는 경우)
+        AuthorizationCode authorizationCode = authorizationCodeRepository.findByPhone(postAuthCodeReq.getPhone()).orElse(null);
+        // 데이터가 존재하지 않을 경우
+        if (authorizationCode == null) {
+            throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+        }
+        // 인증코드 유효기간이 끝난 경우
+        if(LocalDateTime.now().isAfter(authorizationCode.getExpiredAt())) {
+            throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+        }
+        // 인증코드가 일치하지 않는 경우
+        if(!authorizationCode.getAuthorizationCode().equals(postAuthCodeReq.getAuthorizationCode())) {
             throw new MemberException(ErrorCode.WRONG_AUTHENTICATION_CODE);
         }
 

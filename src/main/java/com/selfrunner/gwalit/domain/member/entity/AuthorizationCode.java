@@ -29,13 +29,13 @@ public class AuthorizationCode {
     private LocalDateTime sentAt;
 
     @Column(name = "expired_at", nullable = false)
-    private Long expiredAt;
+    private LocalDateTime expiredAt;
 
     @Builder
-    public AuthorizationCode(String phone, String authorizationCode, Long expiredAt) {
+    public AuthorizationCode(String phone, String authorizationCode) {
         this.phone = phone;
         this.authorizationCode = authorizationCode;
         this.sentAt = LocalDateTime.now();
-        this.expiredAt = expiredAt;
+        this.expiredAt = LocalDateTime.now().plusMinutes(5);
     }
 }
