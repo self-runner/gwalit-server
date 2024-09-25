@@ -13,6 +13,7 @@ import com.selfrunner.gwalit.domain.member.dto.response.PostLoginRes;
 import com.selfrunner.gwalit.domain.member.entity.AuthorizationCode;
 import com.selfrunner.gwalit.domain.member.entity.Blacklist;
 import com.selfrunner.gwalit.domain.member.entity.Member;
+import com.selfrunner.gwalit.domain.member.entity.RefreshToken;
 import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.*;
 import com.selfrunner.gwalit.domain.member.exception.MemberException;
@@ -172,7 +173,15 @@ public class AuthService {
         // Business Logic: 토큰 발급 및 Redis 저장
         TokenDto tokenDto = tokenProvider.generateToken(member);
         String key = member.getType() + member.getPhone(); // unique 확인은 phone + type이므로 이를 string으로 저장, 앞 7자리는 type으로 고정
-        redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
+        if (redisClient.isRedisAvailable()) {
+            redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
+        }
+        RefreshToken refreshToken = RefreshToken.builder()
+                .phone(member.getPhone())
+                .memberType(member.getType())
+                .token(tokenDto.getRefreshToken())
+                .build();
+        refreshTokenRepository.save(refreshToken);
 
         // Response
         return new PostLoginRes().toDto(tokenDto, member);
