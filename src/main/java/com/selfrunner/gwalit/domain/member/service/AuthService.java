@@ -218,10 +218,22 @@ public class AuthService {
         String rtk = httpServletRequest.getHeader("Authorization");
         tokenProvider.validateToken(rtk); // RTK 유효성 검증
         String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
-        String value = redisClient.getValue(key);
-        if(rtk.isBlank() || value == null || !value.equals(rtk)) {
-            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+        if(redisClient.isRedisAvailable()) {
+            String value = redisClient.getValue(key);
+            if(rtk.isBlank() || value == null || !value.equals(rtk)) {
+                throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+            }
+        } else {
+            RefreshToken refreshToken = refreshTokenRepository.findByPhoneAndMemberType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk))).orElse(null);
+            if(rtk.isBlank()
+                    || refreshToken == null
+                    || (tokenProvider.getTokenExpirationAsLocalDateTime(rtk).isBefore(LocalDateTime.now()))
+                    || (tokenProvider.getTokenExpirationAsLocalDateTime(refreshToken.getToken()).isAfter(LocalDateTime.now())
+                        && !refreshToken.getToken().equals(rtk))) {
+                throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+            }
         }
+
         Member member = memberRepository.findActiveByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk))).orElse(null);
         if(member == null) {
             throw new ApplicationException(ErrorCode.WRONG_TOKEN);
@@ -231,7 +243,17 @@ public class AuthService {
         TokenDto tokenDto = tokenProvider.regenerateToken(member, rtk);
         String newRefreshToken = tokenDto.getRefreshToken();
         if(!newRefreshToken.equals(rtk)) {
-            redisClient.setValue(key, newRefreshToken, tokenProvider.getExpiration(newRefreshToken));
+            if(redisClient.isRedisAvailable()) {
+                redisClient.setValue(key, newRefreshToken, tokenProvider.getExpiration(newRefreshToken));
+            }
+
+            refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .token(newRefreshToken)
+                    .phone(member.getPhone())
+                    .memberType(member.getType())
+                    .build();
+            refreshTokenRepository.save(refreshToken);
         }
 
         // Response

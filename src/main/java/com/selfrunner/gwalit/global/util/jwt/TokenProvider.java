@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Slf4j
@@ -121,5 +123,20 @@ public class TokenProvider {
     public Long getExpiration(String token) {
         Claims claims = Jwts.parser().setSigningKey(secretKey.getBytes(StandardCharsets.UTF_8)).parseClaimsJws(token).getBody();
         return claims.getExpiration().getTime();
+    }
+
+    // 해당 토큰의 Expiration을 LocalDateTime으로 반환
+    public LocalDateTime getTokenExpirationAsLocalDateTime(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+
+        // 만료 시간을 가져옵니다 (이는 Date 객체입니다)
+        Date expirationDate = claims.getExpiration();
+
+        // Date를 Instant로 변환한 후, 이를 다시 LocalDateTime으로 변환합니다
+        return LocalDateTime.ofInstant(expirationDate.toInstant(), ZoneId.systemDefault());
     }
 }
