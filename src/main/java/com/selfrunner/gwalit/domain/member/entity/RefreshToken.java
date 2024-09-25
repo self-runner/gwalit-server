@@ -1,0 +1,31 @@
+package com.selfrunner.gwalit.domain.member.entity;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Entity
+@Getter
+@Table(name = "refresh_token")
+@NoArgsConstructor
+public class RefreshToken {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "refresh_token_id", nullable = false)
+    private Long refreshTokenId;
+
+    @Column(name = "token", nullable = false)
+    private String token;
+
+    @Column(name = "expired_at", nullable = false)
+    private Long expiredAt;
+
+    @Builder
+    public RefreshToken(String token, Long expiredAt) {
+        this.token = token;
+        this.expiredAt = expiredAt;
+    }
+}
