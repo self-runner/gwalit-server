@@ -55,6 +55,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         // MySQL 블랙리스트 조회
         else {
             blacklistRepository.findBlacklistByToken(authorization).ifPresent(blacklist -> {
+                // ExpiredAt이 현재 시간보다 크면 블랙리스트로 처리
                 if(tokenProvider.getExpiration(authorization) > blacklist.getExpiredAt()) {
                     throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
                 }
