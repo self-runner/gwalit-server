@@ -16,6 +16,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -56,7 +57,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         else {
             blacklistRepository.findBlacklistByToken(authorization).ifPresent(blacklist -> {
                 // ExpiredAt이 현재 시간보다 크면 블랙리스트로 처리
-                if(tokenProvider.getExpiration(authorization) > blacklist.getExpiredAt()) {
+                if(blacklist.getExpiredAt().isAfter(LocalDateTime.now())) {
                     throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
                 }
             });

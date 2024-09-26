@@ -56,6 +56,7 @@ public class AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final BlacklistRepository blacklistRepository;
 
+    @Transactional
     public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
         // Business Logic - 테스트계정은 문자 발송이 되지 않도록 수정
         if(!postAuthPhoneReq.getPhone().equals("01011111111")) {
@@ -176,11 +177,13 @@ public class AuthService {
         if (redisClient.isRedisAvailable()) {
             redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
         }
-        RefreshToken refreshToken = RefreshToken.builder()
-                .phone(member.getPhone())
-                .memberType(member.getType())
-                .token(tokenDto.getRefreshToken())
-                .build();
+        refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+        RefreshToken refreshToken = new RefreshToken(
+                member.getPhone(),
+                member.getType(),
+                tokenDto.getRefreshToken(),
+                tokenProvider.getTokenExpirationAsLocalDateTime(tokenDto.getRefreshToken())
+        );
         refreshTokenRepository.save(refreshToken);
 
         // Response
@@ -199,10 +202,10 @@ public class AuthService {
 
         // MySQL 블랙리스트 등록
         refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
-        Blacklist blacklist = Blacklist.builder()
-                .token(atk)
-                .expiredAt(tokenProvider.getExpiration(atk))
-                .build();
+        Blacklist blacklist = new Blacklist(
+                atk,
+                tokenProvider.getTokenExpirationAsLocalDateTime(atk)
+        );
         blacklistRepository.save(blacklist);
 
         // FCM 토큰 정보 삭제

@@ -30,13 +30,13 @@ public class RefreshToken {
     private String token;
 
     @Column(name = "expired_at", nullable = false)
-    private Long expiredAt;
+    private LocalDateTime expiredAt;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt; // 배치를 통해, 생성시간 기준 30일이 지난 데이터 삭제
 
     @Builder
-    public RefreshToken(String phone, MemberType memberType, String token, Long expiredAt) {
+    public RefreshToken(String phone, MemberType memberType, String token, LocalDateTime expiredAt) {
         this.phone = phone;
         this.memberType = memberType;
         this.token = token;

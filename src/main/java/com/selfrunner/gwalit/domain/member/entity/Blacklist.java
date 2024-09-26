@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -22,10 +23,10 @@ public class Blacklist {
     private String token;
 
     @Column(name = "expired_at", nullable = false)
-    private Long expiredAt;
+    private LocalDateTime expiredAt;
 
     @Builder
-    public Blacklist(String token, Long expiredAt) {
+    public Blacklist(String token, LocalDateTime expiredAt) {
         this.token = token;
         this.expiredAt = expiredAt;
     }
