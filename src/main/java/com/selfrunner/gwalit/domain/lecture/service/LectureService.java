@@ -61,7 +61,9 @@ public class LectureService {
         if(member.getType() != MemberType.TEACHER) { // 방 생성 권한 없음
             throw new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION);
         }
-        if(memberAndLectureRepository.findCountByMember(member) > 7) {
+        Long count = memberAndLectureRepository.findCountByMember(member);
+        System.out.println("기생성된 Class 개수 제한: " + count);
+        if(count > 15) { // Class 생성 제한 개수 16개
             throw new LectureException(ErrorCode.FAILED_MAKE_CLASS);
         }
         if(postLectureReq.getEndDate().isAfter(postLectureReq.getStartDate().plusYears(1).minusDays(1))) {
@@ -339,7 +341,7 @@ public class LectureService {
 
         // Business Logic
         List<Long> memberIdList = postStudentIdReqList.stream()
-                .map(postStudentIdReq -> postStudentIdReq.getMemberId())
+                .map(PostStudentIdReq::getMemberId)
                 .collect(Collectors.toList());
         memberAndLectureRepository.deleteMemberAndLectureByMemberIdList(lectureId, memberIdList);
         memberRepository.deleteMemberByMemberIdList(memberIdList);
@@ -351,11 +353,8 @@ public class LectureService {
         // Validation
         memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId).orElseThrow(() -> new MemberException(ErrorCode.UNAUTHORIZED_EXCEPTION));
 
-        // Business Logic
-        List<GetStudentRes> getStudentResList = memberAndLectureRepository.findStudentByMemberAndLectureId(member, lectureId).orElse(null);
-
-        // Response
-        return getStudentResList;
+        // Business Logic && Response
+        return memberAndLectureRepository.findStudentByMemberAndLectureId(member, lectureId).orElse(null);
     }
 
 
