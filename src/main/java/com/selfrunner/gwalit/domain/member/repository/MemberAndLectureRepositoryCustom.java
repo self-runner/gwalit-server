@@ -3,7 +3,7 @@ package com.selfrunner.gwalit.domain.member.repository;
 import com.selfrunner.gwalit.domain.lecture.dto.response.GetStudentRes;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 
 import java.util.List;
 import java.util.Optional;

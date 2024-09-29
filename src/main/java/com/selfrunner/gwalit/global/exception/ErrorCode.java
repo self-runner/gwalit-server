@@ -19,6 +19,7 @@ public enum ErrorCode {
     ALREADY_DELETE_EXCEPTION(HttpStatus.BAD_REQUEST, 2004, "이미 삭제된 리소스입니다."),
     FAILED_UPLOAD_FILE(HttpStatus.INTERNAL_SERVER_ERROR, 2005, "파일 업로드에 실패했습니다."),
     FAILED_DELETE_FILE(HttpStatus.INTERNAL_SERVER_ERROR, 2006, "파일 삭제에 실패했습니다."),
+    REDIS_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, 2007, "Redis 서버에 문제가 발생했습니다."),
 
     // Member
     ALREADY_EXIST_MEMBER(HttpStatus.BAD_REQUEST, 3000, "이미 가입된 정보입니다."),

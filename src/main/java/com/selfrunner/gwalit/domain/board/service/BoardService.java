@@ -19,6 +19,7 @@ import com.selfrunner.gwalit.domain.board.repository.ReplyRepository;
 import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.repository.LessonRepository;
 import com.selfrunner.gwalit.domain.member.entity.*;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndLectureRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberAndNotificationJdbcRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;

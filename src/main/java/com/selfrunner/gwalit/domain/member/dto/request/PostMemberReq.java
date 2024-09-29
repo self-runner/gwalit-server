@@ -1,7 +1,7 @@
 package com.selfrunner.gwalit.domain.member.dto.request;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
