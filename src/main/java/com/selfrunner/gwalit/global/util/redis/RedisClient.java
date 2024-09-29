@@ -20,9 +20,24 @@ public class RedisClient {
      * @param value 저장할 value
      * @param timeout 데이터 유효시간 (expire time)
      */
-    public void setValue(String key, String value, Long timeout) {
+    public RedisDto setValue(String key, String value, Long timeout) {
+        // Redis 서버가 정상적으로 동작하지 않을 경우
+        if(!isRedisAvailable()) {
+            return RedisDto.builder()
+                    .key(key)
+                    .value(value)
+                    .isSuccess(false)
+                    .build();
+        }
+
         ValueOperations<String, String> values = redisTemplate.opsForValue();
         values.set(key, value, Duration.ofMinutes(timeout));
+
+        return RedisDto.builder()
+                .key(key)
+                .value(value)
+                .isSuccess(true)
+                .build();
     }
 
     /**
@@ -30,9 +45,21 @@ public class RedisClient {
      * @param key 조회할 key
      * @return key에 해당하는 value
      */
-    public String getValue(String key) {
+    public RedisDto getValue(String key) {
+        if(!isRedisAvailable()) {
+            return RedisDto.builder()
+                    .key(key)
+                    .isSuccess(false)
+                    .build();
+        }
+
         ValueOperations<String, String> values = redisTemplate.opsForValue();
-        return values.get(key);
+
+        return RedisDto.builder()
+                .key(key)
+                .value(values.get(key))
+                .isSuccess(true)
+                .build();
     }
 
     /**
@@ -40,20 +67,23 @@ public class RedisClient {
      * @param key 삭제할 key
      */
     public void deleteValue(String key) {
-        redisTemplate.delete(key);
+        // Redis 정상 동작 시에만 삭제
+        if(isRedisAvailable()) {
+            redisTemplate.delete(key);
+        }
     }
 
     /**
      * Redis 서버가 정상적으로 동작하는지 확인
      * @return Redis 서버 동작 여부
      */
-    public boolean isRedisAvailable() {
+    private boolean isRedisAvailable() {
         try {
             return Optional.ofNullable(redisTemplate.getConnectionFactory())
-                    .map(connectionFactory -> connectionFactory.getConnection().ping() != null)
-                    .orElse(false);
+                    .map(connectionFactory -> (connectionFactory.getConnection().ping() != null))
+                    .orElse(Boolean.FALSE);
         } catch (Exception e) {
-            return false;
+            return true;
         }
     }
 }
