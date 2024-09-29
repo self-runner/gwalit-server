@@ -1,7 +1,7 @@
 package com.selfrunner.gwalit.domain.lecture.dto.response;
 
 import com.selfrunner.gwalit.domain.lecture.entity.Subject;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

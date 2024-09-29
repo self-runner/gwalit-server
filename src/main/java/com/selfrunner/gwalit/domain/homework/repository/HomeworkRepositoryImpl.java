@@ -8,7 +8,7 @@ import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkRes;
 import com.selfrunner.gwalit.domain.homework.dto.response.HomeworkStatisticsRes;
 import com.selfrunner.gwalit.domain.homework.dto.service.HomeworkRemind;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -19,7 +19,6 @@ import java.util.Optional;
 
 import static com.querydsl.core.group.GroupBy.groupBy;
 import static com.selfrunner.gwalit.domain.homework.entity.QHomework.homework;
-import static com.selfrunner.gwalit.domain.lecture.entity.QLecture.lecture;
 import static com.selfrunner.gwalit.domain.lesson.entity.QLesson.lesson;
 import static com.selfrunner.gwalit.domain.member.entity.QMember.member;
 import static com.selfrunner.gwalit.domain.member.entity.QMemberAndLecture.memberAndLecture;

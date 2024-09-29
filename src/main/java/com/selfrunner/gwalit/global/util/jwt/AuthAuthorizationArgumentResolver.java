@@ -1,11 +1,14 @@
 package com.selfrunner.gwalit.global.util.jwt;
 
+import com.selfrunner.gwalit.domain.member.entity.Blacklist;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
+import com.selfrunner.gwalit.domain.member.repository.BlacklistRepository;
 import com.selfrunner.gwalit.domain.member.repository.MemberRepository;
 import com.selfrunner.gwalit.global.exception.ApplicationException;
 import com.selfrunner.gwalit.global.exception.ErrorCode;
 import com.selfrunner.gwalit.global.util.redis.RedisClient;
+import com.selfrunner.gwalit.global.util.redis.RedisDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -15,6 +18,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import java.time.LocalDateTime;
 
 
 @Slf4j
@@ -25,6 +29,7 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
     private final RedisClient redisClient;
     private final TokenProvider tokenProvider;
     private final MemberRepository memberRepository;
+    private final BlacklistRepository blacklistRepository;
 
     // @Auth 어노테이션 존재 여부 확인
     @Override
@@ -43,10 +48,27 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         }
 
         // 토큰 유효 여부 확인
-        String value = redisClient.getValue(authorization);
-        if(value != null && value.equals("logout")) {
+        RedisDto redisDto = redisClient.getValue(authorization);
+        // Redis 장애 또는 Cache Miss 시, MySQL Data 대체
+        if(!redisDto.isSuccess() || redisDto.getValue() == null || !redisDto.getValue().equals("logout")) {
+            Blacklist blacklist = blacklistRepository.findBlacklistByToken(authorization).orElse(null);
+            // MySQL Data 존재 시, 로그아웃 Value 확인 및 처리
+            if(blacklist != null) {
+                // ExpiredAt이 현재 시간보다 크면 블랙리스트로 처리
+                if(blacklist.getExpiredAt().isAfter(LocalDateTime.now())) {
+                    throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
+                }
+            // MySQL Data 미존재 시, Exception 던짐
+            } else {
+                throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+            }
+        }
+        // Redis Data 존재 시, 로그아웃 Value 확인 및 처리
+        else {
             throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
         }
+
+        // 토큰 유효성 검사
         tokenProvider.validateToken(authorization);
 
         // 토큰에서 사용자 정보 추출

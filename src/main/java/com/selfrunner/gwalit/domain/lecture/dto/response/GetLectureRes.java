@@ -5,7 +5,7 @@ import com.selfrunner.gwalit.domain.lecture.entity.Rule;
 import com.selfrunner.gwalit.domain.lecture.entity.Subject;
 import com.selfrunner.gwalit.domain.lesson.dto.response.LessonMetaRes;
 import com.selfrunner.gwalit.domain.member.entity.MemberAndLecture;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
