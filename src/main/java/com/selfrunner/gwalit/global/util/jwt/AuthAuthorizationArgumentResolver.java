@@ -52,15 +52,9 @@ public class AuthAuthorizationArgumentResolver implements HandlerMethodArgumentR
         // Redis 장애 또는 Cache Miss 시, MySQL Data 대체
         if(!redisDto.isSuccess() || redisDto.getValue() == null || !redisDto.getValue().equals("logout")) {
             Blacklist blacklist = blacklistRepository.findBlacklistByToken(authorization).orElse(null);
-            // MySQL Data 존재 시, 로그아웃 Value 확인 및 처리
-            if(blacklist != null) {
-                // ExpiredAt이 현재 시간보다 크면 블랙리스트로 처리
-                if(blacklist.getExpiredAt().isAfter(LocalDateTime.now())) {
-                    throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
-                }
-            // MySQL Data 미존재 시, Exception 던짐
-            } else {
-                throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+            // MySQL Data 존재 시, 로그아웃 Value 확인 및 처리 - ExpiredAt이 현재 시간보다 크면 블랙리스트로 처리
+            if(blacklist != null && blacklist.getExpiredAt().isAfter(LocalDateTime.now())) {
+                throw new ApplicationException(ErrorCode.LOGOUT_TOKEN);
             }
         }
         // Redis Data 존재 시, 로그아웃 Value 확인 및 처리
