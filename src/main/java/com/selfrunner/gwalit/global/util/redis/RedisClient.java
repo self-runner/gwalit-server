@@ -81,9 +81,9 @@ public class RedisClient {
         try {
             return Optional.ofNullable(redisTemplate.getConnectionFactory())
                     .map(connectionFactory -> (connectionFactory.getConnection().ping() != null))
-                    .orElse(Boolean.FALSE);
+                    .orElse(Boolean.TRUE);
         } catch (Exception e) {
-            return true;
+            return false;
         }
     }
 }
