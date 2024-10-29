@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -26,35 +25,32 @@ public class FCMClient {
     @Async
     public void send(Message message) {
         try {
-            // Message message = makeMessage(fcmMessageDto);
-
             FirebaseMessaging.getInstance().sendAsync(message).get();
-            // String response = FirebaseMessaging.getInstance().sendAsync(message).get();
-            // return response if firebase messaging is successfully completed.
-            // return response;
         } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
         }
     }
 
+    /**
+     * 다수에게 단 건 발송
+     * @param messageList Firebase Message 객체 리스트
+     */
     public void sendAll(List<Message> messageList) {
         BatchResponse response;
         try {
             // 알림 발송
-            response = FirebaseMessaging.getInstance().sendAllAsync(messageList).get();
+            response = FirebaseMessaging.getInstance().sendEachAsync(messageList).get();
 
             // 요청에 대한 응답 처리
             if (response.getFailureCount() > 0) {
                 List<SendResponse> responses = response.getResponses();
-                List<String> failedTokens = new ArrayList<>();
 
-                for (int i = 0; i < responses.size(); i++) {
-                    if (!responses.get(i).isSuccessful()) {
-                        failedTokens.add(messageList.get(i).toString());
+                for (SendResponse sendResponse : responses) {
+                    if (!sendResponse.isSuccessful()) {
+                        log.info("Failed to send message to token: {}", sendResponse.getMessageId() + sendResponse.getException().getMessage());
                     }
                 }
-                log.error("List of tokens are not valid FCM token : " + failedTokens);
             }
         } catch (InterruptedException | ExecutionException e) {
             log.error("cannot send to memberList push message. error info : {}", e.getMessage());
@@ -66,22 +62,19 @@ public class FCMClient {
     public void sendMulticast(List<String> tokenList, MulticastMessage multicastMessage) {
         BatchResponse response;
         try {
-            response = FirebaseMessaging.getInstance().sendMulticastAsync(multicastMessage).get();
+            response = FirebaseMessaging.getInstance().sendEachForMulticastAsync(multicastMessage).get();
 
             if (response.getFailureCount() > 0) {
                 List<SendResponse> responses = response.getResponses();
-                List<String> failedTokens = new ArrayList<>();
-                for (int i = 0; i < responses.size(); i++) {
-                    if (!responses.get(i).isSuccessful()) {
-                        // The order of responses corresponds to the order of the registration tokens.
-                        failedTokens.add(tokenList.get(i));
+
+                for (SendResponse sendResponse : responses) {
+                    if (!sendResponse.isSuccessful()) {
+                        log.info("Failed to send message to token: {}", sendResponse.getMessageId() + sendResponse.getException().getMessage());
                     }
                 }
-                log.error("List of tokens are not valid FCM token : " + failedTokens);
             }
         } catch (ExecutionException | InterruptedException e) {
             log.error("cannot send to memberList push message. error info: {}", e.getMessage());
-            e.printStackTrace();
             throw new ApplicationException(ErrorCode.FAILED_SEND_MESSAGE);
         }
     }
@@ -151,6 +144,11 @@ public class FCMClient {
                 .build();
     }
 
+    /**
+     * 알림 발송 시, UTF-8 이모지 제거 (현재 미사용)
+     * @param content 발송할 알림 내용
+     * @return 이모지가 제거된 알림 내용
+     */
     private String removeEmojis(String content) {
         String regexOfEmojis = "[\uD83C-\uDBFF\uDC00-\uDFFF]+";
         return content.replaceAll(regexOfEmojis, "");
