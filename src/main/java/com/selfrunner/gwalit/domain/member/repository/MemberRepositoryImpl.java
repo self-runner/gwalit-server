@@ -2,8 +2,8 @@ package com.selfrunner.gwalit.domain.member.repository;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberState;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

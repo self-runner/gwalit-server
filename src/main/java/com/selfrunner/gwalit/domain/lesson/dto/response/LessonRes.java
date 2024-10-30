@@ -5,7 +5,7 @@ import com.selfrunner.gwalit.domain.lesson.entity.Lesson;
 import com.selfrunner.gwalit.domain.lesson.entity.LessonType;
 import com.selfrunner.gwalit.domain.lesson.entity.Participant;
 import com.selfrunner.gwalit.domain.lesson.entity.Progress;
-import com.selfrunner.gwalit.domain.member.entity.MemberMeta;
+import com.selfrunner.gwalit.domain.member.vo.MemberMeta;
 import com.selfrunner.gwalit.global.common.Schedule;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

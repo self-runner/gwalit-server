@@ -1,8 +1,7 @@
 package com.selfrunner.gwalit.domain.member.repository;
 
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import com.selfrunner.gwalit.domain.member.entity.MemberState;
-import com.selfrunner.gwalit.domain.member.entity.MemberType;
+import com.selfrunner.gwalit.domain.member.enumerate.MemberType;
 
 import java.util.List;
 import java.util.Optional;

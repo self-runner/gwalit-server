@@ -22,11 +22,9 @@ public class BatchConfig {
 
     @Bean
     public Job notificationJob() {
-        Job job = jobBuilderFactory.get("Lesson Notification Job")
+        return jobBuilderFactory.get("Lesson Notification Job")
                 .start(sendLessonInformNotification())
                 .build();
-
-        return job;
     }
 
     @Bean
