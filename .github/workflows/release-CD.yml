@@ -46,7 +46,7 @@ jobs:
           cd ./src/main/resources
           mkdir firebase
           cd firebase
-          touch ./firefirebase-service-key.json
+          touch ./firebase-service-key.json
           echo "${{ secrets.FIREBASE_RELEASE_ADMIN }}" | openssl base64 -d -A > ./firebase-service-key.json
         shell: bash
 
