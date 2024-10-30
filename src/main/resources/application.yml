@@ -28,7 +28,7 @@ spring:
     properties:
       hibernate:
         show_sql: false
-        format_sql: true
+        format_sql: false
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
       open-in-view: false
   servlet:
