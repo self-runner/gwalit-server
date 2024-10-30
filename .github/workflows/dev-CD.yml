@@ -39,6 +39,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # FCM 서비스 계정 키 적용
+      - name: Make firebase-service-key.json
+        run: |
+          cd ./src/main/resources
+          touch ./firebase-service-key.json
+          echo "${{ secrets.FIREBASE_RELEASE_ADMIN }}" | openssl base64 -d -A > ./firebase-service-key.json
+        shell: bash
+
       # secret.yml 반영
       - name: Make application-secret.yml
         run: |
