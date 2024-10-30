@@ -12,6 +12,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -21,7 +22,7 @@ import java.util.List;
 public class FCMConfig {
 
     @Value("${firebase.config}")
-    private String configFile;
+    private ClassPathResource fcmServiceKey;
 
     @Value("${firebase.scope}")
     private String scope;
@@ -38,12 +39,11 @@ public class FCMConfig {
 //            // ByteArrayInputStream을 사용하여 바이트 배열을 InputStream으로 변환
 //            InputStream inputStream = new ByteArrayInputStream(byteArray);
 
-            ClassPathResource resource = new ClassPathResource(configFile);
-            InputStream inputStream = resource.getInputStream();
+            System.out.println(fcmServiceKey);
 
             // Service Account를 이용하여 Fireabse Admin SDK 초기화
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(inputStream).createScoped(List.of(scope)))
+                    .setCredentials(GoogleCredentials.fromStream(fcmServiceKey.getInputStream()).createScoped(List.of(scope)))
                     .build();
 
             if(FirebaseApp.getApps().isEmpty()) {
@@ -53,6 +53,12 @@ public class FCMConfig {
         } catch (Exception e) {
             log.error("FCM Initialize Error: {}", e.getMessage());
             throw new ApplicationException(ErrorCode.FAILED_FCM_INIT);
+        }
+    }
+
+    private String readResourceAsString(ClassPathResource resource) throws IOException {
+        try (InputStream inputStream = resource.getInputStream()) {
+            return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         }
     }
 }
