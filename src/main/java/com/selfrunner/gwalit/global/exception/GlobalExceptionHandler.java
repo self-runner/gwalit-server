@@ -1,6 +1,5 @@
 package com.selfrunner.gwalit.global.exception;
 
-import com.selfrunner.gwalit.global.common.ApplicationResponse;
 import com.selfrunner.gwalit.global.common.ErrorResponse;
 import io.sentry.Sentry;
 import lombok.extern.slf4j.Slf4j;

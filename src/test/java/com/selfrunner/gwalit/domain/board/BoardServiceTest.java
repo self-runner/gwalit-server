@@ -1,8 +1,5 @@
 package com.selfrunner.gwalit.domain.board;
 
-import com.selfrunner.gwalit.domain.board.dto.request.PostBoardReq;
-import com.selfrunner.gwalit.domain.board.dto.response.BoardRes;
-import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.board.repository.BoardRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileJdbcRepository;
 import com.selfrunner.gwalit.domain.board.repository.FileRepository;
@@ -28,11 +25,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 public class BoardServiceTest {

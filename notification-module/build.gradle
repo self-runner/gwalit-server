@@ -1,0 +1,14 @@
+jar { enabled = false }
+
+dependencies {
+    // Common Module Dependency
+    implementation project(":common-module")
+
+    // FCM
+    implementation 'com.google.firebase:firebase-admin:9.2.0'
+
+    // CoolSMS
+    implementation 'net.nurigo:javaSDK:2.2'
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}

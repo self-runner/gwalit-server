@@ -2,7 +2,6 @@ package com.selfrunner.gwalit.domain.homework.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.selfrunner.gwalit.domain.homework.entity.Homework;
-import com.selfrunner.gwalit.domain.lesson.dto.request.PostLessonReq;
 import com.selfrunner.gwalit.domain.member.entity.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

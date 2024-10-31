@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.banner.dto.response;
 
 import com.selfrunner.gwalit.domain.banner.entity.Banner;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,7 +1,6 @@
 package com.selfrunner.gwalit.domain.task.dto.response;
 
 import com.selfrunner.gwalit.domain.task.entity.Subtask;
-import com.selfrunner.gwalit.domain.task.entity.Task;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

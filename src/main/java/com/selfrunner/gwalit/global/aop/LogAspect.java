@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class LogAspect {
 
     // 비즈니스 로직의 실행시간 기록
-    @Around("com.selfrunner.gwalit.global.aop.Pointcuts.allService()")
+    @Around("com.selfrunner.commonmodule.global.aop.Pointcuts.allService()")
     public Object executionTimeLog(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
             Long startTime = System.currentTimeMillis();

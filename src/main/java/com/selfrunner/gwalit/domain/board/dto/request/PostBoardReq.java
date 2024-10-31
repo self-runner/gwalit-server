@@ -3,7 +3,6 @@ package com.selfrunner.gwalit.domain.board.dto.request;
 import com.selfrunner.gwalit.domain.board.entity.Board;
 import com.selfrunner.gwalit.domain.lecture.entity.Lecture;
 import com.selfrunner.gwalit.domain.member.entity.Member;
-import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotNull;

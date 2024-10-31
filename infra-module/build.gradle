@@ -1,0 +1,14 @@
+jar { enabled = false }
+
+dependencies {
+    // Common Module Dependency
+    implementation project(":common-module")
+
+    // Amazon S3
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}

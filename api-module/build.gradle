@@ -1,0 +1,35 @@
+jar { enabled = false }
+
+dependencies {
+    // Common Module Dependency
+    implementation project(":common-module")
+    // Domain Module Dependency
+    implementation project(":domain-module")
+    // Infra Module Dependency
+    implementation project(":infra-module")
+    // Batch Module Dependency
+    implementation project(":batch-module")
+    // Notification Module Dependency
+    implementation project(":notification-module")
+
+    // Web MVC Dependency
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Swagger UI - spring doc
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
+
+    // Jasypt
+    implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
+
+    // Sentry
+    implementation 'io.sentry:sentry-spring-boot-starter:6.28.0'
+
+    // AOP
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // Http Client
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}

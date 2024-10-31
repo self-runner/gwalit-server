@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: infra-module
+  # Redis Configuration
+  redis:
+    host: ENC(w9qDnaEabKQ4NbweCUEcxoMp+an+TBDU)
+    port: 6378
+    password: ENC(IDxTSfQKMZjHv0pDXXf8OGCsgS61Eljt)
+
+# S3 Bucket Configuration
+cloud:
+  aws:
+    s3:
+      bucket: ENC(zZPOplyPi+sA6t4vC0rGt1n1N5LkhL2kg2/A6E4hPCE=)
+    credentials:
+      access-key: ENC(kKpL2gBdJbcVMaAj5H/7oRD/+sbqQn6MUebdoXQ2JEM=)
+      secret-key: ENC(5tVgV5fzXht6SABd5RZol39pkxsVaWocIw5dRit8flEoY8h7uS9LTbA83+aprahCsaO9zrfr7oo=)
+    region:
+      auto: false
+      static: ap-northeast-2
+    stack:
+      auto: false
+    baseUrl: ENC(CnV9sY9YPEFvuVFiQ2VBoQfhlu7XSDiGoydn97WDcnXJfaZvkj26V/XklNjXdu7I2J9LLKD8HwSeswh5VGuRP28ezFIVMbQB)

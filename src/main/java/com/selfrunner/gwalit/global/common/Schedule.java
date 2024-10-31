@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import java.sql.Timestamp;
 import java.time.LocalTime;
 
 @Getter

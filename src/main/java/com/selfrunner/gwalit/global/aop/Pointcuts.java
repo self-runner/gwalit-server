@@ -4,7 +4,7 @@ import org.aspectj.lang.annotation.Pointcut;
 
 public class Pointcuts {
 
-    @Pointcut("execution(* com.selfrunner.gwalit.domain.*.service.*.*(..))")
+    @Pointcut("execution(* com.selfrunner.commonmodule.domain.*.service.*.*(..))")
     public void allService() {
 
     }

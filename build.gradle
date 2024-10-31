@@ -1,121 +1,42 @@
-buildscript {
-	ext {
-		queryDslVersion = "5.0.0"
-	}
-}
-
+// Multi Module Project
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.13'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
-group = 'com.selfrunner'
-version = '0.0.1-SNAPSHOT'
+subprojects { // 모든 하위 모듈들에 이 설정을 적용합니다.
+	apply plugin: 'java'
+	apply plugin: 'java-library'
+	apply plugin: 'org.springframework.boot'
+	apply plugin: 'io.spring.dependency-management'
 
-java {
+	group 'com.selfrunner'
+	version '0.0.1-SNAPSHOT'
 	sourceCompatibility = '11'
-}
 
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+	configurations {
+		compileOnly {
+			extendsFrom annotationProcessor
+		}
 	}
-}
 
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-
-	// lombok
-	implementation 'org.projectlombok:lombok'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-
-	// JPA
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-	// JWT
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-
-	// MySQL
-	implementation 'mysql:mysql-connector-java:8.0.33'
-
-	// Redis
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-	// Swagger UI - spring doc
-	implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
-
-	// Http Client
-	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
-
-	// Jasypt
-	implementation 'com.github.ulisesbocchio:jasypt-spring-boot-starter:3.0.4'
-
-	// QueryDSL
-	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
-	implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
-
-	// Amazon S3
-	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-
-	// MySQL Json
-	implementation 'io.hypersistence:hypersistence-utils-hibernate-5:3.5.1'
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
-	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.2'
-
-	// Sentry
-	implementation 'io.sentry:sentry-spring-boot-starter:6.28.0'
-
-	// AOP
-	implementation 'org.springframework.boot:spring-boot-starter-aop'
-
-	// Spring Batch & Quartz
-	implementation 'org.springframework.boot:spring-boot-starter-batch'
-	implementation 'org.springframework.boot:spring-boot-starter-quartz'
-	testImplementation 'org.springframework.batch:spring-batch-test'
-
-    // FCM
-	implementation 'com.google.firebase:firebase-admin:9.2.0'
-
-	// CoolSMS
-	implementation 'net.nurigo:javaSDK:2.2'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
-}
-
-// QueryDSL Options
-def querydslDir = "$buildDir/generated/querydsl"
-
-querydsl {
-	jpa = true
-	querydslSourcesDir = querydslDir
-}
-
-sourceSets {
-	main.java.srcDir querydslDir
-}
-
-compileQuerydsl {
-	options.annotationProcessorPath = configurations.querydsl
-}
-
-configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
+	repositories {
+		mavenCentral()
 	}
-	querydsl.extendsFrom compileClasspath
+
+	dependencies { // 모든 하위 모듈에 추가 될 의존성 목록입니다.
+		// Basic Dependency
+		implementation 'org.springframework.boot:spring-boot-starter'
+		testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+		// Lombok Dependency
+		implementation 'org.projectlombok:lombok'
+		compileOnly 'org.projectlombok:lombok'
+		annotationProcessor 'org.projectlombok:lombok'
+	}
+
+	test {
+		useJUnitPlatform()
+	}
 }

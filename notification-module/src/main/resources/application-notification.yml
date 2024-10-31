@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: notification-module
+
+# Firebase Configuration
+firebase:
+  config: firebase/firebase-service-key.json
+  scope: ENC(TvK32/6aBLSdr0KU74LEfETuNCh5DAAdh9zNcIlc9YKIiLKzKX5/6Fe38hm7sA1Z/oUcVuxPkoc=)
+
+# CoolSMS Configuration
+coolsms:
+  api-key: ENC(w0vLjP7p8BBFw1RdyHL33sNCJlwi007Rc+6q8U2RFpo=)
+  api-secret: ENC(fGBU8g+telNmdqrnOd2wdHyUyzvyRkgV9mX7WoiHh8ZhxXylsGwxDRJaQOGiEMvE)
+  sender-phone: 01068544527
