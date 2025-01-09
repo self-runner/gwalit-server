@@ -1,8 +1,28 @@
 // Multi Module Project
+buildscript {
+	ext {
+		springBootVersion = '2.7.13'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '2.7.13'
 	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+}
+
+repositories {
+	mavenCentral()
+}
+
+springBoot {
+	mainClass =  'com.selfrunner.apimodule.ApiModuleApplication'
 }
 
 subprojects { // 모든 하위 모듈들에 이 설정을 적용합니다.

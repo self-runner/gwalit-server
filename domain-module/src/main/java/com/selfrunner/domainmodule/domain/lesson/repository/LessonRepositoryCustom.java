@@ -1,0 +1,43 @@
+package com.selfrunner.domainmodule.domain.lesson.repository;
+
+import com.selfrunner.commonmodule.dto.lesson.response.LessonMetaRes;
+import com.selfrunner.commonmodule.dto.lesson.response.LessonProgressRes;
+import com.selfrunner.commonmodule.vo.batch.BatchNotificationDto;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+public interface LessonRepositoryCustom {
+    Optional<List<LessonMetaRes>> findAllLessonMetaByLectureId(Long lectureId);
+
+    Optional<List<LessonMetaRes>> findAllLessonMetaByYearMonth(List<Long> lectureIdList, String year, String month);
+
+    Optional<List<LessonProgressRes>> findAllProgressByLectureId(Long lectureId);
+
+    List<Long> findAllLessonIdByLectureId(Long lectureId);
+
+    Optional<LessonMetaRes> findLessonMetaByLectureIdBeforeNow(Long lectureId);
+
+    Optional<LessonMetaRes> findLessonMetaByLectureIdAfterNow(Long lectureId);
+
+    void deleteAllByLectureIdAndDate(Long lectureId, LocalDate startDate, LocalDate endDate);
+
+    Optional<Long> findRecentLessonIdByLectureId(Long lectureId);
+
+    Optional<List<Long>> findRecentLessonIdByLectureIdList(List<Long> lectureId);
+
+    List<Long> findAllLessonIdByLectureIdList(List<Long> lectureIdList);
+
+    void deleteAllByLectureLectureIdList(List<Long> lectureIdList);
+
+    List<Long> findTodayLessonIdByDate(LocalDate date);
+
+    List<BatchNotificationDto> findAllByDate(List<Long> lessonIdList);
+
+    void updateLessonProcessingByDate(List<Long> lessonIdList);
+
+    void updateLessonSentByDate(List<Long> lessonIdList);
+
+    Optional<LocalDate> findLessonDateByLessonId(Long lessonId);
+}

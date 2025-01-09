@@ -1,3 +1,4 @@
+bootJar { enabled = false }
 jar { enabled = false }
 
 dependencies {
@@ -9,6 +10,9 @@ dependencies {
 
     // Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Spring Boot Web (For MultipartFile)
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 }
 
 tasks.register("prepareKotlinBuildScriptModel"){}
