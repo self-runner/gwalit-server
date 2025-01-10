@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    include: secret
+    active: default
+
+  swagger-ui:
+    path: ENC(WTBg/5W0RzdfjEYWeHF/lvHH8XFo0FJA0Ue3wuWoTRM=)
+    use-root-path: true
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 100MB
+
+jasypt:
+  encryptor:
+    bean: jasyptStringEncryptor
+    algorithm: PBEWithMD5AndDES
+    iv-generator-classname: org.jasypt.iv.NoIvGenerator
+
+jwt:
+  secret-key: ENC(G4uynKebowofr5HmjZXbL6rAlM3LVbNibcNoPprVTIv6BTtqc8EFXX+AbzvNkWe5xpc1J4lfQl8=)
+
+
+sentry:
+  dsn: ENC(kcWB8bBCxkeKlhoM0lJKkfXx29L8hWgX5N03JGF6IQ47OZMC7Fn8IleH+AdjVqFtniKKzqs4yTYsdm2zo9Y0scnN/E/iydqmjU/iVcMjegvYJn/AXZAlRqpU84cAXHNWd4oFcF3Bauc=)
+  traces-sample-rate: 1.0
+
+---
+spring:
+  profiles:
+    active: stag
+
+---
+spring:
+  profiles:
+    active: release

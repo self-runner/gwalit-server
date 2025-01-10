@@ -1,0 +1,41 @@
+package com.selfrunner.commonmodule.dto.lesson.request;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.selfrunner.commonmodule.dto.homework.request.HomeworkReq;
+import com.selfrunner.commonmodule.vo.lecture.ScheduleVo;
+import com.selfrunner.commonmodule.vo.lesson.Participant;
+import com.selfrunner.commonmodule.vo.lesson.Progress;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.List;
+
+@Getter
+@RequiredArgsConstructor
+public class PostLessonReq {
+
+    @NotNull(message = "연결된 Class가 없습니다.")
+    private Long lectureId;
+
+    @NotNull(message = "수업 유형이 선택되지 않았습니다.")
+    @Pattern(regexp = "(Regular|Makeup)", message = "올바르지 않은 수업 유형입니다.")
+    private String type;
+
+    private List<Participant> participants;
+
+    @Size(max = 500, message = "피드백은 최대 500자까지만 작성할 수 있습니다.")
+    private String feedback;
+
+    private List<Progress> progresses;
+
+    private List<HomeworkReq> homeworks;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate date;
+
+    private ScheduleVo time;
+}

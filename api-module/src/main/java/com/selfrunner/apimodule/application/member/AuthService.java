@@ -1,0 +1,310 @@
+package com.selfrunner.apimodule.application.member;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.selfrunner.commonmodule.common.SHA256;
+import com.selfrunner.commonmodule.enumerate.member.MemberState;
+import com.selfrunner.commonmodule.exception.ApplicationException;
+import com.selfrunner.commonmodule.exception.ErrorCode;
+import com.selfrunner.domainmodule.domain.homework.repository.HomeworkRepository;
+import com.selfrunner.domainmodule.domain.lecture.repository.LectureRepository;
+import com.selfrunner.domainmodule.domain.lesson.repository.LessonRepository;
+import com.selfrunner.commonmodule.dto.member.request.PostAuthCodeReq;
+import com.selfrunner.commonmodule.dto.member.request.PostAuthPhoneReq;
+import com.selfrunner.commonmodule.dto.member.request.PostLoginReq;
+import com.selfrunner.commonmodule.dto.member.request.PostMemberReq;
+import com.selfrunner.commonmodule.dto.member.response.GetRefreshRes;
+import com.selfrunner.commonmodule.dto.member.response.PostLoginRes;
+import com.selfrunner.domainmodule.domain.member.AuthorizationCode;
+import com.selfrunner.domainmodule.domain.member.Blacklist;
+import com.selfrunner.domainmodule.domain.member.Member;
+import com.selfrunner.domainmodule.domain.member.RefreshToken;
+import com.selfrunner.commonmodule.enumerate.member.MemberType;
+import com.selfrunner.domainmodule.domain.member.repository.*;
+import com.selfrunner.domainmodule.domain.task.repository.TaskRepository;
+import com.selfrunner.apimodule.global.jwt.TokenDto;
+import com.selfrunner.apimodule.global.jwt.TokenProvider;
+import com.selfrunner.inframodule.redis.RedisClient;
+import com.selfrunner.inframodule.redis.RedisDto;
+import com.selfrunner.notificationmodule.sms.CoolSMSClient;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final CoolSMSClient smsClient;
+    private final RedisClient redisClient;
+    private final TokenProvider tokenProvider;
+    private final MemberRepository memberRepository;
+    private final MemberAndLectureRepository memberAndLectureRepository;
+    private final LectureRepository lectureRepository;
+    private final LessonRepository lessonRepository;
+    private final HomeworkRepository homeworkRepository;
+    private final TaskRepository taskRepository;
+    private final AuthorizationCodeRepository authorizationCodeRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final BlacklistRepository blacklistRepository;
+
+    @Transactional
+    public void sendAuthorizationCode(PostAuthPhoneReq postAuthPhoneReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // Business Logic - 테스트계정은 문자 발송이 되지 않도록 수정
+        if(!postAuthPhoneReq.getPhone().equals("01011111111")) {
+            String code = smsClient.sendAuthorizationCode(postAuthPhoneReq);
+
+            // Redis 저장 (데이터 쓰기 작업은 Redis 성공/실패 여부와 상관없이 동작해야 하므로)
+            redisClient.setValue(postAuthPhoneReq.getPhone(), code, 300L);
+
+            // MySQL 저장 (계정당 가장 최신의 요청 하나만 가지고 있어야 하므로 DELETE 후 INSERT)
+            authorizationCodeRepository.deleteAllByPhone(postAuthPhoneReq.getPhone());
+            AuthorizationCode authorizationCode = AuthorizationCode.builder()
+                    .phone(postAuthPhoneReq.getPhone())
+                    .authorizationCode(code)
+                    .build();
+            authorizationCodeRepository.save(authorizationCode);
+        }
+
+        // Response
+    }
+
+    public void checkAuthorizationCode(PostAuthCodeReq postAuthCodeReq) {
+        // Business Logic
+        checkAuthenticationCode(postAuthCodeReq.getPhone(), postAuthCodeReq.getAuthorizationCode());
+
+        // Response
+    }
+
+    @Transactional
+    public void sendTemporaryPassword(PostAuthCodeReq postAuthCodeReq) throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException, URISyntaxException {
+        // Validation
+        checkAuthenticationCode(postAuthCodeReq.getPhone(), postAuthCodeReq.getAuthorizationCode());
+        Member member = memberRepository
+                .findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.valueOf(postAuthCodeReq.getType()))
+                .orElse(null);
+        if(member == null) {
+            if(MemberType.valueOf(postAuthCodeReq.getType()).equals(MemberType.TEACHER)) {
+                if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.STUDENT)
+                        .orElse(null) != null) {
+                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
+                }
+            }
+            else {
+                if(memberRepository.findActiveByPhoneAndType(postAuthCodeReq.getPhone(), MemberType.TEACHER)
+                        .orElse(null) != null) {
+                    throw new ApplicationException(ErrorCode.WRONG_TYPE);
+                }
+            }
+            throw new ApplicationException(ErrorCode.NOT_EXIST_PHONE);
+        }
+
+        // Business Logic
+        String temporaryPassword = smsClient.sendTemporaryPassword(postAuthCodeReq);
+        member.encryptPassword(temporaryPassword);
+        member.setNeedNotification();
+        memberRepository.save(member);
+
+        // Response
+    }
+
+    @Transactional
+    public void register(PostMemberReq postMemberReq) {
+        // Validation: 전화번호와 타입 및 논리적 삭제 여부로 회원가입 이미 진행했는지 여부 확인
+        if(memberRepository.findActiveByPhoneAndType(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null) != null) {
+            throw new ApplicationException(ErrorCode.ALREADY_EXIST_MEMBER);
+        }
+        // 비밀번호와 비밀번호 확인 일치 여부 확인
+        if(!postMemberReq.getPassword().equals(postMemberReq.getPasswordCheck())) {
+            throw new ApplicationException(ErrorCode.INVALID_VALUE_EXCEPTION);
+        }
+
+        // Business Logic: 비밀번호 암호화 및 회원 정보 저장
+        Member inviter = memberRepository.findInviteByPhoneAndTypeAndState(postMemberReq.getPhone(), MemberType.valueOf(postMemberReq.getType())).orElse(null);
+        if(inviter == null) {
+            Member member = Member.builder()
+                    .name(postMemberReq.getName())
+                    .type(postMemberReq.getType())
+                    .state(MemberState.ACTIVE)
+                    .phone(postMemberReq.getPhone())
+                    .password(postMemberReq.getPassword())
+                    .school(postMemberReq.getSchool())
+                    .grade(postMemberReq.getGrade())
+                    .isAdvertisement(postMemberReq.getIsAdvertisement())
+                    .isPrivacy(postMemberReq.getIsPrivacy())
+                    .build();
+            member.encryptPassword(member.getPassword());
+            memberRepository.save(member);
+        }
+        if(inviter != null) {
+            inviter.update(postMemberReq);
+        }
+
+        // Response
+    }
+
+    @Transactional
+    public PostLoginRes login(PostLoginReq postLoginReq) {
+        // Validation: 계정 존재 여부 및 회원탈퇴 여부 확인
+        Member member = memberRepository.findActiveByPhoneAndType(postLoginReq.getPhone(), MemberType.valueOf(postLoginReq.getType()))
+                .orElse(null);
+        if(member == null) {
+            throw new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION);
+        }
+        if(!member.getPassword().equals(SHA256.encrypt(postLoginReq.getPassword()))) {
+            throw new ApplicationException(ErrorCode.WRONG_PASSWORD);
+        }
+
+        // Business Logic: 토큰 발급 및 Redis 저장
+        TokenDto tokenDto = tokenProvider.generateToken(member);
+        String key = member.getType() + member.getPhone(); // unique 확인은 phone + type이므로 이를 string으로 저장, 앞 7자리는 type으로 고정
+        // Redis 토큰 저장 (데이터 쓰기 작업은 Redis 성공/실패 여부와 상관없이 동작해야 하므로)
+        redisClient.setValue(key, tokenDto.getRefreshToken(), 30 * 24 * 60 * 60 * 1000L);
+        refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+        RefreshToken refreshToken = new RefreshToken(
+                member.getPhone(),
+                member.getType(),
+                tokenDto.getRefreshToken(),
+                tokenProvider.getTokenExpirationAsLocalDateTime(tokenDto.getRefreshToken())
+        );
+        refreshTokenRepository.save(refreshToken);
+
+        // Response
+        return new PostLoginRes(tokenDto.getAccessToken(),
+                tokenDto.getRefreshToken(),
+                member.getMemberId(),
+                member.getName(),
+                member.getType(),
+                member.getPhone(),
+                member.getSchool(),
+                member.getGrade(),
+                member.getNeedNotification(),
+                member.getIsAdvertisement(),
+                member.getIsPrivacy());
+    }
+
+    @Transactional
+    public void logout(String atk, Member member) {
+        // Business Logic
+        String key = member.getType() + member.getPhone();
+
+        // Redis 블랙리스트 토큰 저장 (데이터 쓰기 작업은 Redis 성공/실패 여부와 상관없이 동작해야 하므로)
+        redisClient.deleteValue(key);
+        redisClient.setValue(atk, "logout", tokenProvider.getExpiration(atk));
+
+        // MySQL 블랙리스트 등록
+        refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+        Blacklist blacklist = new Blacklist(
+                atk,
+                tokenProvider.getTokenExpirationAsLocalDateTime(atk)
+        );
+        blacklistRepository.save(blacklist);
+
+        // FCM 토큰 정보 삭제
+        member.deleteToken();
+        memberRepository.save(member);
+
+        // Response
+    }
+
+    @Transactional
+    public GetRefreshRes reissue(HttpServletRequest httpServletRequest) {
+        // Validation: RTK 조회
+        String rtk = httpServletRequest.getHeader("Authorization");
+        tokenProvider.validateToken(rtk); // RTK 유효성 검증
+        String key = tokenProvider.getType(rtk) + tokenProvider.getPhone(rtk);
+        RedisDto redisDto = redisClient.getValue(key);
+        // Redis 장애 또는 Cache Miss 시, MySQL Data 대체
+        if(!redisDto.isSuccess() || redisDto.getValue() == null || !redisDto.getValue().equals(rtk)) {
+            RefreshToken refreshToken = refreshTokenRepository
+                    .findByPhoneAndMemberType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)))
+                    .orElse(null);
+            if(rtk.isBlank()
+                    || refreshToken == null
+                    || (tokenProvider.getTokenExpirationAsLocalDateTime(rtk).isBefore(LocalDateTime.now()))
+                    || (tokenProvider.getTokenExpirationAsLocalDateTime(refreshToken.getToken()).isAfter(LocalDateTime.now())
+                        && !refreshToken.getToken().equals(rtk))) {
+                throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+            }
+        }
+
+        Member member = memberRepository
+                .findActiveByPhoneAndType(tokenProvider.getPhone(rtk), MemberType.valueOf(tokenProvider.getType(rtk)))
+                .orElse(null);
+        if(member == null) {
+            throw new ApplicationException(ErrorCode.WRONG_TOKEN);
+        }
+
+        // Business Logic
+        TokenDto tokenDto = tokenProvider.regenerateToken(member, rtk);
+        String newRefreshToken = tokenDto.getRefreshToken();
+        if(!newRefreshToken.equals(rtk)) {
+            redisClient.setValue(key, newRefreshToken, tokenProvider.getExpiration(newRefreshToken));
+
+            refreshTokenRepository.deleteAllByPhoneAndMemberType(member.getPhone(), member.getType());
+            RefreshToken refreshToken = RefreshToken.builder()
+                    .token(newRefreshToken)
+                    .phone(member.getPhone())
+                    .memberType(member.getType())
+                    .build();
+            refreshTokenRepository.save(refreshToken);
+        }
+
+        // Response
+        return new GetRefreshRes().toDto(tokenDto.getAccessToken(), tokenDto.getRefreshToken());
+    }
+
+    @Transactional
+    public void withdrawal(Member member) {
+        // Validation: 기 탈퇴 여부 확인
+        if(member.getDeletedAt() != null) {
+            throw new ApplicationException(ErrorCode.ALREADY_DELETE_MEMBER);
+        }
+
+        // Business Logic: Soft Delete
+        memberRepository.delete(member);
+        List<Long> lectureIdList = memberAndLectureRepository.findLectureIdByMember(member).orElse(null);
+        memberAndLectureRepository.deleteMemberAndLecturesByMember(member);
+        if(lectureIdList != null && member.getType().equals(MemberType.TEACHER)) {
+            taskRepository.deleteAllByLectureIdList(lectureIdList);
+            List<Long> lessonIdList = lessonRepository.findAllLessonIdByLectureIdList(lectureIdList);
+            homeworkRepository.deleteAllByLessonIdList(lessonIdList);
+            lessonRepository.deleteAllByLectureLectureIdList(lectureIdList);
+            lectureRepository.deleteAllByLectureIdList(lectureIdList);
+        }
+
+        // Response
+    }
+
+    private void checkAuthenticationCode(String phone, String code) {
+        // Redis - 인증코드 조회 및 확인
+        RedisDto redisDto = redisClient.getValue(phone);
+        if(!redisDto.isSuccess() || redisDto.getValue() == null || !redisDto.getValue().equals(code)) {
+            // MySQL - 인증코드 조회 및 확인 (Redis 장애 또는 Redis 데이터가 없는 경우)
+            AuthorizationCode authorizationCode = authorizationCodeRepository.
+                    findByPhone(phone)
+                    .orElse(null);
+            // 데이터가 존재하지 않을 경우
+            if (authorizationCode == null) {
+                throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+            }
+            // 인증코드 유효기간이 끝난 경우
+            if(LocalDateTime.now().isAfter(authorizationCode.getExpiredAt())) {
+                throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+            }
+            // 인증코드가 일치하지 않는 경우
+            if(!authorizationCode.getAuthorizationCode().equals(code)) {
+                throw new ApplicationException(ErrorCode.WRONG_AUTHENTICATION_CODE);
+            }
+        }
+    }
+}

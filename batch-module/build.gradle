@@ -1,0 +1,20 @@
+bootJar { enabled = false }
+jar { enabled = false }
+
+dependencies {
+    // Common Module Dependency
+    implementation project(":common-module")
+
+    // Domain Module Dependency
+    implementation project(":domain-module")
+
+    // Notification Module Dependency
+    implementation project(":notification-module")
+
+    // Spring Batch & Quartz
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-quartz'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+}
+
+tasks.register("prepareKotlinBuildScriptModel"){}
