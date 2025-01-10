@@ -4,6 +4,8 @@ import com.selfrunner.commonmodule.common.Day;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalTime;
+
 @Getter
 @RequiredArgsConstructor
 public class ScheduleVo {
@@ -13,6 +15,12 @@ public class ScheduleVo {
     private String startTime;
 
     private String endTime;
+
+    public ScheduleVo(Day weekday, LocalTime startTime, LocalTime endTime) {
+        this.weekday = weekday;
+        this.startTime = startTime.toString();
+        this.endTime = endTime.toString();
+    }
 
     public ScheduleVo(Day weekday, String startTime, String endTime) {
         this.weekday = weekday;
