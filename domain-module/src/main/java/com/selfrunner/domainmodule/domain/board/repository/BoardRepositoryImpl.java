@@ -34,18 +34,30 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Slice<BoardMetaRes> findBoardPaginationByCategory(Member m, Long lectureId, BoardCategory category, Long cursor, LocalDateTime cursorCreatedAt, Pageable pageable) {
+    public Slice<BoardMetaRes> findBoardPaginationByCategory(Member m,
+                                                             Long lectureId,
+                                                             BoardCategory category,
+                                                             Long cursor,
+                                                             LocalDateTime cursorCreatedAt,
+                                                             Pageable pageable) {
         List<BoardMetaRes> boardMetaResList;
         if (m.getType().equals(MemberType.TEACHER)) {
             boardMetaResList = queryFactory.selectFrom(board)
                     .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                     .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                     .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), checkCategory(category), board.deletedAt.isNull(), reply.deletedAt.isNull())
+                    .where(board.lecture.lectureId.eq(lectureId),
+                            eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), checkCategory(category),
+                            board.deletedAt.isNull(),
+                            reply.deletedAt.isNull())
                     .orderBy(board.createdAt.desc(), board.boardId.asc())
                     .groupBy(board.boardId)
                     .limit(pageable.getPageSize() + 1)
-                    .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+                    .transform(groupBy(board.boardId)
+                            .list(Projections.constructor(BoardMetaRes.class,
+                                    board.boardId, lecture.lectureId, member.memberId, member.type, member.name,
+                                    board.lessonId, board.title, board.body, board.category, board.status,
+                                    reply.count(), board.createdAt, board.modifiedAt)));
 
         }
         else {
@@ -53,11 +65,18 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                     .leftJoin(lecture).on(board.lecture.lectureId.eq(lecture.lectureId))
                     .leftJoin(member).on(board.member.memberId.eq(member.memberId))
                     .leftJoin(reply).on(board.boardId.eq(reply.board.boardId))
-                    .where(board.lecture.lectureId.eq(lectureId), eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt), board.isPublic.eq(Boolean.TRUE).or(checkWriter(m.getMemberId())), checkCategory(category), board.deletedAt.isNull())
+                    .where(board.lecture.lectureId.eq(lectureId),
+                            eqCursorAndCursorCreatedAt(cursor, cursorCreatedAt),
+                            board.isPublic.eq(Boolean.TRUE).or(checkWriter(m.getMemberId())),
+                            checkCategory(category), board.deletedAt.isNull())
                     .orderBy(board.createdAt.desc(), board.boardId.asc())
                     .groupBy(board.boardId)
                     .limit(pageable.getPageSize() + 1)
-                    .transform(groupBy(board.boardId).list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId, member.memberId, member.type, member.name, board.lessonId, board.title, board.body, board.category, board.status, reply.count(), board.createdAt, board.modifiedAt)));
+                    .transform(groupBy(board.boardId)
+                            .list(Projections.constructor(BoardMetaRes.class, board.boardId, lecture.lectureId,
+                                    member.memberId, member.type, member.name, board.lessonId, board.title,
+                                    board.body, board.category, board.status, reply.count(), board.createdAt,
+                                    board.modifiedAt)));
         }
 
         List<BoardMetaRes> content = boardMetaResList.stream()
@@ -66,7 +85,11 @@ public class BoardRepositoryImpl implements BoardRepositoryCustom {
                             .from(reply)
                             .where(reply.board.boardId.eq(boardMetaRes.getBoardId()), reply.deletedAt.isNull())
                             .fetchFirst();
-                    return new BoardMetaRes(boardMetaRes.getBoardId(), boardMetaRes.getLectureId(), boardMetaRes.getMemberId(), boardMetaRes.getMemberType(), boardMetaRes.getMemberName(), boardMetaRes.getLessonId(), boardMetaRes.getTitle(), boardMetaRes.getBody(), boardMetaRes.getCategory(), boardMetaRes.getStatus(), replyCount, boardMetaRes.getCreatedAt(), boardMetaRes.getModifiedAt());
+                    return new BoardMetaRes(boardMetaRes.getBoardId(),
+                            boardMetaRes.getLectureId(), boardMetaRes.getMemberId(), boardMetaRes.getMemberType(),
+                            boardMetaRes.getMemberName(), boardMetaRes.getLessonId(), boardMetaRes.getTitle(),
+                            boardMetaRes.getBody(), boardMetaRes.getCategory(), boardMetaRes.getStatus(), replyCount,
+                            boardMetaRes.getCreatedAt(), boardMetaRes.getModifiedAt());
                 })
                 .collect(Collectors.toList());
 

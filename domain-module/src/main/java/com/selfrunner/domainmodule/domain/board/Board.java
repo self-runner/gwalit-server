@@ -36,7 +36,7 @@ public class Board extends BaseTimeEntity {
     private Member member;
 
     @Column(name = "is_public")
-    private Boolean isPublic;
+    private Boolean isPublic; // True: 공개, False: 비공개
 
     @Column(name = "lesson_id", columnDefinition = "bigint")
     private Long lessonId;
