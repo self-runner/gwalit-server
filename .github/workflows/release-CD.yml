@@ -43,7 +43,7 @@ jobs:
       # FCM 서비스 계정 키 적용
       - name: Make firebase-service-key.json
         run: |
-          cd ./src/main/resources
+          cd ./notification-module/src/main/resources
           mkdir firebase
           cd firebase
           touch ./firebase-service-key.json
@@ -53,7 +53,7 @@ jobs:
       # secret.yml 반영
       - name: Make application-secret.yml
         run: |
-          cd ./src/main/resources
+          cd ./api-module/src/main/resources
           touch ./application-secret.yml
           echo "${{ secrets.APPLICATION_SECRET }}" > ./application-secret.yml
         shell: bash
