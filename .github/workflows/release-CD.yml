@@ -61,7 +61,7 @@ jobs:
       # release.yml 반영
       - name: Make application-release.yml
         run: |
-          cd ./src/main/resources
+          cd ./api-module/src/main/resources
           echo "${{ secrets.APPLICATION_RELEASE }}" > ./application-release.yml
         shell: bash
 

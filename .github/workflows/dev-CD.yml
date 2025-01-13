@@ -60,7 +60,7 @@ jobs:
       # dev.yml 반영
       - name: Make application-dev.yml
         run: |
-          cd ./src/main/resources
+          cd ./api-module/src/main/resources
           echo "${{ secrets.APPLICATION_DEV }}" > ./application-release.yml
         shell: bash
 
