@@ -61,7 +61,7 @@ jobs:
       - name: Make application-dev.yml
         run: |
           cd ./api-module/src/main/resources
-          echo "${{ secrets.APPLICATION_DEV }}" > ./application-release.yml
+          echo "${{ secrets.APPLICATION_DEV }}" > ./application.yml
         shell: bash
 
       # domain yml 반영
