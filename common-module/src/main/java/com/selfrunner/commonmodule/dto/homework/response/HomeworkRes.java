@@ -1,0 +1,23 @@
+package com.selfrunner.commonmodule.dto.homework.response;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
+
+@Getter
+@RequiredArgsConstructor
+public class HomeworkRes {
+
+    private final Long homeworkId;
+
+    private final Long lessonId;
+
+    private final Long memberId;
+
+    private final String body;
+
+    private final LocalDate deadline;
+
+    private final Boolean isFinish;
+}

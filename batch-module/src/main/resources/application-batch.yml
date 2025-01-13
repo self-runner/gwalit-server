@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: batch-module
+  # Batch Configuration
+  batch:
+    jdbc:
+      initialize-schema: never
+    job:
+      enabled: false
