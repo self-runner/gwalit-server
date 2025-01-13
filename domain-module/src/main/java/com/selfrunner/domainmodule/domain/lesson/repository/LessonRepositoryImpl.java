@@ -45,7 +45,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.eq(lectureId))
                         .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants)))
         );
     }
 
@@ -59,7 +59,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.in(lectureIdList), yearDateFormat.eq(year), monthDateFormat.eq(month))
                         .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants)))
         );
     }
 
@@ -68,7 +68,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
                         .where(lesson.lecture.lectureId.eq(lectureId))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.progresses)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.progresses)))
         );
     }
 
@@ -83,7 +83,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
 
     @Override
     public Optional<LessonMetaRes> findLessonMetaByLectureIdBeforeNow(Long lectureId) {
-        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants))
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants))
                 .from(lesson)
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.before(LocalDate.now().plusDays(1L)))
                 .orderBy(lesson.date.desc(), lesson.startTime.desc(), lesson.endTime.desc())
@@ -92,7 +92,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
 
     @Override
     public Optional<LessonMetaRes> findLessonMetaByLectureIdAfterNow(Long lectureId) {
-        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants))
+        return Optional.ofNullable(queryFactory.select(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants))
                 .from(lesson)
                 .where(lesson.lecture.lectureId.eq(lectureId), lesson.date.after(LocalDate.now()))
                 .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
