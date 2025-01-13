@@ -27,4 +27,10 @@ public class ScheduleVo {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+
+    public ScheduleVo(String weekday, String startTime, String endTime) {
+        this.weekday = Day.valueOf(weekday);
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }
