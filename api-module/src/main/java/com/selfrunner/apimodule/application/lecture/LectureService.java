@@ -324,12 +324,16 @@ public class LectureService {
         MemberAndLecture memberAndLecture = memberAndLectureRepository.findMemberAndLectureByMemberAndLectureLectureId(member, lectureId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.UNAUTHORIZED_EXCEPTION)); // Class 소속 여부 확인
 
+        System.out.println("memberAndLecture: " + memberAndLecture.getMemberAndLectureId());
+
         // Business Logic
         List<MemberMeta> memberMetas = memberAndLectureRepository.findMemberMetaByLectureLectureId(lectureId)
                 .orElseThrow(() -> new ApplicationException(ErrorCode.NOT_FOUND_EXCEPTION));
         List<LessonMetaRes> lessonMetaRess = new ArrayList<>();
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdBeforeNow(lectureId).orElse(null)); // TODO: Optional 사용 시, NullPointException 발생 이유 분석
         lessonMetaRess.add(lessonRepository.findLessonMetaByLectureIdAfterNow(lectureId).orElse(null));
+
+        System.out.println("memberAndLecture2: " + memberAndLecture.getMemberAndLectureId());
 
         // Response
         return new GetLectureRes(memberAndLecture.getLecture().getLectureId(),
