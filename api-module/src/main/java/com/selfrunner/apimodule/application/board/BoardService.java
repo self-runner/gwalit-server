@@ -80,7 +80,7 @@ public class BoardService {
         Board board = Board.builder()
                 .lecture(memberAndLecture.getLecture())
                 .member(member)
-                .isPublic(!postBoardReq.getIsPublic()) // 클라이언트와 서버 간 동작 방식 반대로 설정하여 임의적으로 not 적용
+                .isPublic(member.getType().equals(MemberType.TEACHER) ? Boolean.TRUE : !postBoardReq.getIsPublic()) // 클라이언트와 서버 간 동작 방식 반대로 설정하여 임의적으로 not 적용
                 .lessonId(postBoardReq.getLessonId())
                 .title(postBoardReq.getTitle())
                 .body(postBoardReq.getBody())
