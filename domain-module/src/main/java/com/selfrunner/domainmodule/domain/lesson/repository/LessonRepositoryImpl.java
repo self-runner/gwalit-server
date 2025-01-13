@@ -45,7 +45,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.eq(lectureId))
                         .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants)))
         );
     }
 
@@ -59,7 +59,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
                         .leftJoin(lecture).on(lesson.lecture.eq(lecture))
                         .where(lesson.lecture.lectureId.in(lectureIdList), yearDateFormat.eq(year), monthDateFormat.eq(month))
                         .orderBy(lesson.date.asc(), lesson.startTime.asc(), lesson.endTime.asc())
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.participants)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonMetaRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.type, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.participants)))
         );
     }
 
@@ -68,7 +68,7 @@ public class LessonRepositoryImpl implements LessonRepositoryCustom{
         return Optional.ofNullable(
                 queryFactory.selectFrom(lesson)
                         .where(lesson.lecture.lectureId.eq(lectureId))
-                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday, lesson.startTime, lesson.endTime), lesson.progresses)))
+                        .transform(groupBy(lesson.lessonId).list(Projections.constructor(LessonProgressRes.class, lesson.lessonId, lesson.lecture.lectureId, lesson.date, Projections.constructor(ScheduleVo.class, lesson.weekday.stringValue(), lesson.startTime, lesson.endTime), lesson.progresses)))
         );
     }
 
