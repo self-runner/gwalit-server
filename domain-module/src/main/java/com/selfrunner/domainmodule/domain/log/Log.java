@@ -1,0 +1,42 @@
+package com.selfrunner.domainmodule.domain.log;
+
+import com.selfrunner.commonmodule.enumerate.log.LogType;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Entity
+@Getter
+@Table(name = "Log")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Log {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "logId")
+    private Long logId;
+
+    @Column(name = "memberId")
+    private Long memberId;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private LogType type;
+
+    @Column(name = "endPoint", columnDefinition = "TEXT")
+    private String endPoint;
+
+    @Column(name = "isSuccess")
+    private Boolean isSuccess;
+
+    @Builder
+    public Log(Long memberId, String type, String endPoint, Boolean isSuccess) {
+        this.memberId = memberId;
+        this.type = LogType.valueOf(type);
+        this.endPoint = endPoint;
+        this.isSuccess = isSuccess;
+    }
+}
