@@ -28,9 +28,9 @@ public class ScheduleVo {
         this.endTime = endTime;
     }
 
-    public ScheduleVo(String weekday, String startTime, String endTime) {
+    public ScheduleVo(String weekday, LocalTime startTime, LocalTime endTime) {
         this.weekday = Day.valueOf(weekday);
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.startTime = startTime.toString();
+        this.endTime = endTime.toString();
     }
 }
