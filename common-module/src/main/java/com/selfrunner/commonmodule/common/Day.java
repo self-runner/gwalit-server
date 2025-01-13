@@ -1,10 +1,5 @@
 package com.selfrunner.commonmodule.common;
 
-import lombok.Getter;
-import lombok.ToString;
-
-@Getter
-@ToString
 public enum Day {
     MON, // "월요일"
     TUE, // "화요일"
@@ -13,5 +8,4 @@ public enum Day {
     FRI, // "금요일"
     SAT, // "토요일"
     SUN // "일요일"
-
 }
