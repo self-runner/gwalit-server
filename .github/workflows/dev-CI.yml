@@ -49,12 +49,26 @@ jobs:
           echo "${{ secrets.FIREBASE_RELEASE_ADMIN }}" | openssl base64 -d -A > ./firebase-service-key.json
         shell: bash
 
-      # yml 반영
+      # secret yml 반영
       - name: Make application-secret.yml
         run: |
           cd ./api-module/src/main/resources
           touch ./application-secret.yml
           echo "${{ secrets.APPLICATION_SECRET }}" > ./application-secret.yml
+        shell: bash
+
+      # domain yml 반영
+      - name: Make application-domain.yml
+        run: |
+          cd ./domain-module/src/main/resources
+          echo "${{ secrets.APPLICATION_DOMAIN }}" > ./application-domain.yml
+        shell: bash
+
+      # infra yml 반영
+      - name: Make application-infra.yml
+        run: |
+          cd ./infra-module/src/main/resources
+          echo "${{ secrets.APPLICATION_INFRA }}" > ./application-infra .yml
         shell: bash
 
       # Gradle clean bootJar
