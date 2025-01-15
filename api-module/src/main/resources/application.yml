@@ -29,12 +29,12 @@ sentry:
   dsn: ENC(kcWB8bBCxkeKlhoM0lJKkfXx29L8hWgX5N03JGF6IQ47OZMC7Fn8IleH+AdjVqFtniKKzqs4yTYsdm2zo9Y0scnN/E/iydqmjU/iVcMjegvYJn/AXZAlRqpU84cAXHNWd4oFcF3Bauc=)
   traces-sample-rate: 1.0
 
----
-spring:
-  profiles:
-    active: stag
-
----
-spring:
-  profiles:
-    active: release
+#---
+#spring:
+#  profiles:
+#    active: stag
+#
+#---
+#spring:
+#  profiles:
+#    active: release
